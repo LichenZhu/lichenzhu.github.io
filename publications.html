@@ -9,16 +9,30 @@
 <meta name="author" content="Lichen Zhu">
 <link rel="canonical" href="https://lichenzhu.github.io/publications.html">
 
+<!-- Follow the reader's system theme; the stylesheet ships both palettes. -->
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101215" media="(prefers-color-scheme: dark)">
+
+<!-- Search engines yes, generative-AI training no. -->
+<meta name="robots" content="index, follow, noai, noimageai, max-image-preview:large">
+<meta name="googlebot" content="index, follow, noai, noimageai">
+<meta name="bingbot" content="index, follow, noai, noimageai">
+<meta name="twitter:dnt" content="on">
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Lichen Zhu">
 <meta property="og:title" content="Publications — Lichen Zhu">
 <meta property="og:description" content="Complete list of publications, preprints, and manuscripts under review by Lichen Zhu.">
 <meta property="og:url" content="https://lichenzhu.github.io/publications.html">
 <meta property="og:image" content="https://lichenzhu.github.io/assets/images/profile/lichen-zhu.jpg">
+<meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary">
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
+
+<script>document.documentElement.className += ' js';</script>
 </head>
 
 <body>
@@ -41,9 +55,9 @@
 
       <ul class="nav-list" id="nav-list">
         <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#research">Research</a></li>
-        <li><a href="index.html#news">News</a></li>
         <li><a href="publications.html" aria-current="page">Publications</a></li>
+        <li><a href="index.html#news">News</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
         <li><a href="assets/files/Lichen_Zhu_CV.pdf">CV</a></li>
       </ul>
     </nav>
@@ -52,7 +66,7 @@
 
 <main id="main">
 
-<div class="container">
+<div class="container container--narrow">
   <header class="page-head">
     <h1 class="page-title">Publications</h1>
     <p class="page-lede">
@@ -78,7 +92,7 @@
      │    the <figure> block — the entry becomes full width.                │
      └──────────────────────────────────────────────────────────────────────┘
      ═══════════════════════════════════════════════════════════════════════ -->
-<div class="container page-body">
+<div class="container container--narrow page-body">
 
   <!-- ── GROUP: peer-reviewed ─────────────────────────────────────────── -->
   <section class="group" aria-labelledby="g-2026">
@@ -302,5 +316,22 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+<!-- Structured data: this page is the authoritative publication list. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Publications — Lichen Zhu",
+  "url": "https://lichenzhu.github.io/publications.html",
+  "inLanguage": "en",
+  "about": {
+    "@type": "Person",
+    "@id": "https://lichenzhu.github.io/#person",
+    "name": "Lichen Zhu",
+    "url": "https://lichenzhu.github.io/"
+  }
+}
+</script>
+
 </body>
 </html>

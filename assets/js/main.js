@@ -1,5 +1,8 @@
 /* Lichen Zhu — homepage behaviour.
-   Progressive enhancement only: every piece of content is readable with JS off. */
+   Progressive enhancement only: every piece of content is readable with JS off.
+   The publication cards are the one place that matters — their .pub-detail
+   blocks render inline when this file never runs, and are hidden (by the `js`
+   class set in <head>) only so this script can lift them into the modal. */
 (function () {
   'use strict';
 
@@ -38,6 +41,72 @@
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* --- Publication modal ------------------------------------------------
+     One <dialog> serves every card. On open we assemble its contents from
+     the card itself — teaser, badges, title — and append a clone of the
+     card's .pub-detail. Nothing is duplicated in the markup.
+     -------------------------------------------------------------------- */
+  var modal = document.getElementById('pub-modal');
+  var modalBody = document.getElementById('pub-modal-body');
+  var supportsDialog = modal && typeof modal.showModal === 'function';
+
+  if (supportsDialog && modalBody) {
+    var lastOpener = null;
+
+    var fill = function (card) {
+      var thumb = card.querySelector('.pub-thumb img');
+      var badges = card.querySelector('.badges');
+      var opener = card.querySelector('.pub-open');
+      var detail = card.querySelector('.pub-detail');
+
+      modalBody.textContent = '';
+
+      if (thumb) {
+        var figure = document.createElement('figure');
+        figure.className = 'pub-modal-figure';
+        var img = document.createElement('img');
+        img.src = thumb.currentSrc || thumb.src;
+        img.alt = thumb.alt;
+        figure.appendChild(img);
+        modalBody.appendChild(figure);
+      }
+
+      if (badges) { modalBody.appendChild(badges.cloneNode(true)); }
+
+      var title = document.createElement('h2');
+      title.className = 'pub-modal-title';
+      title.id = 'pub-modal-title';
+      title.textContent = opener ? opener.textContent.trim().replace(/\s+/g, ' ') : '';
+      modalBody.appendChild(title);
+
+      if (detail) { modalBody.appendChild(detail.cloneNode(true)); }
+    };
+
+    document.addEventListener('click', function (e) {
+      var opener = e.target.closest('.pub-open');
+      if (!opener) { return; }
+      var card = opener.closest('.pub-card');
+      if (!card) { return; }
+
+      lastOpener = opener;
+      fill(card);
+      modal.showModal();
+      modalBody.scrollTop = 0;
+    });
+
+    // The close button, and clicks that land on the backdrop rather than the
+    // dialog's own content (those report the <dialog> itself as the target).
+    modal.addEventListener('click', function (e) {
+      if (e.target.closest('.pub-modal-close') || e.target === modal) {
+        modal.close();
+      }
+    });
+
+    modal.addEventListener('close', function () {
+      if (lastOpener) { lastOpener.focus(); lastOpener = null; }
+    });
   }
 
   /* --- Reveal earlier news ---------------------------------------------- */
