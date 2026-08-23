@@ -4,8 +4,10 @@ Personal academic homepage. Plain static HTML, CSS, and a small amount of
 vanilla JavaScript — no build step, no dependencies, no framework.
 
 ```
-index.html                  homepage (sticky sidebar + scrolling content)
+index.html                  homepage — about, selected publications, recent news
 publications.html           full publication list
+news.html                   full news archive, grouped by year
+experience.html             education, experience, honours
 404.html                    not-found page (GitHub Pages serves it automatically)
 robots.txt                  crawler rules; blocks the named AI training bots
 sitemap.xml                 two URLs; bump <lastmod> when you publish changes
@@ -45,9 +47,18 @@ Two typefaces, both from the system stack, no web-font requests:
   reason the page reads as technical rather than decorative, so keep it: if you
   add a new piece of metadata, give it the `mono` class.
 
-Section headings are `01 / About` — a mono index, the title, then a hairline
-that runs to the right edge. Numbers are hand-written in the markup, so renumber
-them if you reorder sections.
+Section headings on the homepage are `01 / About` — a mono index, the title,
+then a hairline that runs to the right edge. Numbers are hand-written, so
+renumber them if you reorder sections. Inner pages use a `.page-head` (large
+title + lede) instead, and `.group-title` for the bands within.
+
+**No call-to-action buttons.** The CV is a plain link in the sidebar rail,
+alongside Email and GitHub — not a download button. This follows what the
+best academic homepages actually do: Jon Barron's is `Email / CV / Bio /
+Scholar / Twitter / Github` as slash-separated text with no button anywhere,
+and Karpathy's is a bare icon row. A gradient CTA is a landing-page device;
+on a researcher's page it reads as selling something. If you ever do add a
+button, save it for an action that warrants one — booking a meeting, say.
 
 Three effects carry the rest:
 
@@ -64,6 +75,30 @@ Three effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
+## Pages, not scroll anchors
+
+The top nav navigates between real pages; nothing in it is a `#` link. Each
+page is a complete document — there is no build step and no templating, so the
+shared shell is **physically duplicated in every page**:
+
+- `<head>` (only title / description / canonical / og differ)
+- the header and its nav list, with `aria-current="page"` on the current item
+- the whole `<aside class="sidebar">`
+- the footer
+
+**If you change any of those, change them in all four pages.** The sidebar and
+the nav list are the two that will bite you. A quick check after editing:
+
+```sh
+grep -c 'sidebar-links' index.html publications.html news.html experience.html
+```
+
+The homepage is deliberately the fullest page: about, the four selected
+publication cards, and the five most recent news items, each with a link
+through to the page that holds the rest. When you add a news item, put it on
+`news.html` and mirror it into the homepage's `NEWS` section if it belongs in
+the recent five.
+
 ## How the homepage is laid out
 
 Two columns inside `<div class="layout">`:
@@ -72,7 +107,8 @@ Two columns inside `<div class="layout">`:
   button. It is `position: sticky`, so it stays put while the right column
   scrolls. Below 820px it becomes a normal block above the content; below 720px
   it goes fully single-column.
-- **`<main>`** — About, Selected Publications, News, Education & Experience.
+- **`<main>`** — About, Selected Publications, Recent News. The inner pages use
+  the same two-column layout, with a `.page-head` in place of numbered sections.
 
 Everything personal lives in the sidebar or the footer, so the scrolling column
 is nothing but substance.
@@ -85,14 +121,14 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | What | Where |
 | --- | --- |
 | Name, affiliation, photo | `index.html` → `SIDEBAR` |
-| Download CV button | `index.html` → `SIDEBAR`, the `<a class="btn">` |
-| Email / GitHub / LinkedIn / Scholar links | `index.html` → `<div class="sidebar-links">` and the footer |
+| Email / GitHub / LinkedIn / Scholar / CV links | `index.html` → `<div class="sidebar-links">` and the footer |
 | Biography | `index.html` → `ABOUT` |
 | Research interest tags | `index.html` → `<ul class="tags">` |
 | Selected publications (cards) | `index.html` → `SELECTED PUBLICATIONS` |
-| News | `index.html` → `NEWS`, add a `<li>` at the top |
+| Recent news (5 on the homepage) | `index.html` → `NEWS`, add a `<li>` at the top |
 | All publications | `publications.html`, grouped by status |
-| Education / experience / awards | `index.html` → `EDUCATION · EXPERIENCE · HONOURS` |
+| All news | `news.html`, grouped by year |
+| Education / experience / awards | `experience.html` |
 | Profile photo | replace `assets/images/profile/lichen-zhu.jpg` (square) |
 | CV | replace `assets/files/Lichen_Zhu_CV.pdf` (keep the filename) |
 
@@ -153,7 +189,7 @@ modal, everything on the page at once.
 - [ ] **Teaser figures** are placeholders.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
-- [ ] **`sitemap.xml`** `<lastmod>` dates.
+- [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
 
 ## Deploying
 

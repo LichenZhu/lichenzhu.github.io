@@ -195,35 +195,6 @@
     setTimeout(sweep, 2500);
   }
 
-  /* --- Highlight the section currently in view -------------------------- */
-  var sectionLinks = Array.prototype.filter.call(
-    document.querySelectorAll('.nav-list a[href^="#"]'),
-    function (a) { return document.querySelector(a.getAttribute('href')); }
-  );
-
-  if (sectionLinks.length && 'IntersectionObserver' in window) {
-    var byId = {};
-    var targets = sectionLinks.map(function (a) {
-      var el = document.querySelector(a.getAttribute('href'));
-      byId[el.id] = a;
-      return el;
-    });
-
-    var visible = new Set();
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) { visible.add(entry.target.id); }
-        else { visible.delete(entry.target.id); }
-      });
-
-      var current = targets.filter(function (el) { return visible.has(el.id); })[0];
-      sectionLinks.forEach(function (a) { a.classList.remove('is-active'); });
-      if (current && byId[current.id]) { byId[current.id].classList.add('is-active'); }
-    }, { rootMargin: '-25% 0px -60% 0px', threshold: 0 });
-
-    targets.forEach(function (el) { spy.observe(el); });
-  }
-
   /* --- Footer year ------------------------------------------------------ */
   var year = document.getElementById('year');
   if (year) { year.textContent = String(new Date().getFullYear()); }

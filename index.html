@@ -4,33 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     PAGE METADATA — update the description if your research focus changes.
-     ═══════════════════════════════════════════════════════════════════════ -->
 <title>Lichen Zhu</title>
 <meta name="description" content="Lichen Zhu is an M.S. student in Electrical &amp; Computer Engineering at Duke University, working on multimodal large language models, long-form video understanding, and efficient AI systems.">
 <meta name="author" content="Lichen Zhu">
-<meta name="keywords" content="Lichen Zhu, Duke ECE, multimodal large language models, long-form video understanding, LLM memory, efficient AI systems">
 <link rel="canonical" href="https://lichenzhu.github.io/">
 
-<!-- Follow the reader's system theme; the stylesheet ships both palettes. -->
+<!-- Dark is the designed default; the stylesheet ships both palettes. -->
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 
-<!-- Search engines yes, generative-AI training no. Honoured by the crawlers
-     that choose to; robots.txt blocks the named AI agents outright. -->
+<!-- Search engines yes, generative-AI training no. -->
 <meta name="robots" content="index, follow, noai, noimageai, max-image-preview:large">
 <meta name="googlebot" content="index, follow, noai, noimageai">
 <meta name="bingbot" content="index, follow, noai, noimageai">
 <meta name="twitter:dnt" content="on">
 
-<!-- Open Graph / social preview. og:image uses the profile photo; swap in a
-     dedicated 1200x630 image at assets/images/og-image.png if you make one. -->
 <meta property="og:type" content="profile">
 <meta property="og:site_name" content="Lichen Zhu">
 <meta property="og:title" content="Lichen Zhu">
-<meta property="og:description" content="M.S. student at Duke ECE working on multimodal large language models, long-form video understanding, and efficient AI systems.">
+<meta property="og:description" content="Lichen Zhu is an M.S. student in Electrical &amp; Computer Engineering at Duke University, working on multimodal large language models, long-form video understanding, and efficient AI systems.">
 <meta property="og:url" content="https://lichenzhu.github.io/">
 <meta property="og:image" content="https://lichenzhu.github.io/assets/images/profile/lichen-zhu.jpg">
 <meta property="og:locale" content="en_US">
@@ -41,7 +34,7 @@
 <link rel="stylesheet" href="assets/css/style.css">
 
 <!-- Marks the document as scripted before first paint, so the publication
-     cards render collapsed rather than flashing their full detail. -->
+     cards render collapsed and the reveal animation has something to reveal. -->
 <script>document.documentElement.className += ' js';</script>
 </head>
 
@@ -52,7 +45,8 @@
 <div class="backdrop" aria-hidden="true"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     HEADER
+     HEADER — the nav is real page-to-page navigation, not scroll anchors.
+     Keep the item list identical across every page.
      ═══════════════════════════════════════════════════════════════════════ -->
 <header class="site-header">
   <div class="container">
@@ -84,10 +78,10 @@
       </button>
 
       <ul class="nav-list" id="nav-list">
-        <li><a href="#about">About</a></li>
-        <li><a href="#publications">Publications</a></li>
-        <li><a href="#news">News</a></li>
-        <li><a href="#experience">Experience</a></li>
+        <li><a href="index.html" aria-current="page">About</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="experience.html">Experience</a></li>
         <li><a href="assets/files/Lichen_Zhu_CV.pdf">CV</a></li>
       </ul>
     </nav>
@@ -98,9 +92,9 @@
 <div class="layout">
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     SIDEBAR — identity rail. Sticks to the viewport on desktop; stacks above
-     the content on narrow screens. Everything personal lives here or in the
-     footer, so the scrolling column is nothing but substance.
+     SIDEBAR — identity rail, sticky on desktop, stacked on narrow screens.
+     IDENTICAL ON EVERY PAGE. There is no build step, so if you edit it here
+     you must edit it in index / publications / news / experience alike.
      ═══════════════════════════════════════════════════════════════════════ -->
 <aside class="sidebar" aria-label="Profile">
 
@@ -157,24 +151,20 @@
         <path d="M20 4.5h-6a3 3 0 00-3 3v12a2.5 2.5 0 012.5-2.5H20z"/></svg>
       Publications
     </a>
+
+    <a href="assets/files/Lichen_Zhu_CV.pdf">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 2.5H7a2 2 0 00-2 2v15a2 2 0 002 2h10a2 2 0 002-2V7.5z"/>
+        <path d="M14 2.5v5h5"/></svg>
+      Curriculum Vitae
+    </a>
   </div>
 
-  <a class="btn" href="assets/files/Lichen_Zhu_CV.pdf">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <g class="glyph-fall"><path d="M12 3v11"/><path d="M7.5 9.5L12 14l4.5-4.5"/></g>
-      <path d="M4.5 19.5h15"/></svg>
-    Download CV
-    <span class="btn-meta">PDF</span>
-  </a>
 
 </aside>
 
 <main id="main">
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     ABOUT
-     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="about" aria-labelledby="about-title">
   <div class="section-head">
     <span class="section-index" aria-hidden="true">01</span>
@@ -224,29 +214,6 @@
   </ul>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     SELECTED PUBLICATIONS — card grid
-
-     ┌── TO ADD A PUBLICATION ──────────────────────────────────────────────┐
-     │  Copy one <article class="pub-card"> block. Keep 4-6 of your         │
-     │  strongest here; every paper goes in publications.html.              │
-     │                                                                      │
-     │  A card has two halves:                                              │
-     │    • the FACE   — teaser, badge, title, venue. Always visible.       │
-     │    • the DETAIL — <div class="pub-detail">: authors, full venue,     │
-     │      summary, links. JavaScript lifts it into the modal on click;    │
-     │      with JS off it simply renders inline under the face, so nothing │
-     │      is ever unreachable.                                            │
-     │                                                                      │
-     │  • Wrap your own name: <span class="author-me">L. Zhu</span>         │
-     │  • Badges:  <span class="badge">VENUE 2026</span>                    │
-     │             <span class="badge badge--muted">Under Review</span>     │
-     │             <span class="badge badge--award">Oral</span>             │
-     │  • Drop any link you don't have, with its <span class="sep">·</span> │
-     │  • No teaser figure? Delete the whole <div class="pub-thumb">.       │
-     │  • Teaser figures are 16:10, in assets/images/publications/.         │
-     └──────────────────────────────────────────────────────────────────────┘
-     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="publications" aria-labelledby="pubs-title">
   <div class="section-head">
     <span class="section-index" aria-hidden="true">02</span>
@@ -403,23 +370,12 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     NEWS
-
-     ┌── TO ADD A NEWS ITEM ────────────────────────────────────────────────┐
-     │  Add a new <li> at the TOP of the list. Keep ~5 items visible; give  │
-     │  older ones class="news-more" and the hidden attribute so they sit   │
-     │  behind the "Show earlier news" button.                              │
-     └──────────────────────────────────────────────────────────────────────┘
-
-     NOTE: the months below were inferred from your CV — please check each
-     one and correct anything that is off.
-     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="news" aria-labelledby="news-title">
   <div class="section-head">
     <span class="section-index" aria-hidden="true">03</span>
-    <h2 class="section-title" id="news-title">News</h2>
+    <h2 class="section-title" id="news-title">Recent News</h2>
     <span class="section-rule" aria-hidden="true"></span>
+    <a class="section-link" href="news.html">All news <span class="arrow">&rarr;</span></a>
   </div>
 
   <ul class="news-list">
@@ -457,116 +413,7 @@
         <strong>HumanSys 2026</strong>, co-located with ACM MobiCom 2026.</span>
     </li>
 
-    <!-- Older items — hidden until "Show earlier news" is pressed. -->
-    <li class="news-more" hidden>
-      <span class="news-date">Sep 2025</span>
-      <span>Began the M.S. in ECE at Duke University and joined the CEI lab as a
-        research intern.</span>
-    </li>
-
-    <li class="news-more" hidden>
-      <span class="news-date">Sep 2025</span>
-      <span>Awarded an $18,000 scholarship from the Duke Master's Program.</span>
-    </li>
-
-    <li class="news-more" hidden>
-      <span class="news-date">Jul 2025</span>
-      <span>Graduated from Xi'an Jiaotong-Liverpool University with First Class
-        Honours, and was named a 2025 XJTLU Outstanding Graduate.</span>
-    </li>
-
-    <li class="news-more" hidden>
-      <span class="news-date">2024</span>
-      <span>Received the National Inspirational Scholarship from the Ministry of
-        Education of China.</span>
-    </li>
-
   </ul>
-
-  <button class="news-toggle" type="button" aria-expanded="false">
-    <span class="news-toggle-label">Show earlier news</span> <span class="chev" aria-hidden="true">⌄</span>
-  </button>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     EDUCATION · EXPERIENCE · HONOURS
-     Add a new <li> at the TOP of the relevant <ul> to keep reverse-chronology.
-     ═══════════════════════════════════════════════════════════════════════ -->
-<section class="section" id="experience" aria-labelledby="exp-title">
-  <div class="section-head">
-    <span class="section-index" aria-hidden="true">04</span>
-    <h2 class="section-title" id="exp-title">Education &amp; Experience</h2>
-    <span class="section-rule" aria-hidden="true"></span>
-  </div>
-
-  <div class="subsection">
-    <h3 class="subsection-title">Education</h3>
-    <ul class="timeline">
-      <li>
-        <div class="tl-head">
-          <h4 class="tl-org">Duke University</h4>
-          <span class="tl-meta">Durham, NC · Sep 2025 – Jul 2027</span>
-        </div>
-        <p class="tl-role">M.S. in Electrical &amp; Computer Engineering</p>
-      </li>
-      <li>
-        <div class="tl-head">
-          <h4 class="tl-org">Xi'an Jiaotong-Liverpool University / University of Liverpool</h4>
-          <span class="tl-meta">Suzhou, China · Sep 2021 – Jul 2025</span>
-        </div>
-        <p class="tl-role">B.Sc. in Financial Mathematics, First Class Honours</p>
-      </li>
-    </ul>
-  </div>
-
-  <div class="subsection">
-    <h3 class="subsection-title">Experience</h3>
-    <ul class="timeline">
-      <li>
-        <div class="tl-head">
-          <h4 class="tl-org">Hefei University of Technology</h4>
-          <span class="tl-meta">Hefei, China · Jun 2026 – Present</span>
-        </div>
-        <p class="tl-role">Research Intern</p>
-        <p class="tl-desc">
-          Long-form video understanding, advised by Prof. Yanbin Hao and Dr. Shuo Wang.
-        </p>
-      </li>
-      <li>
-        <div class="tl-head">
-          <h4 class="tl-org">Duke ECE · Center for Computational Evolutionary Intelligence</h4>
-          <span class="tl-meta">Durham, NC · Sep 2025 – Present</span>
-        </div>
-        <p class="tl-role">Research Intern</p>
-        <p class="tl-desc">
-          Multimodal large language models and efficient AI systems, under the guidance
-          of Yueqian Lin, Yudong Liu, and Prof. Yiran Chen. Investigating efficient
-          inference techniques for vision-language models.
-        </p>
-      </li>
-      <li>
-        <div class="tl-head">
-          <h4 class="tl-org">China Construction Bank</h4>
-          <span class="tl-meta">Hefei, China · Jul 2022 – Sep 2022</span>
-        </div>
-        <p class="tl-role">Financial Technology Intern</p>
-        <p class="tl-desc">
-          Engineered behavioural features from terabyte-scale transaction datasets
-          using SQL and Pandas.
-        </p>
-      </li>
-    </ul>
-  </div>
-
-  <div class="subsection">
-    <h3 class="subsection-title">Honours &amp; Awards</h3>
-    <ul class="honors">
-      <li>$18,000 scholarship, Duke Master's Program <span class="honor-year">· 2025</span></li>
-      <li>XJTLU Outstanding Graduate <span class="honor-year">· 2025</span></li>
-      <li>National Inspirational Scholarship, Ministry of Education of China <span class="honor-year">· 2024</span></li>
-      <li>XJTLU Outstanding Student <span class="honor-year">· 2023–2024</span></li>
-    </ul>
-  </div>
 
 </section>
 
@@ -587,9 +434,6 @@
   <div class="pub-modal-body" id="pub-modal-body"></div>
 </dialog>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════════════════════════════════ -->
 <footer class="site-footer">
   <div class="container">
     <div class="footer-inner">
@@ -609,8 +453,7 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      STRUCTURED DATA — the Person, plus one ScholarlyArticle per selected
-     paper so search engines can attribute the work. Mirror any change you
-     make to the publication cards above.
+     paper. Mirror any change you make to the publication cards above.
      ═══════════════════════════════════════════════════════════════════════ -->
 <script type="application/ld+json">
 {

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>News — Lichen Zhu</title>
+<meta name="description" content="Announcements, paper acceptances, and updates from Lichen Zhu.">
+<meta name="author" content="Lichen Zhu">
+<link rel="canonical" href="https://lichenzhu.github.io/news.html">
+
+<!-- Dark is the designed default; the stylesheet ships both palettes. -->
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+<!-- Search engines yes, generative-AI training no. -->
+<meta name="robots" content="index, follow, noai, noimageai, max-image-preview:large">
+<meta name="googlebot" content="index, follow, noai, noimageai">
+<meta name="bingbot" content="index, follow, noai, noimageai">
+<meta name="twitter:dnt" content="on">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lichen Zhu">
+<meta property="og:title" content="News — Lichen Zhu">
+<meta property="og:description" content="Announcements, paper acceptances, and updates from Lichen Zhu.">
+<meta property="og:url" content="https://lichenzhu.github.io/news.html">
+<meta property="og:image" content="https://lichenzhu.github.io/assets/images/profile/lichen-zhu.jpg">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/images/profile/lichen-zhu.jpg" fetchpriority="high">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- Marks the document as scripted before first paint, so the publication
+     cards render collapsed and the reveal animation has something to reveal. -->
+<script>document.documentElement.className += ' js';</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Decorative only: dot grid + accent bloom, fixed behind everything. -->
+<div class="backdrop" aria-hidden="true"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HEADER — the nav is real page-to-page navigation, not scroll anchors.
+     Keep the item list identical across every page.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="index.html">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="nm-plate" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#193a63"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
+            <linearGradient id="nm-bar" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4d9cff"/><stop offset="1" stop-color="#7b6cff"/></linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="url(#nm-plate)"/>
+          <rect x="15" y="14" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+          <path d="M44 25.5L20 39.5" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
+          <rect x="15" y="42.5" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+        </svg>
+        Lichen Zhu
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false"
+              aria-controls="nav-list" aria-label="Toggle navigation menu">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+
+      <ul class="nav-list" id="nav-list">
+        <li><a href="index.html">About</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="news.html" aria-current="page">News</a></li>
+        <li><a href="experience.html">Experience</a></li>
+        <li><a href="assets/files/Lichen_Zhu_CV.pdf">CV</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+<div class="layout">
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SIDEBAR — identity rail, sticky on desktop, stacked on narrow screens.
+     IDENTICAL ON EVERY PAGE. There is no build step, so if you edit it here
+     you must edit it in index / publications / news / experience alike.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" aria-label="Profile">
+
+  <div class="sidebar-portrait">
+    <img src="assets/images/profile/lichen-zhu.jpg"
+         alt="Portrait of Lichen Zhu" width="400" height="400">
+  </div>
+
+  <h1 class="sidebar-name">Lichen Zhu</h1>
+
+  <p class="sidebar-role">
+    M.S. Student, Electrical &amp; Computer Engineering,
+    <a href="https://ece.duke.edu/">Duke University</a>
+    <span class="sidebar-role-sep"></span>
+    Research Intern,
+    <a href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary Intelligence</a>
+  </p>
+
+  <!-- PROFILE LINKS — Google Scholar is commented out below; uncomment
+       and paste your profile URL once you have one. -->
+  <div class="sidebar-links">
+    <a href="mailto:lichen.zhu@duke.edu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M3 6l9 6.5L21 6"/></svg>
+      lichen.zhu@duke.edu
+    </a>
+
+    <!--
+    <a href="https://scholar.google.com/citations?user=YOUR_ID">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3L1.5 8.5 12 14l10.5-5.5L12 3z"/><path d="M5 10.8v4.7c0 1.9 3.1 3.5 7 3.5s7-1.6 7-3.5v-4.7"/></svg>
+      Google Scholar
+    </a>
+    -->
+
+    <a href="https://github.com/LichenZhu">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 1.8a10.2 10.2 0 00-3.2 19.9c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.4 1.1 3 .8.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 015 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0012 1.8z"/></svg>
+      GitHub
+    </a>
+
+    <a href="https://www.linkedin.com/in/lichen-zhu-b25b42352">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95 4.02 0 4.76 2.5 4.76 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.46-2.2 2.96V21h-4z"/></svg>
+      LinkedIn
+    </a>
+
+    <a href="publications.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 4.5h6a3 3 0 013 3v12a2.5 2.5 0 00-2.5-2.5H4z"/>
+        <path d="M20 4.5h-6a3 3 0 00-3 3v12a2.5 2.5 0 012.5-2.5H20z"/></svg>
+      Publications
+    </a>
+
+    <a href="assets/files/Lichen_Zhu_CV.pdf">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M14 2.5H7a2 2 0 00-2 2v15a2 2 0 002 2h10a2 2 0 002-2V7.5z"/>
+        <path d="M14 2.5v5h5"/></svg>
+      Curriculum Vitae
+    </a>
+  </div>
+
+
+</aside>
+
+<main id="main">
+<header class="page-head">
+  <h1 class="page-title">News</h1>
+  <p class="page-lede">Paper acceptances, submissions, and everything else worth noting, newest first.</p>
+</header>
+
+<!-- ┌── TO ADD A NEWS ITEM ──────────────────────────────────────────────┐
+     │  Add an <li> at the top of the right year group. Mirror the five   │
+     │  most recent items into the NEWS section of index.html.            │
+     └────────────────────────────────────────────────────────────────────┘ -->
+  <section class="group" aria-labelledby="n-2026">
+    <h2 class="group-title" id="n-2026">2026</h2>
+    <ul class="news-list">
+      <li>
+        <span class="news-date">Aug 2026</span>
+      <span>Two papers submitted for review: <em>Semantic-Unit Aggregation for
+        Streaming Interaction Memory</em> (AAAI 2027) and <em>Query-Conditioned
+        Evidential Keyframe Sampling</em> (WACV 2027).</span></li>
+      <li>
+        <span class="news-date">Jul 2026</span>
+      <span><em>When No Answer Is Correct</em> was accepted to
+        <strong>EMNLP 2026</strong>.</span></li>
+      <li>
+        <span class="news-date">Jun 2026</span>
+      <span>Started a research internship at Hefei University of Technology with
+        Prof. Yanbin Hao and Dr. Shuo Wang, working on long-form video
+        understanding.</span></li>
+      <li>
+        <span class="news-date">Jun 2026</span>
+      <span>Preprint released:
+        <a href="https://arxiv.org/abs/2606.08239"><em>When No Answer Is Correct:
+        Diagnosing Absent Answer Detection for MLLMs in Video Understanding</em></a>.</span></li>
+      <li>
+        <span class="news-date">May 2026</span>
+      <span><em>Will My Assistant Remember My Allergy?</em> was accepted to
+        <strong>HumanSys 2026</strong>, co-located with ACM MobiCom 2026.</span></li>
+    </ul>
+  </section>
+
+  <section class="group" aria-labelledby="n-2025">
+    <h2 class="group-title" id="n-2025">2025</h2>
+    <ul class="news-list">
+      <li>
+        <span class="news-date">Sep 2025</span>
+      <span>Began the M.S. in ECE at Duke University and joined the CEI lab as a
+        research intern.</span></li>
+      <li>
+        <span class="news-date">Sep 2025</span>
+      <span>Awarded an $18,000 scholarship from the Duke Master's Program.</span></li>
+      <li>
+        <span class="news-date">Jul 2025</span>
+      <span>Graduated from Xi'an Jiaotong-Liverpool University with First Class
+        Honours, and was named a 2025 XJTLU Outstanding Graduate.</span></li>
+    </ul>
+  </section>
+
+  <section class="group" aria-labelledby="n-2024">
+    <h2 class="group-title" id="n-2024">2024</h2>
+    <ul class="news-list">
+      <li>
+        <span class="news-date">2024</span>
+      <span>Received the National Inspirational Scholarship from the Ministry of
+        Education of China.</span></li>
+    </ul>
+  </section>
+
+</main>
+
+</div><!-- /.layout -->
+</div><!-- /.container -->
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <p class="footer-links">
+        <span class="footer-name">Lichen Zhu</span>
+        <a href="mailto:lichen.zhu@duke.edu">lichen.zhu@duke.edu</a>
+        <a href="https://github.com/LichenZhu">GitHub</a>
+        <!-- <a href="https://scholar.google.com/citations?user=YOUR_ID">Google Scholar</a> -->
+        <a href="https://www.linkedin.com/in/lichen-zhu-b25b42352">LinkedIn</a>
+      </p>
+      <p class="footer-meta">&copy; <span id="year">2026</span> Lichen Zhu</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+
+</body>
+</html>
