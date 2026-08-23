@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img"><style>.bg{fill:#f6f5f2}.ln{stroke:#c9cdd4;stroke-width:2.5;fill:none}.fl{fill:#17457c;fill-opacity:.13}.fl2{fill:#17457c;fill-opacity:.34}.gy{fill:#dcdad5}.lb{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:52px;letter-spacing:.14em;fill:#b3aea6}</style><rect class="bg" width="1200" height="750"/>
+<rect class="ln" x="120" y="130" width="380" height="240" rx="6"/>
+<path class="ln" d="M120 300 l90-70 70 55 80-64 140 109"/>
+<circle class="fl2" cx="205" cy="196" r="26"/>
+<rect class="gy" x="120" y="410" width="380" height="14" rx="7"/>
+<rect class="gy" x="120" y="446" width="280" height="14" rx="7"/>
+<rect class="fl" x="620" y="140" width="460" height="72" rx="5"/>
+<path class="ln" d="M660 162 l28 28 m0-28 -28 28" stroke="#17457c" stroke-opacity=".45"/>
+<rect class="fl" x="620" y="250" width="460" height="72" rx="5"/>
+<path class="ln" d="M660 272 l28 28 m0-28 -28 28" stroke="#17457c" stroke-opacity=".45"/>
+<rect class="fl" x="620" y="360" width="460" height="72" rx="5"/>
+<path class="ln" d="M660 382 l28 28 m0-28 -28 28" stroke="#17457c" stroke-opacity=".45"/>
+<rect class="fl" x="620" y="470" width="460" height="72" rx="5"/>
+<path class="ln" d="M660 492 l28 28 m0-28 -28 28" stroke="#17457c" stroke-opacity=".45"/>
+<rect class="ln" x="620" y="580" width="460" height="72" rx="5" stroke-dasharray="7 7"/>
+<text class="lb" x="60" y="694">FIGURE PLACEHOLDER</text></svg>

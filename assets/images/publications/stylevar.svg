@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img"><style>.bg{fill:#f6f5f2}.ln{stroke:#c9cdd4;stroke-width:2.5;fill:none}.fl{fill:#17457c;fill-opacity:.13}.fl2{fill:#17457c;fill-opacity:.34}.gy{fill:#dcdad5}.lb{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:52px;letter-spacing:.14em;fill:#b3aea6}</style><rect class="bg" width="1200" height="750"/>
+<rect class="fl" x="120" y="390" width="60" height="60" rx="4"/>
+<rect class="ln" x="120" y="390" width="60" height="60" rx="4"/>
+<rect class="fl" x="226" y="370" width="100" height="100" rx="4"/>
+<rect class="ln" x="226" y="370" width="100" height="100" rx="4"/>
+<rect class="fl" x="372" y="345" width="150" height="150" rx="4"/>
+<rect class="ln" x="372" y="345" width="150" height="150" rx="4"/>
+<rect class="fl" x="568" y="315" width="210" height="210" rx="4"/>
+<rect class="ln" x="568" y="315" width="210" height="210" rx="4"/>
+<rect class="fl" x="824" y="280" width="280" height="280" rx="4"/>
+<rect class="ln" x="824" y="280" width="280" height="280" rx="4"/>
+<path class="ln" d="M120 560 h952 m-26-22 26 22-26 22"/>
+<rect class="fl2" x="120" y="120" width="140" height="90" rx="5"/>
+<rect class="fl2" x="300" y="120" width="140" height="90" rx="5"/>
+<path class="ln" d="M270 165 h20 M470 165 h60"/>
+<text class="lb" x="60" y="694">FIGURE PLACEHOLDER</text></svg>
