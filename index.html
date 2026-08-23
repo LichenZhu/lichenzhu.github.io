@@ -14,9 +14,9 @@
 <link rel="canonical" href="https://lichenzhu.github.io/">
 
 <!-- Follow the reader's system theme; the stylesheet ships both palettes. -->
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101215" media="(prefers-color-scheme: dark)">
 
 <!-- Search engines yes, generative-AI training no. Honoured by the crawlers
      that choose to; robots.txt blocks the named AI agents outright. -->
@@ -48,13 +48,30 @@
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 
+<!-- Decorative only: dot grid + accent bloom, fixed behind everything. -->
+<div class="backdrop" aria-hidden="true"></div>
+
 <!-- ═══════════════════════════════════════════════════════════════════════
      HEADER
      ═══════════════════════════════════════════════════════════════════════ -->
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="Primary">
-      <a class="nav-brand" href="index.html">Lichen Zhu</a>
+      <a class="nav-brand" href="index.html">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="nm-plate" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#193a63"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
+            <linearGradient id="nm-bar" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4d9cff"/><stop offset="1" stop-color="#7b6cff"/></linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="url(#nm-plate)"/>
+          <rect x="15" y="14" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+          <path d="M44 25.5L20 39.5" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
+          <rect x="15" y="42.5" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+        </svg>
+        Lichen Zhu
+      </a>
 
       <button class="nav-toggle" type="button" aria-expanded="false"
               aria-controls="nav-list" aria-label="Toggle navigation menu">
@@ -87,8 +104,10 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <aside class="sidebar" aria-label="Profile">
 
-  <img class="sidebar-photo" src="assets/images/profile/lichen-zhu.jpg"
-       alt="Portrait of Lichen Zhu" width="400" height="400">
+  <div class="sidebar-portrait">
+    <img src="assets/images/profile/lichen-zhu.jpg"
+         alt="Portrait of Lichen Zhu" width="400" height="400">
+  </div>
 
   <h1 class="sidebar-name">Lichen Zhu</h1>
 
@@ -140,11 +159,13 @@
     </a>
   </div>
 
-  <a class="cv-button" href="assets/files/Lichen_Zhu_CV.pdf">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+  <a class="btn" href="assets/files/Lichen_Zhu_CV.pdf">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 3v12"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 19.5h15"/></svg>
+      <g class="glyph-fall"><path d="M12 3v11"/><path d="M7.5 9.5L12 14l4.5-4.5"/></g>
+      <path d="M4.5 19.5h15"/></svg>
     Download CV
+    <span class="btn-meta">PDF</span>
   </a>
 
 </aside>
@@ -156,7 +177,9 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="about" aria-labelledby="about-title">
   <div class="section-head">
+    <span class="section-index" aria-hidden="true">01</span>
     <h2 class="section-title" id="about-title">About</h2>
+    <span class="section-rule" aria-hidden="true"></span>
   </div>
 
   <div class="prose">
@@ -226,7 +249,9 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="publications" aria-labelledby="pubs-title">
   <div class="section-head">
+    <span class="section-index" aria-hidden="true">02</span>
     <h2 class="section-title" id="pubs-title">Selected Publications</h2>
+    <span class="section-rule" aria-hidden="true"></span>
     <a class="section-link" href="publications.html">All publications <span class="arrow">&rarr;</span></a>
   </div>
 
@@ -392,7 +417,9 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="news" aria-labelledby="news-title">
   <div class="section-head">
+    <span class="section-index" aria-hidden="true">03</span>
     <h2 class="section-title" id="news-title">News</h2>
+    <span class="section-rule" aria-hidden="true"></span>
   </div>
 
   <ul class="news-list">
@@ -467,7 +494,9 @@
      ═══════════════════════════════════════════════════════════════════════ -->
 <section class="section" id="experience" aria-labelledby="exp-title">
   <div class="section-head">
+    <span class="section-index" aria-hidden="true">04</span>
     <h2 class="section-title" id="exp-title">Education &amp; Experience</h2>
+    <span class="section-rule" aria-hidden="true"></span>
   </div>
 
   <div class="subsection">

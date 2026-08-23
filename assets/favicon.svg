@@ -1,6 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="12" fill="#17457c"/>
-  <text x="32" y="44" text-anchor="middle"
-        font-family="Georgia, 'Times New Roman', serif" font-size="34"
-        font-weight="600" fill="#ffffff" letter-spacing="-1">LZ</text>
+  <!-- Monogram Z built from two accent bars and a white diagonal. Three shapes
+       only, so it stays legible at 16px in a browser tab. The bars double as a
+       frame/scanline motif, nodding at the long-form video work. -->
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#193a63"/>
+      <stop offset="1" stop-color="#080f1c"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4d9cff"/>
+      <stop offset="1" stop-color="#7b6cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#plate)"/>
+  <rect x="14.5" y="1.5" width="35" height="0" fill="none"/>
+
+  <rect x="15" y="14" width="34" height="7.5" rx="2.5" fill="url(#bar)"/>
+  <path d="M44 25.5 L20 39.5" stroke="#ffffff" stroke-width="8.5" stroke-linecap="round"/>
+  <rect x="15" y="42.5" width="34" height="7.5" rx="2.5" fill="url(#bar)"/>
+
+  <rect x=".5" y=".5" width="63" height="63" rx="13.5" fill="none"
+        stroke="#ffffff" stroke-opacity=".10"/>
 </svg>

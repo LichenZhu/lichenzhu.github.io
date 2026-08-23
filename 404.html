@@ -8,9 +8,9 @@
 <meta name="description" content="That page does not exist on lichenzhu.github.io.">
 <meta name="robots" content="noindex, follow">
 
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101215" media="(prefers-color-scheme: dark)">
 
 <!-- Absolute paths: GitHub Pages serves this file for URLs at any depth. -->
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -18,10 +18,26 @@
 </head>
 
 <body>
+<div class="backdrop" aria-hidden="true"></div>
+
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="Primary">
-      <a class="nav-brand" href="/">Lichen Zhu</a>
+      <a class="nav-brand" href="/">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="nm-plate" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#193a63"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
+            <linearGradient id="nm-bar" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4d9cff"/><stop offset="1" stop-color="#7b6cff"/></linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="url(#nm-plate)"/>
+          <rect x="15" y="14" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+          <path d="M44 25.5L20 39.5" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
+          <rect x="15" y="42.5" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
+        </svg>
+        Lichen Zhu
+      </a>
       <ul class="nav-list">
         <li><a href="/#about">About</a></li>
         <li><a href="/publications.html">Publications</a></li>

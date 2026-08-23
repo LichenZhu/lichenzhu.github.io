@@ -1,10 +1,13 @@
 /* Lichen Zhu — homepage behaviour.
-   Progressive enhancement only: every piece of content is readable with JS off.
-   The publication cards are the one place that matters — their .pub-detail
-   blocks render inline when this file never runs, and are hidden (by the `js`
-   class set in <head>) only so this script can lift them into the modal. */
+
+   Progressive enhancement only. Nothing here is required to read the page:
+   the publication detail blocks render inline without it, and the reveal
+   animation is gated behind the `js` class set in <head> so no element can
+   ever be stranded at opacity 0. */
 (function () {
   'use strict';
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* --- Mobile navigation ------------------------------------------------ */
   var toggle = document.querySelector('.nav-toggle');
@@ -16,7 +19,6 @@
       toggle.setAttribute('aria-expanded', String(open));
     });
 
-    // Close after tapping a link (same-page anchors would otherwise leave it open).
     navList.addEventListener('click', function (e) {
       if (e.target.closest('a')) {
         navList.classList.remove('is-open');
@@ -33,7 +35,7 @@
     });
   }
 
-  /* --- Hairline under the header once the page scrolls ------------------ */
+  /* --- Header goes translucent once the page scrolls -------------------- */
   var header = document.querySelector('.site-header');
   if (header) {
     var onScroll = function () {
@@ -43,16 +45,39 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  /* --- Cursor-tracked glow on the publication cards ---------------------
+     The card's ::before (fill bloom) and ::after (1px gradient border) are
+     both centred on --mx / --my. We only write them while the pointer is
+     over a card, and only on devices that actually have a hover pointer.
+     -------------------------------------------------------------------- */
+  var grid = document.querySelector('.pub-grid');
+  if (grid && window.matchMedia('(hover: hover)').matches && !reduceMotion) {
+    var pending = null;
+
+    grid.addEventListener('pointermove', function (e) {
+      var card = e.target.closest('.pub-card');
+      if (!card) { return; }
+
+      // One write per frame; pointermove fires far faster than we repaint.
+      if (pending) { return; }
+      pending = requestAnimationFrame(function () {
+        pending = null;
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    }, { passive: true });
+  }
+
   /* --- Publication modal ------------------------------------------------
-     One <dialog> serves every card. On open we assemble its contents from
-     the card itself — teaser, badges, title — and append a clone of the
-     card's .pub-detail. Nothing is duplicated in the markup.
+     One <dialog> serves every card. Its contents are assembled from the card
+     itself — teaser, badges, title — plus a clone of that card's .pub-detail,
+     so nothing is duplicated in the markup.
      -------------------------------------------------------------------- */
   var modal = document.getElementById('pub-modal');
   var modalBody = document.getElementById('pub-modal-body');
-  var supportsDialog = modal && typeof modal.showModal === 'function';
 
-  if (supportsDialog && modalBody) {
+  if (modal && modalBody && typeof modal.showModal === 'function') {
     var lastOpener = null;
 
     var fill = function (card) {
@@ -96,8 +121,8 @@
       modalBody.scrollTop = 0;
     });
 
-    // The close button, and clicks that land on the backdrop rather than the
-    // dialog's own content (those report the <dialog> itself as the target).
+    // Close button, plus clicks that land on the backdrop rather than the
+    // dialog's content (those report the <dialog> itself as the target).
     modal.addEventListener('click', function (e) {
       if (e.target.closest('.pub-modal-close') || e.target === modal) {
         modal.close();
@@ -115,13 +140,59 @@
     var moreItems = document.querySelectorAll('.news-more');
     newsToggle.addEventListener('click', function () {
       var expanded = newsToggle.getAttribute('aria-expanded') === 'true';
-      Array.prototype.forEach.call(moreItems, function (li) {
-        li.hidden = expanded;
-      });
+      Array.prototype.forEach.call(moreItems, function (li) { li.hidden = expanded; });
       newsToggle.setAttribute('aria-expanded', String(!expanded));
       newsToggle.querySelector('.news-toggle-label').textContent =
         expanded ? 'Show earlier news' : 'Show fewer';
     });
+  }
+
+  /* --- Scroll reveal ----------------------------------------------------
+     Classes are applied from here rather than in the markup, so the HTML
+     stays free of presentation hooks. Cards in a grid stagger by index.
+     -------------------------------------------------------------------- */
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var revealed = document.querySelectorAll(
+      '.sidebar > *, .page-head, .section-head, .prose, .tags, ' +
+      '.pub-card, .news-list, .news-toggle, .subsection, .entry-list > li'
+    );
+
+    var revealObserver = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        entry.target.classList.add('is-in');
+        obs.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+
+    Array.prototype.forEach.call(revealed, function (el) {
+      el.classList.add('reveal');
+
+      // Stagger siblings that sit in the same grid or stack.
+      var peers = el.parentElement ? el.parentElement.children : null;
+      if (peers && peers.length > 1 && el.matches('.pub-card, .sidebar > *')) {
+        var i = Array.prototype.indexOf.call(peers, el);
+        el.style.transitionDelay = Math.min(i, 5) * 70 + 'ms';
+      }
+
+      revealObserver.observe(el);
+    });
+
+    // Safety net. An element that is on screen but still hidden means the
+    // observer never delivered — throttled tab, restored scroll position,
+    // print/screenshot rendering. Content must never be stranded invisible,
+    // so sweep once the page has settled and again on resize.
+    var sweep = function () {
+      var stuck = document.querySelectorAll('.reveal:not(.is-in)');
+      Array.prototype.forEach.call(stuck, function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          el.classList.add('is-in');
+        }
+      });
+    };
+    window.addEventListener('load', function () { setTimeout(sweep, 600); });
+    window.addEventListener('resize', sweep, { passive: true });
+    setTimeout(sweep, 2500);
   }
 
   /* --- Highlight the section currently in view -------------------------- */
@@ -139,19 +210,18 @@
     });
 
     var visible = new Set();
-    var observer = new IntersectionObserver(function (entries) {
+    var spy = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) { visible.add(entry.target.id); }
         else { visible.delete(entry.target.id); }
       });
 
-      // The topmost visible section wins.
       var current = targets.filter(function (el) { return visible.has(el.id); })[0];
       sectionLinks.forEach(function (a) { a.classList.remove('is-active'); });
       if (current && byId[current.id]) { byId[current.id].classList.add('is-active'); }
     }, { rootMargin: '-25% 0px -60% 0px', threshold: 0 });
 
-    targets.forEach(function (el) { observer.observe(el); });
+    targets.forEach(function (el) { spy.observe(el); });
   }
 
   /* --- Footer year ------------------------------------------------------ */

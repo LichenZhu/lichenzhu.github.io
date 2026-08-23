@@ -28,6 +28,42 @@ python3 -m http.server 8000
 Then open <http://localhost:8000>. Use a server rather than opening the file
 directly, so relative asset paths behave exactly as they will once deployed.
 
+## Design system
+
+Dark-first. `assets/css/style.css` declares the complete dark palette as custom
+properties on `:root`; the light theme is a single
+`@media (prefers-color-scheme: light)` block that overrides those properties and
+nothing else. To retune either theme, edit token values — no rule below section 1
+of the stylesheet needs to change. There is no manual toggle; the site follows
+the reader's system setting.
+
+Two typefaces, both from the system stack, no web-font requests:
+
+- **Sans** for everything that is prose or a heading.
+- **Mono** for everything that is *data* — venue badges, news dates, timeline
+  ranges, section indices, tags, the file-type chip. That split is the main
+  reason the page reads as technical rather than decorative, so keep it: if you
+  add a new piece of metadata, give it the `mono` class.
+
+Section headings are `01 / About` — a mono index, the title, then a hairline
+that runs to the right edge. Numbers are hand-written in the markup, so renumber
+them if you reorder sections.
+
+Three effects carry the rest:
+
+- **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
+  below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
+- **Cursor-tracked card glow** — each `.pub-card` has a fill bloom (`::before`)
+  and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
+  `main.js` writes on pointer move (one write per frame, hover-capable pointers
+  only). With JS off they fall back to the card centre.
+- **Scroll reveal** — `main.js` adds `.reveal` to a fixed selector list and an
+  IntersectionObserver adds `.is-in`. The hidden state is gated behind the `js`
+  class *and* backed by a sweep that un-hides anything still invisible on
+  screen after load, so content can never be stranded at `opacity: 0`.
+
+All three are disabled under `prefers-reduced-motion: reduce`.
+
 ## How the homepage is laid out
 
 Two columns inside `<div class="layout">`:
@@ -49,6 +85,7 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | What | Where |
 | --- | --- |
 | Name, affiliation, photo | `index.html` → `SIDEBAR` |
+| Download CV button | `index.html` → `SIDEBAR`, the `<a class="btn">` |
 | Email / GitHub / LinkedIn / Scholar links | `index.html` → `<div class="sidebar-links">` and the footer |
 | Biography | `index.html` → `ABOUT` |
 | Research interest tags | `index.html` → `<ul class="tags">` |
@@ -91,16 +128,12 @@ modal, everything on the page at once.
   `class="news-more"` and the `hidden` attribute.
 - **Teaser figures** are 16:10. The ones currently in
   `assets/images/publications/` are labelled `FIGURE PLACEHOLDER` — swap in real
-  PNG/JPG figures and update the `src` and `alt`.
-
-## Theming
-
-`assets/css/style.css` defines every colour as a custom property in `:root`, and
-the dark palette is a single `@media (prefers-color-scheme: dark)` block that
-overrides those properties and nothing else. To retune either theme, edit the
-token values — no rule below section 1 of the stylesheet needs to change.
-
-The site follows the reader's system setting; there is no manual toggle.
+  PNG/JPG figures and update the `src` and `alt`. On the dark theme they are
+  dimmed and bottom-faded into the card so a white-plate diagram does not sit
+  there as a bright rectangle; that treatment is switched off in light mode.
+- **The favicon** (`assets/favicon.svg`) is a Z built from two accent bars and a
+  white diagonal — three shapes, so it survives 16px in a browser tab. The same
+  mark is inlined in each page's `.nav-brand`; if you change one, change both.
 
 ## Crawlers and structured data
 
