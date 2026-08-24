@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  images/logos/             institution marks — PLACEHOLDERS, see below
+  images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
   files/Lichen_Zhu_CV.pdf   CV
@@ -151,7 +151,7 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | Selected publications (cards) | `index.html` → `SELECTED PUBLICATIONS` |
 | Recent news (5 on the homepage) | `index.html` → `NEWS`, add a `<li>` at the top |
 | Hobbies / personal voice | `experience.html` → `OUTSIDE THE LAB` |
-| Institution logos | `assets/images/logos/` — see below |
+| Institution logos | `assets/images/logos/`, shown in `experience.html` |
 | All publications | `publications.html`, grouped by status |
 | All news | `news.html`, grouped by year |
 | Education / experience / awards | `experience.html` |
@@ -199,16 +199,35 @@ modal, everything on the page at once.
 
 ## Institution logos
 
-`assets/images/logos/` holds `duke.svg`, `liverpool.svg` and `xjtlu.svg`. **All
-three are placeholders** — plain lettered plates, not the real marks. Wikipedia
-carries only Duke's *seal* (which Duke's brand policy restricts to official
-documents), Liverpool's coat of arms, and no XJTLU logo at all, so none of them
-were safe to ship.
+`assets/images/logos/` holds the three real marks:
 
-Download the real logos from each university's brand or media-resources page and
-overwrite these three files, keeping the filenames. The markup in
-`experience.html` needs no change. Prefer SVG; a square-ish crop sits best in the
-30×30 slot.
+| File | Source | Notes |
+| --- | --- | --- |
+| `duke.png` | Duke wordmark, navy `#012169` | transparent PNG, cropped to the ink and downscaled to 720px |
+| `xjtlu.png` | XJTLU shield | supplied as a white-background JPEG, cropped to the mark, downscaled to 360px |
+| `liverpool.svg` | <https://www.liverpool.ac.uk/logo-size-test/> `full-colour.svg` | **`width`/`height` were added to the root `<svg>`** |
+
+That last point matters. The file Liverpool serves declares only a `viewBox`,
+and with no intrinsic dimensions its width collapses to nothing under
+height-based sizing — the chip renders empty. If you ever re-download it, add
+`width="566.9" height="144.7"` to the `<svg>` element again.
+
+The three marks have wildly different proportions — a 2.3:1 wordmark, a 0.8:1
+shield, a 3.9:1 lockup. They are handled like this:
+
+- Each sits in a **white chip** (`.tl-mark`) of uniform height. All three are
+  dark-on-light artwork, and a white chip is the only treatment that carries
+  every one of them without recolouring somebody's trademark. On the dark theme
+  the chip is held just under full brightness so it does not glare.
+- Chips sit on **their own row above the organisation name**, not beside it. Put
+  beside it and each row's text would start at a different x — a Duke chip is
+  94px wide, the XJTLU + Liverpool pair is 230px — and the list looks broken.
+- Marks are normalised by **height, not by box**. Wordmarks get 30px; add
+  `tl-mark--tall` for a portrait mark like the XJTLU shield and it gets 42px, so
+  every chip carries the same optical weight.
+
+Logos use `alt=""` on purpose: the organisation name is in the heading directly
+beneath, so alt text would just make a screen reader say it twice.
 
 ## The corner stamp
 
@@ -240,7 +259,6 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
       full names if you prefer.
 - [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
 - [ ] **Corner stamp dates** — run the `sed` command above.
-- [ ] **Institution logos** are placeholders.
 
 ## Deploying
 

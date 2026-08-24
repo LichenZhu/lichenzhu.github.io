@@ -90,6 +90,7 @@
   .pub-thumb img,
   .entry-figure img { opacity: 1; }
   .pub-thumb::after { opacity: 0; }
+  .tl-mark { opacity: 1; border-color: var(--rule); }
 }
 
 /* 2. Base ---------------------------------------------------------------- */
@@ -799,7 +800,7 @@ li { list-style: none; }
 }
 
 .timeline { border-left: 1px solid var(--rule); }
-.timeline > li { position: relative; padding: 0 0 1.6rem 1.75rem; }
+.timeline > li { position: relative; padding: 0 0 1.9rem 1.75rem; }
 .timeline > li:last-child { padding-bottom: 0; }
 .timeline > li::before {
   content: "";
@@ -809,6 +810,7 @@ li { list-style: none; }
   border-radius: 50%;
   background: var(--faint);
 }
+.timeline > li:has(.tl-marks)::before { top: 1.7rem; }
 .timeline > li:first-child::before {
   background: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-dim);
@@ -816,18 +818,44 @@ li { list-style: none; }
 
 .tl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem 1rem; }
 
-/* Institution marks. The files in assets/images/logos/ are placeholders —
-   drop the real logo in under the same name and this needs no change. */
-.tl-id { display: flex; align-items: center; gap: .65rem; min-width: 0; }
-.tl-logo {
-  width: 30px; height: 30px;
-  flex: none;
-  object-fit: contain;
-  border-radius: 6px;
-  background: var(--bg-1);
-  border: 1px solid var(--rule);
+/* Institution marks. The three logos have wildly different proportions —
+   a 2.3:1 wordmark, a 0.8:1 shield, a 3.9:1 lockup — so they are normalised
+   by HEIGHT and given their natural width. They sit on their own row above
+   the organisation name rather than beside it, which keeps every row's text
+   starting at the same x.
+
+   The chip is white in both themes. All three marks are dark-on-light
+   artwork, and a white chip is the only treatment that carries them without
+   recolouring somebody's trademark. On the dark theme the chip is held just
+   under full brightness so it does not glare, and lifts on hover. */
+.tl-marks {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  margin-bottom: .8rem;
 }
-.tl-logo + .tl-logo { margin-left: -.3rem; }
+.tl-mark {
+  display: grid;
+  place-items: center;
+  height: 56px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid var(--rule-2);
+  border-radius: 8px;
+  opacity: .9;
+  transition: opacity .2s ease, border-color .2s ease;
+}
+.timeline > li:hover .tl-mark { opacity: 1; border-color: var(--accent); }
+/* Sized by explicit height, not max-height: the Liverpool file carries only a
+   viewBox, and under max-height its width collapses to nothing. */
+.tl-mark img {
+  display: block;
+  height: 30px;
+  width: auto;
+}
+/* A portrait shield set to a wordmark's height reads as a speck. Tall marks
+   get their own height so every chip carries the same optical weight. */
+.tl-mark--tall img { height: 42px; }
 .tl-org { font-size: .965rem; letter-spacing: -0.015em; }
 .tl-meta { font-size: .705rem; letter-spacing: .02em; color: var(--faint); white-space: nowrap; }
 .tl-role { font-size: .875rem; color: var(--body); margin: .18rem 0 0; }
