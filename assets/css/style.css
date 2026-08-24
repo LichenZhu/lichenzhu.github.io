@@ -30,7 +30,7 @@
   --ink:       #f3f5f8;   /* headings                 */
   --body:      #a5adbb;   /* body copy                */
   --muted:     #7b8493;   /* metadata, authors        */
-  --faint:     #575f6d;   /* indices, dates           */
+  --faint:     #575f6d;   /* decorative fills only — too low-contrast for text */
 
   /* One accent, one partner for gradients. Used sparingly. */
   --accent:     #4d9cff;
@@ -41,6 +41,11 @@
 
   --award:      #e0b968;
   --award-dim:  rgba(224, 185, 104, .12);
+
+  /* Duke Blue does not change with the theme; declared once, here, so
+     .duke-bar cannot silently lose its colour on dark (var(--duke) was
+     previously undefined outside the light-theme block). */
+  --duke:       #012169;
 
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display",
           "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -72,10 +77,9 @@
     --ink:       #0a0c10;
     --body:      #474e5c;
     --muted:     #69717f;
-    --faint:     #98a0ae;
+    --faint:     #98a0ae;   /* decorative fills only, see above */
 
     /* On white, Duke Blue can carry the accent directly. */
-    --duke:       #012169;
     --accent:     #012169;
     --accent-2:   #00539b;
     --accent-ink: #012169;
@@ -377,15 +381,6 @@ li { list-style: none; }
 }
 /* The role and the institution carry the weight; the connective text does not. */
 .sidebar-role strong { color: var(--ink); font-weight: 600; letter-spacing: -0.005em; }
-.sidebar-role .unit {
-  display: block;
-  font-family: var(--mono);
-  font-size: .655rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: .3rem;
-}
 .sidebar-role a { color: var(--body); box-shadow: inset 0 -1px 0 0 var(--rule); }
 .sidebar-role a:hover { color: var(--accent-ink); box-shadow: inset 0 -1px 0 0 var(--accent); }
 .sidebar-role-sep { display: block; height: .5rem; }
@@ -409,7 +404,7 @@ li { list-style: none; }
   transition: color .15s ease, background-color .15s ease;
 }
 .sidebar-links a:hover { color: var(--ink); background: var(--bg-2); }
-.sidebar-links svg { width: 15px; height: 15px; flex: none; color: var(--faint); transition: color .15s ease; }
+.sidebar-links svg { width: 15px; height: 15px; flex: none; color: var(--muted); transition: color .15s ease; }
 .sidebar-links a:hover svg { color: var(--accent); }
 
 /* 7. Section furniture ---------------------------------------------------
@@ -460,7 +455,7 @@ li { list-style: none; }
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   margin: 1.9rem 0 .75rem;
 }
 .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.75rem; }
@@ -617,7 +612,7 @@ li { list-style: none; }
   font-size: .655rem;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   transition: color .2s ease;
 }
 .js .pub-hint { display: flex; }
@@ -760,7 +755,7 @@ li { list-style: none; }
   font-size: .675rem;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   padding-top: .34rem;
   white-space: nowrap;
 }
@@ -795,7 +790,7 @@ li { list-style: none; }
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   margin-bottom: 1.25rem;
 }
 
@@ -857,7 +852,7 @@ li { list-style: none; }
    get their own height so every chip carries the same optical weight. */
 .tl-mark--tall img { height: 42px; }
 .tl-org { font-size: .965rem; letter-spacing: -0.015em; }
-.tl-meta { font-size: .705rem; letter-spacing: .02em; color: var(--faint); white-space: nowrap; }
+.tl-meta { font-size: .705rem; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
 .tl-role { font-size: .875rem; color: var(--body); margin: .18rem 0 0; }
 .tl-desc { font-size: .85rem; color: var(--muted); margin: .35rem 0 0; max-width: 66ch; }
 
@@ -875,7 +870,7 @@ li { list-style: none; }
   border-radius: 50%;
   background: var(--rule-2);
 }
-.honors .honor-year { color: var(--faint); font-size: .72rem; letter-spacing: .04em; }
+.honors .honor-year { color: var(--muted); font-size: .72rem; letter-spacing: .04em; }
 
 /* 10b. Publications page ------------------------------------------------- */
 
@@ -890,7 +885,7 @@ li { list-style: none; }
   font-weight: 500;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   padding-bottom: .7rem;
   border-bottom: 1px solid var(--rule);
   margin-bottom: 1.5rem;
@@ -926,7 +921,7 @@ li { list-style: none; }
   font-size: .615rem;
   letter-spacing: .13em;
   text-transform: uppercase;
-  color: var(--faint);
+  color: var(--muted);
   pointer-events: none;
 }
 .stamp .dot {
@@ -945,7 +940,7 @@ li { list-style: none; }
 .footer-links a { color: var(--muted); }
 .footer-links a:hover { color: var(--ink); }
 .footer-name { color: var(--ink); font-weight: 600; letter-spacing: -0.015em; }
-.footer-meta { font-family: var(--mono); font-size: .705rem; letter-spacing: .04em; color: var(--faint); }
+.footer-meta { font-family: var(--mono); font-size: .705rem; letter-spacing: .04em; color: var(--muted); }
 
 /* 12. Responsive --------------------------------------------------------- */
 
