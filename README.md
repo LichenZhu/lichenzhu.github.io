@@ -316,10 +316,10 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
 ## Before you publish — things to check
 
 - [ ] **News dates** were inferred from the CV; verify each one.
-- [ ] **Teaser figures**: two are real paper figures; the other three
-      (`streaming-absent-answer`, `keyframe-sampling`, `stylevar`) are still
-      hand-drawn stand-ins. Export the real ones and drop them in — nothing in
-      the CSS needs to change.
+- [ ] **Teaser figures**: four are the real figures from the papers. Only
+      `keyframe-sampling` is still a hand-drawn stand-in, because that paper is
+      not public yet. Drop the real one in when it is — nothing in the CSS
+      needs to change.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
 - [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
@@ -328,9 +328,14 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
 ## Files that are not deployed
 
 `_source/` holds the full-resolution originals — the photographs off the phone,
-the figures exported from the papers. It is git-ignored; the web-ready
-derivatives under `assets/images/` are what ship. Keep it if you might re-export
-at a different size, delete it if you have the originals elsewhere.
+the figures exported from the papers, and in `_source/papers/` the arXiv PDFs
+the rest were cut out of. It is git-ignored; the web-ready derivatives under
+`assets/images/` are what ship. Keep it if you might re-crop or re-export,
+delete it if you have the originals elsewhere.
+
+To pull a figure out of a paper: `pdftoppm -r 400 -f <page> -l <page> -png
+paper.pdf out` renders the page, then crop to the figure and save it as WebP at
+about 1500px on the long edge, quality 90.
 
 ## Deploying
 
