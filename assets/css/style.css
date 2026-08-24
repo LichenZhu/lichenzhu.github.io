@@ -87,6 +87,7 @@
   /* A Garamond's x-height runs about 15% shorter than a grotesque at the
      same em, so the display steps carry their own values rather than
      borrowing the UI scale — at --t-title they would read undersized. */
+  --t-org:     1.25rem;  /* 20px — institution names                    */
   --t-subhead: 1.375rem; /* 22px — section titles, the modal title      */
   --t-display: 2.625rem; /* 42px — page titles, the name                */
 
@@ -964,14 +965,9 @@ img.fig-mark { padding: 17% 34%; }
 
 .subsection + .subsection { margin-top: 2.75rem; }
 
-.subsection-title {
-  font-size: var(--t-label);
-  font-weight: 500;
-  letter-spacing: var(--tr-caps);
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1.25rem;
-}
+/* Shares its rule with .group-title further down: the bands on this page and
+   the bands on the publications page are the same thing, and were drifting
+   apart — one had the hairline, the other did not. */
 
 /* Education cards. The three institution marks are a 2.3:1 wordmark, a
    0.8:1 shield and a 3.9:1 lockup; giving each card its own logo row means
@@ -1003,19 +999,40 @@ img.fig-mark { padding: 17% 34%; }
   margin-bottom: 1.1rem;
 }
 
+/* Institution names are set in the display serif, like the page title and the
+   unit signature in the banner. Proper nouns of institutions get the
+   institutional voice; the degree and the school beneath stay in the UI face.
+   Three steps, so the stack cannot read as one grey block:
+     name    serif 20px, --ink, 600
+     school  sans  13px, --muted, 400
+     degree  sans  14px, --body,  500   */
 .edu-org {
-  font-size: var(--t-title);
+  font-family: var(--display);
+  font-size: var(--t-org);
+  font-weight: 600;
   line-height: var(--lh-snug);
-  letter-spacing: var(--tr-head);
-  margin-bottom: .3rem;
+  letter-spacing: var(--tr-serif);
+  margin-bottom: .18rem;
+}
+
+.edu-school {
+  font-size: var(--t-fine);
+  line-height: var(--lh-normal);
+  color: var(--muted);
+  margin-bottom: .6rem;
 }
 
 .edu-degree {
   font-size: var(--t-small);
+  font-weight: 500;
   line-height: var(--lh-normal);
   color: var(--body);
   margin-bottom: 1rem;
 }
+
+/* Gold is the site's award colour — the honours list uses it too, so a
+   distinction reads as a distinction wherever it appears. */
+.edu-honour { color: var(--award); }
 
 .edu-meta {
   display: flex;
@@ -1076,7 +1093,12 @@ img.fig-mark { padding: 17% 34%; }
 /* A portrait shield set to a wordmark's height reads as a speck. Tall marks
    get their own height so every chip carries the same optical weight. */
 .tl-mark--tall img { height: 42px; }
-.tl-org { font-size: var(--t-title); letter-spacing: var(--tr-head); }
+.tl-org {
+  font-family: var(--display);
+  font-size: var(--t-org);
+  font-weight: 600;
+  letter-spacing: var(--tr-serif);
+}
 .tl-meta {
   display: flex;
   gap: 1.4rem;
@@ -1084,7 +1106,9 @@ img.fig-mark { padding: 17% 34%; }
   color: var(--muted);
   white-space: nowrap;
 }
-.tl-role { font-size: var(--t-small); color: var(--body); margin: .18rem 0 0; }
+.tl-role { font-size: var(--t-small); color: var(--body); margin: .22rem 0 0; }
+/* The ongoing role, marked the same way the timeline marks it with a dot. */
+.tl-when--now { color: var(--accent-ink); }
 .tl-desc {
   font-size: var(--t-small);
   line-height: var(--lh-relaxed);
@@ -1105,7 +1129,7 @@ img.fig-mark { padding: 17% 34%; }
   position: absolute; left: 0; top: .72em;
   width: 4px; height: 4px;
   border-radius: 50%;
-  background: var(--rule-2);
+  background: var(--award);
 }
 .honors .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
 
@@ -1127,6 +1151,7 @@ img.fig-mark { padding: 17% 34%; }
   max-width: 58ch;
 }
 .group + .group { margin-top: 3.25rem; }
+.subsection-title,
 .group-title {
   font-size: var(--t-label);
   font-weight: 500;

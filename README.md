@@ -90,6 +90,20 @@ to the right edge, with an optional link ("All news →") pinned to the far end.
 Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
 for the bands within.
 
+**Education cards** carry three lines in three voices, so the stack cannot
+collapse into one grey block: the institution in the display serif
+(`.edu-org`, 20px, `--ink`), its school in the UI face (`.edu-school`, 13px,
+`--muted`), and the degree below it (`.edu-degree`, 14px, `--body`, weight
+500). Organisation names in the Experience timeline (`.tl-org`) use the same
+serif — proper nouns of institutions get the institutional voice, while paper
+titles stay in the UI face.
+
+**Colour on that page carries meaning, it is not decoration.** Gold
+(`--award`) marks a distinction wherever one appears — the honours bullets and
+`.edu-honour` on "First Class Honours" — and the accent marks what is ongoing:
+`.tl-when--now` on the current role, matching the accent dot the timeline
+already puts beside it. Don't spend either colour on anything else here.
+
 **Duke.** The header *is* the institutional banner: Duke navy, wordmark and CEI
 name on the left, navigation on the right, one bar. It stays navy in both themes
 because it is institutional livery rather than page chrome, so every colour
