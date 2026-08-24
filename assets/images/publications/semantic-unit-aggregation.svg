@@ -1,20 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img"><style>.bg{fill:#f6f5f2}.ln{stroke:#c9cdd4;stroke-width:2.5;fill:none}.fl{fill:#17457c;fill-opacity:.13}.fl2{fill:#17457c;fill-opacity:.34}.gy{fill:#dcdad5}.lb{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:52px;letter-spacing:.14em;fill:#b3aea6}</style><rect class="bg" width="1200" height="750"/>
-<rect class="fl" x="120" y="200" width="60" height="110" rx="4"/>
-<rect class="fl" x="190" y="200" width="36" height="110" rx="4"/>
-<rect class="fl" x="236" y="200" width="82" height="110" rx="4"/>
-<rect class="fl" x="328" y="200" width="48" height="110" rx="4"/>
-<rect class="fl" x="386" y="200" width="30" height="110" rx="4"/>
-<rect class="fl" x="426" y="200" width="94" height="110" rx="4"/>
-<rect class="fl" x="530" y="200" width="56" height="110" rx="4"/>
-<rect class="fl" x="596" y="200" width="40" height="110" rx="4"/>
-<rect class="fl" x="646" y="200" width="76" height="110" rx="4"/>
-<rect class="fl" x="732" y="200" width="52" height="110" rx="4"/>
-<rect class="fl" x="794" y="200" width="64" height="110" rx="4"/>
-<rect class="fl" x="868" y="200" width="34" height="110" rx="4"/>
-<path class="ln" d="M120 350 v26 h240 v-26 M380 350 v26 h300 v-26 M700 350 v26 h372 v-26"/>
-<rect class="fl2" x="150" y="430" width="180" height="88" rx="5"/>
-<rect class="fl2" x="480" y="430" width="180" height="88" rx="5"/>
-<rect class="fl2" x="810" y="430" width="180" height="88" rx="5"/>
-<path class="ln" d="M120 590 h952" stroke-dasharray="6 8"/>
-<rect class="gy" x="120" y="622" width="520" height="14" rx="7"/>
-<text class="lb" x="60" y="694">FIGURE PLACEHOLDER</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750"
+     role="img" aria-label="Fixed temporal windows cut events in half, while semantic-unit segmentation keeps each event intact">
+  <defs>
+<style>
+    .s   { stroke:#8892a0; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .s2  { stroke:#8892a0; stroke-width:2; fill:none; stroke-linecap:round; opacity:.55 }
+    .dash{ stroke:#8892a0; stroke-width:2.5; fill:none; stroke-dasharray:9 9; stroke-linecap:round; opacity:.6 }
+    .a   { stroke:#3d8bf0; stroke-width:3.5; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .adash{stroke:#3d8bf0; stroke-width:3; fill:none; stroke-dasharray:10 8; stroke-linecap:round }
+    .gf  { fill:#8892a0; opacity:.20 }
+    .gf2 { fill:#8892a0; opacity:.38 }
+    .af  { fill:#3d8bf0; opacity:.26 }
+    .af2 { fill:#3d8bf0; opacity:.85 }
+    .wf  { fill:#d98b6a; opacity:.30 }
+    .w   { stroke:#d98b6a; stroke-width:3; fill:none; stroke-linecap:round }
+    .t   { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#8892a0 }
+    .ta  { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#3d8bf0 }
+  </style>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#8892a0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#3d8bf0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  </defs>
+
+  <text class="t" x="70" y="90">FIXED WINDOW</text>
+
+  <!-- events, sliced by a regular grid that ignores their boundaries -->
+  <g>
+    <rect class="gf2" x="70" y="130" width="230" height="60" rx="10"/>
+    <rect class="gf2" x="320" y="130" width="330" height="60" rx="10"/>
+    <rect class="gf2" x="670" y="130" width="190" height="60" rx="10"/>
+    <rect class="gf2" x="880" y="130" width="250" height="60" rx="10"/>
+  </g>
+  <g class="w">
+    <path d="M335 112 L335 208"/>
+    <path d="M600 112 L600 208"/>
+    <path d="M865 112 L865 208"/>
+  </g>
+  <text class="t" x="70" y="252" style="fill:#d98b6a">EVENTS SPLIT</text>
+
+  <!-- same stream, cut on event boundaries -->
+  <text class="ta" x="70" y="420">SEMANTIC UNIT</text>
+
+  <g>
+    <rect class="af" x="70" y="460" width="230" height="60" rx="10"/>
+    <rect class="af" x="320" y="460" width="330" height="60" rx="10"/>
+    <rect class="af" x="670" y="460" width="190" height="60" rx="10"/>
+    <rect class="af" x="880" y="460" width="250" height="60" rx="10"/>
+    <rect class="a" x="70" y="460" width="230" height="60" rx="10"/>
+    <rect class="a" x="320" y="460" width="330" height="60" rx="10"/>
+    <rect class="a" x="670" y="460" width="190" height="60" rx="10"/>
+    <rect class="a" x="880" y="460" width="250" height="60" rx="10"/>
+  </g>
+  <g class="adash">
+    <path d="M310 442 L310 538"/>
+    <path d="M660 442 L660 538"/>
+    <path d="M870 442 L870 538"/>
+  </g>
+  <text class="ta" x="70" y="582">EVENTS INTACT</text>
+
+  <!-- retrieval improves -->
+  <path class="a" d="M70 650 L1130 650" marker-end="url(#ara)"/>
+  <text class="t" x="70" y="712">LONG-HORIZON RETRIEVAL</text>
+</svg>

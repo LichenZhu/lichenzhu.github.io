@@ -1,15 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img"><style>.bg{fill:#f6f5f2}.ln{stroke:#c9cdd4;stroke-width:2.5;fill:none}.fl{fill:#17457c;fill-opacity:.13}.fl2{fill:#17457c;fill-opacity:.34}.gy{fill:#dcdad5}.lb{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:52px;letter-spacing:.14em;fill:#b3aea6}</style><rect class="bg" width="1200" height="750"/>
-<rect class="fl" x="140" y="150" width="140" height="90" rx="5"/>
-<path class="ln" d="M210 240 V 300 H 520 V 340"/>
-<rect class="fl" x="320" y="150" width="140" height="90" rx="5"/>
-<path class="ln" d="M390 240 V 300 H 520 V 340"/>
-<rect class="fl" x="500" y="150" width="140" height="90" rx="5"/>
-<path class="ln" d="M570 240 V 300 H 520 V 340"/>
-<rect class="fl2" x="400" y="340" width="240" height="96" rx="5"/>
-<rect class="fl" x="760" y="350" width="56" height="210" rx="3"/>
-<rect class="fl" x="838" y="400" width="56" height="160" rx="3"/>
-<rect class="fl" x="916" y="440" width="56" height="120" rx="3"/>
-<rect class="fl" x="994" y="470" width="56" height="90" rx="3"/>
-<rect class="fl" x="1072" y="500" width="56" height="60" rx="3"/>
-<path class="ln" d="M740 560 h420"/>
-<text class="lb" x="60" y="694">FIGURE PLACEHOLDER</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750"
+     role="img" aria-label="Loan features feed an XGBoost model and a deep network, whose predictions are stacked into a default-risk score">
+  <defs>
+<style>
+    .s   { stroke:#8892a0; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .s2  { stroke:#8892a0; stroke-width:2; fill:none; stroke-linecap:round; opacity:.55 }
+    .dash{ stroke:#8892a0; stroke-width:2.5; fill:none; stroke-dasharray:9 9; stroke-linecap:round; opacity:.6 }
+    .a   { stroke:#3d8bf0; stroke-width:3.5; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .adash{stroke:#3d8bf0; stroke-width:3; fill:none; stroke-dasharray:10 8; stroke-linecap:round }
+    .gf  { fill:#8892a0; opacity:.20 }
+    .gf2 { fill:#8892a0; opacity:.38 }
+    .af  { fill:#3d8bf0; opacity:.26 }
+    .af2 { fill:#3d8bf0; opacity:.85 }
+    .wf  { fill:#d98b6a; opacity:.30 }
+    .w   { stroke:#d98b6a; stroke-width:3; fill:none; stroke-linecap:round }
+    .t   { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#8892a0 }
+    .ta  { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#3d8bf0 }
+  </style>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#8892a0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#3d8bf0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  </defs>
+
+  <text class="t" x="70" y="90">FEATURES</text>
+
+  <g>
+    <rect class="gf" x="70" y="130" width="230" height="30" rx="8"/>
+    <rect class="gf" x="70" y="176" width="180" height="30" rx="8"/>
+    <rect class="gf" x="70" y="222" width="215" height="30" rx="8"/>
+    <rect class="gf" x="70" y="268" width="160" height="30" rx="8"/>
+    <rect class="gf" x="70" y="314" width="205" height="30" rx="8"/>
+    <rect class="gf" x="70" y="360" width="175" height="30" rx="8"/>
+  </g>
+  <text class="t" x="70" y="440">870K RECORDS</text>
+
+  <path class="s" d="M330 200 C400 200 400 175 460 175" marker-end="url(#ar)"/>
+  <path class="s" d="M330 300 C400 300 400 405 460 405" marker-end="url(#ar)"/>
+
+  <!-- tree ensemble -->
+  <rect class="s" x="470" y="110" width="270" height="130" rx="12"/>
+  <text class="t" x="498" y="152">XGBOOST</text>
+  <g class="s2">
+    <path d="M605 180 L560 220 M605 180 L650 220 M560 220 L535 250 M560 220 L585 250
+             M650 220 L625 250 M650 220 L675 250"/>
+  </g>
+  <circle cx="605" cy="180" r="7" class="gf2"/>
+
+  <!-- deep net -->
+  <rect class="s" x="470" y="340" width="270" height="130" rx="12"/>
+  <text class="t" x="498" y="382">DNN</text>
+  <g class="s2">
+    <path d="M530 415 L590 400 M530 415 L590 435 M530 445 L590 400 M530 445 L590 435
+             M590 400 L655 418 M590 435 L655 418"/>
+  </g>
+  <g class="gf2">
+    <circle cx="530" cy="415" r="7"/><circle cx="530" cy="445" r="7"/>
+    <circle cx="590" cy="400" r="7"/><circle cx="590" cy="435" r="7"/><circle cx="655" cy="418" r="7"/>
+  </g>
+
+  <path class="a" d="M760 175 C830 175 830 265 880 285" marker-end="url(#ara)"/>
+  <path class="a" d="M760 405 C830 405 830 315 880 295" marker-end="url(#ara)"/>
+
+  <!-- meta-learner -->
+  <rect class="a" x="890" y="230" width="240" height="120" rx="12"/>
+  <rect class="af" x="906" y="246" width="208" height="88" rx="8"/>
+  <text class="ta" x="918" y="298">STACK</text>
+
+  <path class="a" d="M1010 370 L1010 470" marker-end="url(#ara)"/>
+
+  <!-- risk score -->
+  <rect class="s" x="810" y="490" width="320" height="54" rx="27"/>
+  <rect class="af" x="818" y="498" width="200" height="38" rx="19"/>
+  <text class="t" x="810" y="606">DEFAULT RISK</text>
+</svg>

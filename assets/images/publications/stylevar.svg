@@ -1,16 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img"><style>.bg{fill:#f6f5f2}.ln{stroke:#c9cdd4;stroke-width:2.5;fill:none}.fl{fill:#17457c;fill-opacity:.13}.fl2{fill:#17457c;fill-opacity:.34}.gy{fill:#dcdad5}.lb{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;font-size:52px;letter-spacing:.14em;fill:#b3aea6}</style><rect class="bg" width="1200" height="750"/>
-<rect class="fl" x="120" y="390" width="60" height="60" rx="4"/>
-<rect class="ln" x="120" y="390" width="60" height="60" rx="4"/>
-<rect class="fl" x="226" y="370" width="100" height="100" rx="4"/>
-<rect class="ln" x="226" y="370" width="100" height="100" rx="4"/>
-<rect class="fl" x="372" y="345" width="150" height="150" rx="4"/>
-<rect class="ln" x="372" y="345" width="150" height="150" rx="4"/>
-<rect class="fl" x="568" y="315" width="210" height="210" rx="4"/>
-<rect class="ln" x="568" y="315" width="210" height="210" rx="4"/>
-<rect class="fl" x="824" y="280" width="280" height="280" rx="4"/>
-<rect class="ln" x="824" y="280" width="280" height="280" rx="4"/>
-<path class="ln" d="M120 560 h952 m-26-22 26 22-26 22"/>
-<rect class="fl2" x="120" y="120" width="140" height="90" rx="5"/>
-<rect class="fl2" x="300" y="120" width="140" height="90" rx="5"/>
-<path class="ln" d="M270 165 h20 M470 165 h60"/>
-<text class="lb" x="60" y="694">FIGURE PLACEHOLDER</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750"
+     role="img" aria-label="Style and content tokens blended by cross-attention across coarse-to-fine autoregressive scales">
+  <defs>
+<style>
+    .s   { stroke:#8892a0; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .s2  { stroke:#8892a0; stroke-width:2; fill:none; stroke-linecap:round; opacity:.55 }
+    .dash{ stroke:#8892a0; stroke-width:2.5; fill:none; stroke-dasharray:9 9; stroke-linecap:round; opacity:.6 }
+    .a   { stroke:#3d8bf0; stroke-width:3.5; fill:none; stroke-linecap:round; stroke-linejoin:round }
+    .adash{stroke:#3d8bf0; stroke-width:3; fill:none; stroke-dasharray:10 8; stroke-linecap:round }
+    .gf  { fill:#8892a0; opacity:.20 }
+    .gf2 { fill:#8892a0; opacity:.38 }
+    .af  { fill:#3d8bf0; opacity:.26 }
+    .af2 { fill:#3d8bf0; opacity:.85 }
+    .wf  { fill:#d98b6a; opacity:.30 }
+    .w   { stroke:#d98b6a; stroke-width:3; fill:none; stroke-linecap:round }
+    .t   { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#8892a0 }
+    .ta  { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px;
+           letter-spacing:.10em; fill:#3d8bf0 }
+  </style>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#8892a0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0 L10 5 L0 10" fill="none" stroke="#3d8bf0" stroke-width="2" stroke-linecap="round"/>
+  </marker>
+  </defs>
+
+  <text class="t" x="70" y="88">STYLE</text>
+  <text class="t" x="70" y="330">CONTENT</text>
+  <text class="ta" x="700" y="88">COARSE  →  FINE</text>
+
+  <rect class="s" x="70" y="120" width="170" height="120" rx="10"/>
+  <g class="gf"><rect x="86" y="140" width="60" height="60" rx="6"/><rect x="160" y="140" width="60" height="60" rx="6"/></g>
+  <rect class="s" x="70" y="362" width="170" height="120" rx="10"/>
+  <g class="gf"><rect x="86" y="382" width="138" height="26" rx="6"/><rect x="86" y="420" width="100" height="26" rx="6"/></g>
+
+  <!-- blended cross-attention -->
+  <path class="a" d="M260 180 C380 180 400 280 480 300" marker-end="url(#ara)"/>
+  <path class="a" d="M260 422 C380 422 400 322 480 302" marker-end="url(#ara)"/>
+  <circle cx="530" cy="301" r="46" class="af"/>
+  <circle cx="530" cy="301" r="46" class="a"/>
+  <text class="ta" x="504" y="314">⊗</text>
+
+  <!-- scale ladder: 2x2 to 16x16 -->
+  <g transform="translate(650 150)">
+    <rect class="s" x="0" y="60" width="90" height="90" rx="8"/>
+    <path class="s2" d="M45 60 L45 150 M0 105 L90 105"/>
+
+    <rect class="s" x="120" y="40" width="110" height="110" rx="8"/>
+    <path class="s2" d="M147.5 40 L147.5 150 M175 40 L175 150 M202.5 40 L202.5 150
+                        M120 67.5 L230 67.5 M120 95 L230 95 M120 122.5 L230 122.5"/>
+
+    <rect class="a" x="260" y="20" width="130" height="130" rx="8"/>
+    <path class="adash" d="M276 20 L276 150 M292 20 L292 150 M308 20 L308 150 M324 20 L324 150
+                           M340 20 L340 150 M356 20 L356 150 M372 20 L372 150
+                           M260 36 L390 36 M260 52 L390 52 M260 68 L390 68 M260 84 L390 84
+                           M260 100 L390 100 M260 116 L390 116 M260 132 L390 132"/>
+  </g>
+
+  <path class="s" d="M600 300 L640 300" marker-end="url(#ar)"/>
+  <path class="s" d="M760 380 L780 380" marker-end="url(#ar)"/>
+  <path class="s" d="M900 380 L920 380" marker-end="url(#ar)"/>
+
+  <rect class="a" x="700" y="480" width="430" height="180" rx="12"/>
+  <rect class="af" x="716" y="496" width="398" height="148" rx="8"/>
+  <text class="ta" x="700" y="712">STYLISED OUTPUT</text>
+</svg>

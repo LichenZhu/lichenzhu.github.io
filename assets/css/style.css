@@ -90,10 +90,6 @@
     --award-dim:  rgba(138, 106, 31, .10);
   }
 
-  /* Figures need no rescuing on a white page. */
-  .pub-thumb img,
-  .entry-figure img { opacity: 1; }
-  .pub-thumb::after { opacity: 0; }
   .tl-mark { opacity: 1; border-color: var(--rule); }
 }
 
@@ -222,12 +218,44 @@ li { list-style: none; }
    ------------------------------------------------------------------------ */
 
 .duke-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 3px;
+  position: relative;
   z-index: 60;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 40%, var(--duke) 100%);
+  background: var(--duke);
+  border-bottom: 1px solid rgba(255, 255, 255, .10);
 }
+.duke-bar .container {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  min-height: 40px;
+  padding-top: .3rem;
+  padding-bottom: .3rem;
+}
+/* The wordmark file is navy on transparent — the same navy as this bar.
+   brightness(0) flattens it to black, invert(1) lifts it to white; the alpha
+   channel, and so the letterforms, are untouched. */
+.duke-bar img {
+  height: 17px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: .95;
+  flex: none;
+}
+.duke-bar .rule {
+  width: 1px;
+  height: 17px;
+  background: rgba(255, 255, 255, .28);
+  flex: none;
+}
+.duke-bar .unit {
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .82);
+  line-height: 1.3;
+}
+.duke-bar a.unit:hover { color: #fff; }
 
 /* 4. Layout -------------------------------------------------------------- */
 
@@ -266,7 +294,7 @@ li { list-style: none; }
 
 .site-header {
   position: sticky;
-  top: 3px;
+  top: 0;
   z-index: 50;
   border-bottom: 1px solid transparent;
   transition: border-color .25s ease, background-color .25s ease;
@@ -560,26 +588,23 @@ li { list-style: none; }
 .pub-card:focus-within::after { opacity: 1; }
 .pub-card:focus-within .pub-open:focus-visible { outline: none; }
 
-.pub-thumb { position: relative; background: var(--bg-2); border-bottom: 1px solid var(--rule); }
+/* Figures are transparent, theme-neutral line art drawn for this site, so
+   they need no rescuing: no dimming, no fade to hide a white plate. Just a
+   quiet ground for them to sit on. */
+.pub-thumb {
+  position: relative;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--rule);
+}
 .pub-thumb img {
   width: 100%;
   aspect-ratio: 16 / 10;
-  object-fit: cover;
-  opacity: .88;
-  transition: transform .5s cubic-bezier(.3, 0, .2, 1), opacity .3s ease;
-}
-/* Bottom fade, so a white-plate figure dissolves into the card rather than
-   sitting on it as a bright rectangle. Neutralised in the light theme. */
-.pub-thumb::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 48%, var(--bg-1) 100%);
-  opacity: .7;
+  object-fit: contain;
+  padding: 6%;
+  transition: transform .5s cubic-bezier(.3, 0, .2, 1);
 }
 @media (hover: hover) {
-  .js .pub-card:hover .pub-thumb img { transform: scale(1.035); opacity: 1; }
+  .js .pub-card:hover .pub-thumb img { transform: scale(1.03); }
 }
 
 .pub-body {
@@ -641,7 +666,6 @@ li { list-style: none; }
   transition: color .16s ease, border-color .16s ease, background-color .16s ease;
 }
 .pub-links a:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-dim); }
-.pub-links .sep { display: none; }   /* pills don't need separators */
 
 /* Modal */
 .pub-modal {
@@ -676,7 +700,8 @@ li { list-style: none; }
 .pub-modal-title { font-size: 1.22rem; line-height: 1.35; letter-spacing: -0.025em; margin-bottom: .7rem; padding-right: 2.2rem; }
 .pub-modal-figure { margin: 0 0 1.2rem; }
 .pub-modal-figure img {
-  width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+  width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
+  padding: 4%;
   border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--bg-2);
 }
 
@@ -715,12 +740,10 @@ li { list-style: none; }
 
 .entry-figure { margin: 0; }
 .entry-figure img {
-  width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
-  border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--bg-1);
-  opacity: .9;
-  transition: opacity .25s ease;
+  width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
+  padding: 5%;
+  border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--bg-2);
 }
-.entry:hover .entry-figure img { opacity: 1; }
 
 .entry-body { min-width: 0; }
 .entry-title { font-size: 1.02rem; line-height: 1.42; letter-spacing: -0.018em; margin-bottom: .45rem; }
@@ -736,7 +759,6 @@ li { list-style: none; }
   transition: color .16s ease, border-color .16s ease, background-color .16s ease;
 }
 .entry-links a:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-dim); }
-.entry-links .sep { display: none; }
 
 /* 9. News --------------------------------------------------------------- */
 
@@ -852,7 +874,14 @@ li { list-style: none; }
    get their own height so every chip carries the same optical weight. */
 .tl-mark--tall img { height: 42px; }
 .tl-org { font-size: .965rem; letter-spacing: -0.015em; }
-.tl-meta { font-size: .705rem; letter-spacing: .02em; color: var(--muted); white-space: nowrap; }
+.tl-meta {
+  display: flex;
+  gap: 1.4rem;
+  font-size: .705rem;
+  letter-spacing: .02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
 .tl-role { font-size: .875rem; color: var(--body); margin: .18rem 0 0; }
 .tl-desc { font-size: .85rem; color: var(--muted); margin: .35rem 0 0; max-width: 66ch; }
 
@@ -870,7 +899,7 @@ li { list-style: none; }
   border-radius: 50%;
   background: var(--rule-2);
 }
-.honors .honor-year { color: var(--muted); font-size: .72rem; letter-spacing: .04em; }
+.honors .honor-year { color: var(--muted); font-size: .72rem; letter-spacing: .04em; margin-left: .6rem; }
 
 /* 10b. Publications page ------------------------------------------------- */
 
@@ -1000,6 +1029,10 @@ li { list-style: none; }
   .nav-list li:last-child a { border-bottom: 0; }
   .nav-list a::after { display: none; }
   .nav-list a.is-active { color: var(--accent-ink); }
+
+  .duke-bar .container { min-height: 34px; gap: .6rem; }
+  .duke-bar img { height: 15px; }
+  .duke-bar .unit { font-size: .55rem; letter-spacing: .1em; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar-portrait { grid-row: auto; max-width: 150px; margin-bottom: 1.3rem; }

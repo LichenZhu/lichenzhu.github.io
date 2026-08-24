@@ -58,7 +58,15 @@ to the right edge, with an optional link ("All news →") pinned to the far end.
 Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
 for the bands within.
 
-**Duke.** `--duke` is Duke Blue, `#012169`. It is far too dark to carry an
+**Duke.** Every page opens with `.duke-bar`, a navy institutional strip
+carrying the Duke wordmark and the CEI name — the same lockup convention the
+lab's other pages use. The wordmark file is navy on transparent, i.e. the same
+colour as the strip, so it is flipped to white with `brightness(0) invert(1)`:
+that flattens every opaque pixel to black then lifts it to white, leaving the
+alpha channel and therefore the letterforms untouched. No white variant of the
+asset is needed.
+
+`--duke` is Duke Blue, `#012169`. It is far too dark to carry an
 accent on a near-black page, so on the dark theme it stays as the deep plate —
 the nav mark, the right end of the top bar — and the working accent is a bright
 derivative. On the light theme Duke Blue *is* the accent directly. The 3px
@@ -188,11 +196,13 @@ modal, everything on the page at once.
   the `<figure>`.
 - **Older news** is hidden behind the "Show earlier news" button: give the `<li>`
   `class="news-more"` and the `hidden` attribute.
-- **Teaser figures** are 16:10. The ones currently in
-  `assets/images/publications/` are labelled `FIGURE PLACEHOLDER` — swap in real
-  PNG/JPG figures and update the `src` and `alt`. On the dark theme they are
-  dimmed and bottom-faded into the card so a white-plate diagram does not sit
-  there as a bright rectangle; that treatment is switched off in light mode.
+- **Teaser figures** are 16:10 SVGs in `assets/images/publications/`, one per
+  paper, drawn for this site. They share a palette declared inline in each file:
+  `#8892a0` for structure, `#3d8bf0` for the highlighted path, `#d98b6a` for the
+  failure case. **Backgrounds are transparent and the tones are chosen to read on
+  both themes** — that is why there is no dimming, no white plate and no filter
+  anywhere in the figure CSS. If you replace one with a real paper figure, either
+  match that convention or reintroduce a plate for that image alone.
 - **The favicon** (`assets/favicon.svg`) is a Z built from two accent bars and a
   white diagonal — three shapes, so it survives 16px in a browser tab. The same
   mark is inlined in each page's `.nav-brand`; if you change one, change both.
@@ -227,7 +237,15 @@ shield, a 3.9:1 lockup. They are handled like this:
   every chip carries the same optical weight.
 
 Logos use `alt=""` on purpose: the organisation name is in the heading directly
-beneath, so alt text would just make a screen reader say it twice.
+beneath, so alt text would just make a screen reader say it twice. The one in
+`.duke-bar` is the exception — it carries `alt="Duke University"`, because there
+is no adjacent text naming it.
+
+**No middle dots.** `·` is not used as a separator anywhere. Where one piece of
+metadata sits beside another — a place beside a date range, a review status
+beside a venue — they are separate elements with space between them
+(`.tl-place` / `.tl-when`, or two `.badge`s), not one string glued with
+punctuation. Keep it that way when you add entries.
 
 ## The corner stamp
 
