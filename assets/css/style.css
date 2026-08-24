@@ -47,6 +47,16 @@
      on dark the way it silently did before. */
   --duke:       #012169;
 
+  /* Teaser figures sit on a white plate in both themes. Two of them are pulled
+     straight out of the papers: white ground, dark text printed onto it, and
+     photographs inside — there is nothing to key out and no filter that
+     survives. Rather than let half the grid go white and half stay
+     transparent, every figure gets the same plate, the way figures sit on a
+     page. It also hides the letterboxing: a 2.8:1 figure and a 1.2:1 figure
+     both blend into a ground the same colour as their own. */
+  --fig-bg:     #ffffff;
+  --fig-line:   rgba(9, 14, 24, .14);
+
   /* Three faces, three jobs, no overlap:
        --sans     prose and UI
        --display  the name, page titles, section titles, the unit signature
@@ -658,8 +668,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    quiet ground for them to sit on. */
 .pub-thumb {
   position: relative;
-  background: var(--bg-2);
-  border-bottom: 1px solid var(--rule);
+  background: var(--fig-bg);
+  border-bottom: 1px solid var(--fig-line);
 }
 .pub-thumb img {
   width: 100%;
@@ -793,7 +803,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .pub-modal-figure img {
   width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
   padding: 4%;
-  border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--bg-2);
+  border: 1px solid var(--fig-line); border-radius: var(--r-md);
+  background: var(--fig-bg);
 }
 
 .pub-modal-close {
@@ -829,11 +840,16 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .entry--notease { grid-template-columns: minmax(0, 1fr); }
 .entry--notease .entry-body { max-width: 52rem; }
 
+/* A university mark standing in for a figure wants air around it, not the
+   edge-to-edge treatment a real figure gets. */
+img.fig-mark { padding: 17% 34%; }
+
 .entry-figure { margin: 0; }
 .entry-figure img {
   width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
   padding: 5%;
-  border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--bg-2);
+  border: 1px solid var(--fig-line); border-radius: var(--r-md);
+  background: var(--fig-bg);
 }
 
 .entry-body { min-width: 0; }

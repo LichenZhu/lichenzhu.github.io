@@ -94,6 +94,7 @@
         var img = document.createElement('img');
         img.src = thumb.currentSrc || thumb.src;
         img.alt = thumb.alt;
+        img.className = thumb.className;   // carries any figure modifier
         figure.appendChild(img);
         modalBody.appendChild(figure);
       }

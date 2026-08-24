@@ -228,13 +228,27 @@ modal, everything on the page at once.
   mono like every other piece of data. Run new photos through
   `assets/images/life/` at ≤900px on the long edge, quality 82, **and strip the
   EXIF** — phone photos carry GPS coordinates.
-- **Teaser figures** are 16:10 SVGs in `assets/images/publications/`, one per
-  paper, drawn for this site. They share a palette declared inline in each file:
-  `#8892a0` for structure, `#3d8bf0` for the highlighted path, `#d98b6a` for the
-  failure case. **Backgrounds are transparent and the tones are chosen to read on
-  both themes** — that is why there is no dimming, no white plate and no filter
-  anywhere in the figure CSS. If you replace one with a real paper figure, either
-  match that convention or reintroduce a plate for that image alone.
+- **Teaser figures** live in `assets/images/publications/` and come in two
+  kinds. Real figures exported from the papers are `.webp` at ~1500px on the
+  long edge, quality 90 — WebP because these are dense diagrams whose text has
+  to stay sharp, and a PNG of the same figure runs six times larger. The rest
+  are 16:10 SVGs drawn for this site, sharing a palette declared inline in each
+  file: `#8892a0` for structure, `#3d8bf0` for the highlighted path, `#d98b6a`
+  for the failure case.
+
+  **Every figure sits on a white plate in both themes** (`--fig-bg`,
+  `--fig-line`). A paper figure arrives with a white ground and dark text
+  printed onto it, and often photographs inside — there is nothing to key out
+  and no `invert()` that survives. Rather than let half the grid go white and
+  half stay transparent, they all get the same plate. It also hides the
+  letterboxing, since a 2.8:1 figure and a 1.2:1 figure blend into a ground the
+  same colour as their own. Drop a new figure in at any aspect ratio;
+  `object-fit: contain` handles the rest.
+
+  A paper with no figure worth showing can carry its university mark instead:
+  `class="fig-mark"` on the `<img>`, which adds the extra padding a logo needs
+  so it reads as a mark rather than a block. `publications.html` does this for
+  the undergraduate dissertation.
 - **The favicon** (`assets/favicon.svg`) is a Z built from two accent bars and a
   white diagonal — three shapes, so it survives 16px in a browser tab. The same
   mark is inlined in each page's `.nav-brand`; if you change one, change both.
@@ -302,11 +316,21 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
 ## Before you publish — things to check
 
 - [ ] **News dates** were inferred from the CV; verify each one.
-- [ ] **Teaser figures** are placeholders.
+- [ ] **Teaser figures**: two are real paper figures; the other three
+      (`streaming-absent-answer`, `keyframe-sampling`, `stylevar`) are still
+      hand-drawn stand-ins. Export the real ones and drop them in — nothing in
+      the CSS needs to change.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
 - [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
 - [ ] **Corner stamp dates** — run the `sed` command above.
+
+## Files that are not deployed
+
+`_source/` holds the full-resolution originals — the photographs off the phone,
+the figures exported from the papers. It is git-ignored; the web-ready
+derivatives under `assets/images/` are what ship. Keep it if you might re-export
+at a different size, delete it if you have the originals elsewhere.
 
 ## Deploying
 

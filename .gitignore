@@ -1,0 +1,5 @@
+# Originals: full-resolution photographs and the figures exported from the
+# papers. The web-ready versions are committed under assets/images/; these are
+# kept only so an asset can be re-exported at a different size or crop.
+# Nothing here is deployed, and the directory is safe to delete.
+_source/
