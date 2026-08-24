@@ -219,6 +219,14 @@ modal, everything on the page at once.
   the `<figure>`.
 - **Older news** is hidden behind the "Show earlier news" button: give the `<li>`
   `class="news-more"` and the `hidden` attribute.
+- **A news item can carry a photo.** Add a `<figure class="news-photo">` as the
+  *third* child of the `<li>` — it is pinned to grid column 2 so it lands under
+  the sentence, not under the date. Photos are normalised by height rather than
+  cropped to a shared ratio, so landscape and portrait shots can sit in the same
+  feed without anyone losing their head. The `<figcaption>` is a place, set in
+  mono like every other piece of data. Run new photos through
+  `assets/images/life/` at ≤900px on the long edge, quality 82, **and strip the
+  EXIF** — phone photos carry GPS coordinates.
 - **Teaser figures** are 16:10 SVGs in `assets/images/publications/`, one per
   paper, drawn for this site. They share a palette declared inline in each file:
   `#8892a0` for structure, `#3d8bf0` for the highlighted path, `#d98b6a` for the

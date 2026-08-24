@@ -230,7 +230,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .subsection-title, .group-title, .error-code, .honor-year, .tags-label,
-.stamp, .footer-meta, .tag {
+.stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "kern" 1;
@@ -892,6 +892,38 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   white-space: nowrap;
 }
 
+/* Some entries carry a photograph. It is a third child of the same two-column
+   grid, so it is pinned to column 2 and sits under the sentence rather than
+   under the date.
+
+   The photos are different shapes — one landscape, one portrait — so they are
+   normalised by height, not cropped to a shared ratio. Cropping a standing
+   portrait to 3:2 takes the heads off. */
+.news-photo {
+  grid-column: 2;
+  margin: .85rem 0 .3rem;
+}
+.news-photo img {
+  width: auto;
+  max-height: 320px;
+  max-width: min(100%, 440px);
+  border-radius: var(--r-md);
+  border: 1px solid var(--rule);
+  transition: border-color .2s ease;
+}
+.news-photo figcaption {
+  margin-top: .5rem;
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.news-list > li:hover .news-photo img { border-color: var(--rule-2); }
+
+/* The homepage feed is a summary of the news page, so its photos stay
+   thumbnail-sized; the full-height version lives on news.html. */
+#news .news-photo img { max-height: 210px; }
+
 .news-more[hidden] { display: none; }
 
 .news-toggle {
@@ -1251,6 +1283,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
   .news-list > li { grid-template-columns: minmax(0, 1fr); gap: .15rem; padding: .65rem 0; }
   .news-date { padding-top: 0; }
+  /* One column now, so column 2 does not exist — without this the photo
+     would open a phantom track and squeeze the text beside it. */
+  .news-photo { grid-column: 1; }
+  .news-photo img { max-height: 280px; }
 
   .tl-head { flex-direction: column; }
   .tl-meta { white-space: normal; }
