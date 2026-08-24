@@ -11,8 +11,9 @@
 
 <!-- Dark is the designed default; the stylesheet ships both palettes. -->
 <meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<!-- The banner is the top of every page in both themes, so the browser's own
+     chrome is set to the same navy rather than to the page background. -->
+<meta name="theme-color" content="#012169">
 
 <!-- Search engines yes, generative-AI training no. -->
 <meta name="robots" content="index, follow, noai, noimageai, max-image-preview:large">
@@ -468,19 +469,22 @@
       "author": [
         { "@id": "https://lichenzhu.github.io/#person" },
         { "@type": "Person", "name": "Yueqian Lin" },
-        { "@type": "Person", "name": "Y. Wang" },
+        { "@type": "Person", "name": "Yiheng Wang" },
         { "@type": "Person", "name": "Yudong Liu" },
         { "@type": "Person", "name": "Hai Li" },
         { "@type": "Person", "name": "Yiran Chen" }
       ],
       "datePublished": "2026",
-      "publication": "ACM Workshop on Human-Centered Systems (HumanSys)"
+      "isPartOf": {
+        "@type": "CreativeWork",
+        "name": "ACM Workshop on Human-Centered Systems (HumanSys)"
+      }
     },
     {
       "@type": "ScholarlyArticle",
       "name": "When No Answer Is Correct: Diagnosing Absent Answer Detection for MLLMs in Video Understanding",
       "author": [
-        { "@type": "Person", "name": "Y. Wang" },
+        { "@type": "Person", "name": "Yiheng Wang" },
         { "@type": "Person", "name": "Yueqian Lin" },
         { "@id": "https://lichenzhu.github.io/#person" },
         { "@type": "Person", "name": "Yudong Liu" },
@@ -488,8 +492,39 @@
         { "@type": "Person", "name": "Yiran Chen" }
       ],
       "datePublished": "2026",
-      "publication": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "isPartOf": {
+        "@type": "CreativeWork",
+        "name": "Conference on Empirical Methods in Natural Language Processing (EMNLP)"
+      },
       "url": "https://arxiv.org/abs/2606.08239"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "name": "Semantic-Unit Aggregation for Streaming Interaction Memory",
+      "author": [
+        { "@id": "https://lichenzhu.github.io/#person" },
+        { "@type": "Person", "name": "Yueqian Lin" },
+        { "@type": "Person", "name": "Yiheng Wang" },
+        { "@type": "Person", "name": "Hai Li" },
+        { "@type": "Person", "name": "Yiran Chen" }
+      ],
+      "datePublished": "2026",
+      "creativeWorkStatus": "Preprint"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "name": "Query-Conditioned Evidential Keyframe Sampling for MLLM-Based Long-Form Video Understanding",
+      "author": [
+        { "@type": "Person", "name": "Yiheng Wang" },
+        { "@id": "https://lichenzhu.github.io/#person" },
+        { "@type": "Person", "name": "Yueqian Lin" },
+        { "@type": "Person", "name": "Yudong Liu" },
+        { "@type": "Person", "name": "J. Zhang" },
+        { "@type": "Person", "name": "Hai Li" },
+        { "@type": "Person", "name": "Yiran Chen" }
+      ],
+      "datePublished": "2026",
+      "creativeWorkStatus": "Preprint"
     }
   ]
 }

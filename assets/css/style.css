@@ -240,6 +240,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   outline-offset: 3px;
   border-radius: 2px;
 }
+/* The banner is Duke navy in both themes, and on the light theme --accent is
+   that same navy — a focus ring drawn in it was invisible on the one control
+   set a keyboard user reaches first. Inside the banner the ring is white. */
+.site-header :focus-visible { outline-color: #ffffff; }
 
 /* Every piece of metadata on this site is set in mono. It is the one
    consistent signal that separates data from prose. */
