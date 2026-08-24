@@ -329,7 +329,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   padding: 4rem 0 2rem;
 }
 
-.section { padding: 3.25rem 0; }
+.section { padding: 2.5rem 0; }
 .section:first-child { padding-top: 0; }
 
 /* 5. Header / navigation ------------------------------------------------- */
@@ -727,11 +727,14 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   font-size: var(--t-micro);
   letter-spacing: var(--tr-caps);
   text-transform: uppercase;
-  color: var(--muted);
+  /* The link colour, not muted grey. This is the only thing telling a reader
+     the card opens at all, and on a touch screen the hover state never
+     arrives to say so. */
+  color: var(--accent-ink);
   transition: color .2s ease;
 }
 .js .pub-hint { display: flex; }
-.js .pub-card:hover .pub-hint { color: var(--accent); }
+.js .pub-card:hover .pub-hint { color: var(--ink); }
 .pub-hint .arrow { transition: transform .2s ease; }
 .js .pub-card:hover .pub-hint .arrow { transform: translateX(4px); }
 
@@ -1306,7 +1309,6 @@ img.fig-mark { padding: 17% 34%; }
   .stamp { display: none; }   /* crowds the footer at this width */
   .site-footer { padding-bottom: 2.5rem; }
 
-  .section { padding: 2.5rem 0; }
   .section-head { gap: .7rem; }
   .page-head { padding: 0 0 2rem; }
   .page-title, .error-title { font-size: 1.9rem; }
