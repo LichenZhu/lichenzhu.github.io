@@ -892,9 +892,11 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   white-space: nowrap;
 }
 
-/* Some entries carry a photograph. It is a third child of the same two-column
-   grid, so it is pinned to column 2 and sits under the sentence rather than
-   under the date.
+/* Some entries on news.html carry a photograph. The homepage feed stays text
+   only — it is a summary, and a photo there outweighs the four lines above it.
+
+   The figure is a third child of the same two-column grid, so it is pinned to
+   column 2 and sits under the sentence rather than under the date.
 
    The photos are different shapes — one landscape, one portrait — so they are
    normalised by height, not cropped to a shared ratio. Cropping a standing
@@ -919,10 +921,6 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   color: var(--muted);
 }
 .news-list > li:hover .news-photo img { border-color: var(--rule-2); }
-
-/* The homepage feed is a summary of the news page, so its photos stay
-   thumbnail-sized; the full-height version lives on news.html. */
-#news .news-photo img { max-height: 210px; }
 
 .news-more[hidden] { display: none; }
 

@@ -219,7 +219,8 @@ modal, everything on the page at once.
   the `<figure>`.
 - **Older news** is hidden behind the "Show earlier news" button: give the `<li>`
   `class="news-more"` and the `hidden` attribute.
-- **A news item can carry a photo.** Add a `<figure class="news-photo">` as the
+- **A news item on `news.html` can carry a photo.** The homepage feed stays text
+  only. Add a `<figure class="news-photo">` as the
   *third* child of the `<li>` — it is pinned to grid column 2 so it lands under
   the sentence, not under the date. Photos are normalised by height rather than
   cropped to a shared ratio, so landscape and portrait shots can sit in the same
