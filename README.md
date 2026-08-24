@@ -68,12 +68,22 @@ accumulated one iteration at a time. If a new size seems necessary, the scale is
 probably wrong — change the token, not the rule.
 
 **Inline links are coloured, not underlined.** A paragraph of prose with four
-underlined names in it reads as fencing, so `.prose a` carries the accent colour
+underlined names in it reads as fencing, so `.prose a` carries the link colour
 plus `font-weight: 500`, and the underline appears only on `:hover` /
-`:focus-visible`. Colour on its own would not be enough — the luminance ratio
-between link and body text is 1.36:1 on dark and 1.77:1 on light, well under the
-3:1 that WCAG 1.4.1 asks before colour may carry a distinction alone — which is
-what the weight and the interaction underline are there for. Don't drop either.
+`:focus-visible`.
+
+For that to work the colour has to be a *link* blue, not a dark navy. Duke Blue
+`#012169` is only a 1.77:1 luminance step from body grey, so an unlined link set
+in it just reads as slightly darker text — which is exactly what happened the
+first time. `--accent-ink` on the light theme is therefore `#0f62c9`: same hue
+family as the banner, 5.8:1 on white, and unmistakably a link. For scale,
+jonbarron.info uses `#1772d0` unlined and yueqianlin.com uses `#39c`.
+
+Strict WCAG 1.4.1 wants 3:1 between link and surrounding text before colour may
+carry the distinction alone, and on this palette that is unreachable in either
+theme — body copy is mid-grey, and no blue clears 3:1 against it while still
+clearing 4.5:1 against the page. The weight and the hover/focus underline are
+the second cue. Don't drop either.
 
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
