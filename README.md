@@ -41,13 +41,18 @@ of the stylesheet needs to change. There is no manual toggle; the site follows
 the reader's system setting.
 
 Three typefaces, three jobs, no overlap — all variable, all from one Google
-Fonts request, about 100 KB of latin subsets between them:
+Fonts request, about 122 KB of latin subsets between them:
 
-- **Display** — Space Grotesk. The name, page titles, section titles, the
-  modal title.
-- **Sans** — Inter. Prose and UI.
+- **Display** — EB Garamond. The name, page titles, section titles, and the CEI
+  unit name in the banner. The choice is institutional, not decorative: Duke's
+  own wordmark is set in Garamond LT 3, and EB Garamond is the Garamond in
+  Duke's brand palette (it is what `brand.duke.edu` serves as its web serif),
+  so the unit name beside the wordmark is drawn in the same letterforms as the
+  mark. A Garamond's x-height runs ~15% shorter than a grotesque at the same
+  em, which is why `--t-display` / `--t-subhead` exist as separate steps.
+- **Sans** — Inter. Prose, UI, and every paper title.
 - **Mono** — JetBrains Mono, for everything that is *data*: venue badges, news
-  dates, timeline ranges, tags, the corner stamp, the banner unit name. That
+  dates, timeline ranges, tags, the corner stamp. That
   split is the main reason the page reads as technical rather than decorative,
   so keep it — if you add a new piece of metadata, add its selector to the
   `.mono` rule group in section 2.
@@ -56,11 +61,19 @@ Every stack degrades to system faces, so deleting the two `preconnect` links
 and the `fonts.googleapis.com` stylesheet from all five pages leaves a working,
 if plainer, site.
 
-**The type scale is closed.** `--t-micro` through `--t-page`, and `--lh-*` /
+**The type scale is closed.** `--t-micro` through `--t-display`, and `--lh-*` /
 `--tr-*` for line height and tracking, are declared in section 1 and every rule
 picks from them. They replaced 31 ad-hoc font sizes and 12 line heights that had
 accumulated one iteration at a time. If a new size seems necessary, the scale is
 probably wrong — change the token, not the rule.
+
+**Inline links are coloured, not underlined.** A paragraph of prose with four
+underlined names in it reads as fencing, so `.prose a` carries the accent colour
+plus `font-weight: 500`, and the underline appears only on `:hover` /
+`:focus-visible`. Colour on its own would not be enough — the luminance ratio
+between link and body text is 1.36:1 on dark and 1.77:1 on light, well under the
+3:1 that WCAG 1.4.1 asks before colour may carry a distinction alone — which is
+what the weight and the interaction underline are there for. Don't drop either.
 
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
@@ -197,7 +210,7 @@ modal, everything on the page at once.
 - **Your name in an author list** goes in `<span class="author-me">L. Zhu</span>`
   so it renders darker and bolder than the co-authors.
 - **Badges** come in three flavours: `badge` (accent, for accepted venues),
-  `badge badge--muted` (grey, for under review / preprints), and
+  `badge badge--muted` (grey, for preprints and arXiv), and
   `badge badge--award` (for Oral, Spotlight, Best Paper).
 - **Missing links are fine.** Delete any `Paper` / `Code` / `Project` / `Demo`
   link you don't have along with its `<span class="sep">·</span>`.
@@ -280,8 +293,6 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
 ## Before you publish — things to check
 
 - [ ] **News dates** were inferred from the CV; verify each one.
-- [ ] **Google Scholar link** is commented out in the sidebar and footer of both
-      pages — uncomment it and paste your profile URL.
 - [ ] **Teaser figures** are placeholders.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.

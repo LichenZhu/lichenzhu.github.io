@@ -49,18 +49,23 @@
 
   /* Three faces, three jobs, no overlap:
        --sans     prose and UI
-       --display  the name, page titles, section titles
+       --display  the name, page titles, section titles, the unit signature
        --mono     every piece of data — dates, venues, labels, counts
-     All three are variable fonts; the latin subsets total about 100 KB. */
+
+     The display face is a Garamond on purpose. Duke's own wordmark is set in
+     Garamond LT 3, and EB Garamond is the Garamond in Duke's brand palette
+     (brand.duke.edu serves it as its web serif), so the unit name beside the
+     wordmark is drawn in the same letterforms as the mark itself.
+     All three are variable fonts; the latin subsets total about 122 KB. */
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
-  --display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont,
-             "Segoe UI", Arial, sans-serif;
+  --display: "EB Garamond", "Iowan Old Style", "Palatino Linotype", Palatino,
+             Georgia, "Times New Roman", serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
           Consolas, "Liberation Mono", monospace;
 
   /* ── Type scale ────────────────────────────────────────────────────────
-     Replaces 31 ad-hoc font-sizes. Every rule below picks from these ten
+     Replaces 31 ad-hoc font-sizes. Every rule below picks from these
      steps; if a new size feels necessary, the scale is probably wrong. */
   --t-micro: .6875rem;   /* 11px — badges, the corner stamp             */
   --t-label: .75rem;     /* 12px — mono eyebrows, dates, timeline meta  */
@@ -68,8 +73,12 @@
   --t-small: .875rem;    /* 14px — sidebar role, roles, descriptions    */
   --t-body:  1rem;       /* 16px — prose                               */
   --t-title: 1.0625rem;  /* 17px — card and entry titles               */
-  --t-head:  1.1875rem;  /* 19px — section titles                      */
-  --t-page:  2.25rem;    /* 36px — page titles, the name               */
+
+  /* A Garamond's x-height runs about 15% shorter than a grotesque at the
+     same em, so the display steps carry their own values rather than
+     borrowing the UI scale — at --t-title they would read undersized. */
+  --t-subhead: 1.375rem; /* 22px — section titles, the modal title      */
+  --t-display: 2.625rem; /* 42px — page titles, the name                */
 
   /* ── Line heights ─────────────────────────────────────────────────── */
   --lh-tight:   1.15;    /* display                                    */
@@ -78,9 +87,9 @@
   --lh-relaxed: 1.72;    /* prose                                      */
 
   /* ── Tracking ─────────────────────────────────────────────────────── */
-  --tr-display: -.035em; /* large display text needs pulling in        */
-  --tr-head:    -.018em;
+  --tr-head:    -.018em; /* card and entry titles, set in --sans        */
   --tr-body:    0;       /* Inter is drawn for zero at text sizes      */
+  --tr-serif:   -.008em; /* serifs do not want grotesque tracking      */
   --tr-caps:    .13em;   /* uppercase mono labels need opening up      */
 
   --container: 1340px;
@@ -169,18 +178,29 @@ p:last-child { margin-bottom: 0; }
 a { color: var(--accent-ink); text-decoration: none; transition: color .15s ease; }
 a:hover { color: var(--ink); }
 
-/* Inline prose links: hairline underline that brightens on hover. */
-.prose a, .pub-summary a {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: var(--rule-2);
+/* Inline prose links carry colour and a little extra weight instead of a
+   rule — a paragraph with four underlined names in it reads as fencing.
+
+   Colour alone is not enough on its own, and not as a matter of taste: the
+   luminance ratio between link and body text is 1.36:1 on dark and 1.77:1 on
+   light, well under the 3:1 that WCAG 1.4.1 wants before colour may carry a
+   distinction by itself. Weight is the second static cue; hover and focus
+   bring the underline back, which is the interaction cue the same criterion
+   asks for. */
+.prose a, .pub-summary a, .entry-summary a, .news-list a {
+  color: var(--accent-ink);
+  font-weight: 500;
+  text-decoration: none;
   text-decoration-thickness: 1px;
   text-underline-offset: .18em;
   text-decoration-skip-ink: auto;
-  transition: text-decoration-color .18s ease, color .18s ease;
+  transition: color .18s ease;
 }
-.prose a:hover, .pub-summary a:hover {
-  color: var(--accent-ink);
+.prose a:hover, .pub-summary a:hover, .entry-summary a:hover, .news-list a:hover,
+.prose a:focus-visible, .pub-summary a:focus-visible,
+.entry-summary a:focus-visible, .news-list a:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
   text-decoration-color: var(--accent);
 }
 
@@ -210,7 +230,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .subsection-title, .group-title, .error-code, .honor-year, .tags-label,
-.stamp, .footer-meta, .brand-unit, .tag {
+.stamp, .footer-meta, .tag {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "kern" 1;
@@ -347,14 +367,16 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   background: rgba(255, 255, 255, .30);
   flex: none;
 }
+/* The unit signature: Duke's own Garamond, sitting beside a wordmark cut
+   from the same family. Title case rather than the mono caps it replaced —
+   Garamond's character lives in its lowercase. */
 .brand-unit {
-  font-family: var(--mono);
-  font-size: .625rem;
-  font-weight: 400;
-  letter-spacing: var(--tr-caps);
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, .80);
-  line-height: 1.42;
+  font-family: var(--display);
+  font-size: .875rem;
+  font-weight: 500;
+  letter-spacing: .006em;
+  color: rgba(255, 255, 255, .88);
+  line-height: 1.24;
   transition: color .15s ease;
 }
 .nav-brand:hover .brand-unit { color: #fff; }
@@ -428,10 +450,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 .sidebar-name {
   font-family: var(--display);
-  font-size: var(--t-page);
-  font-weight: 700;
+  font-size: var(--t-display);
+  font-weight: 600;
   line-height: var(--lh-tight);
-  letter-spacing: var(--tr-display);
+  letter-spacing: var(--tr-serif);
   margin-bottom: .8rem;
 }
 
@@ -443,8 +465,19 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 /* The role and the institution carry the weight; the connective text does not. */
 .sidebar-role strong { color: var(--ink); font-weight: 600; letter-spacing: -0.005em; }
-.sidebar-role a { color: var(--body); box-shadow: inset 0 -1px 0 0 var(--rule); }
-.sidebar-role a:hover { color: var(--accent-ink); box-shadow: inset 0 -1px 0 0 var(--accent); }
+/* Same treatment as prose links: colour and weight, no standing rule. */
+.sidebar-role a {
+  color: var(--accent-ink);
+  font-weight: 500;
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .16em;
+}
+.sidebar-role a:hover, .sidebar-role a:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
 .sidebar-role-sep { display: block; height: .5rem; }
 
 .sidebar-links {
@@ -483,8 +516,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .section-title {
   font-family: var(--display);
   font-weight: 600;
-  font-size: var(--t-head);
-  letter-spacing: var(--tr-head);
+  font-size: var(--t-subhead);
+  letter-spacing: var(--tr-serif);
   white-space: nowrap;
 }
 
@@ -749,8 +782,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 .pub-modal-body .pub-detail { padding: 0; border-top: 0; display: block; }
 .pub-modal-title {
-  font-family: var(--display);
-  font-size: 1.375rem;
+  font-family: var(--sans);
+  font-size: var(--t-subhead);
   line-height: var(--lh-snug);
   letter-spacing: var(--tr-head);
   margin-bottom: .7rem;
@@ -1034,10 +1067,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .page-head { padding: 0 0 2.5rem; }
 .page-title {
   font-family: var(--display);
-  font-weight: 700;
-  font-size: var(--t-page);
+  font-weight: 600;
+  font-size: var(--t-display);
   line-height: var(--lh-tight);
-  letter-spacing: var(--tr-display);
+  letter-spacing: var(--tr-serif);
   margin-bottom: .65rem;
 }
 .page-lede {
@@ -1072,10 +1105,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 .error-title {
   font-family: var(--display);
-  font-weight: 700;
-  font-size: var(--t-page);
+  font-weight: 600;
+  font-size: var(--t-display);
   line-height: var(--lh-tight);
-  letter-spacing: var(--tr-display);
+  letter-spacing: var(--tr-serif);
   margin-bottom: .8rem;
 }
 .error-text { color: var(--muted); margin-bottom: 1.8rem; }
@@ -1191,11 +1224,11 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   .nav-brand { gap: .6rem; }
   .brand-mark { height: 18px; }
   .brand-rule { height: 24px; }
-  .brand-unit { font-size: .5rem; letter-spacing: .1em; }
+  .brand-unit { font-size: .75rem; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar-portrait { grid-row: auto; max-width: 140px; margin-bottom: 1.3rem; }
-  .sidebar-name { font-size: 2.1rem; }
+  .sidebar-name { font-size: 2.35rem; }
   .stamp { display: none; }   /* crowds the footer at this width */
   .site-footer { padding-bottom: 2.5rem; }
 
