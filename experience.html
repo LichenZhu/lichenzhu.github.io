@@ -31,6 +31,9 @@
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" as="image" href="assets/images/profile/lichen-zhu.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 
 <!-- Marks the document as scripted before first paint, so the publication
@@ -39,6 +42,7 @@
 </head>
 
 <body>
+<div class="duke-bar" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- Decorative only: dot grid + accent bloom, fixed behind everything. -->
@@ -80,9 +84,7 @@
       <ul class="nav-list" id="nav-list">
         <li><a href="index.html">About</a></li>
         <li><a href="publications.html">Publications</a></li>
-        <li><a href="news.html">News</a></li>
         <li><a href="experience.html" aria-current="page">Experience</a></li>
-        <li><a href="assets/files/Lichen_Zhu_CV.pdf">CV</a></li>
       </ul>
     </nav>
   </div>
@@ -106,10 +108,10 @@
   <h1 class="sidebar-name">Lichen Zhu</h1>
 
   <p class="sidebar-role">
-    M.S. Student, Electrical &amp; Computer Engineering,
-    <a href="https://ece.duke.edu/">Duke University</a>
+    <span class="unit">Duke University · Pratt School of Engineering</span>
+    <strong>M.S. Student</strong>, Electrical &amp; Computer Engineering
     <span class="sidebar-role-sep"></span>
-    Research Intern,
+    <strong>Research Intern</strong>,
     <a href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary Intelligence</a>
   </p>
 
@@ -176,14 +178,24 @@
     <ul class="timeline">
       <li>
         <div class="tl-head">
-          <h4 class="tl-org">Duke University</h4>
+          <div class="tl-id">
+            <img class="tl-logo" src="assets/images/logos/duke.svg" alt=""
+                 width="30" height="30" loading="lazy">
+            <h4 class="tl-org">Duke University</h4>
+          </div>
           <span class="tl-meta">Durham, NC · Sep 2025 – Jul 2027</span>
         </div>
         <p class="tl-role">M.S. in Electrical &amp; Computer Engineering</p>
       </li>
       <li>
         <div class="tl-head">
-          <h4 class="tl-org">Xi'an Jiaotong-Liverpool University / University of Liverpool</h4>
+          <div class="tl-id">
+            <img class="tl-logo" src="assets/images/logos/xjtlu.svg" alt=""
+                 width="30" height="30" loading="lazy">
+            <img class="tl-logo" src="assets/images/logos/liverpool.svg" alt=""
+                 width="30" height="30" loading="lazy">
+            <h4 class="tl-org">Xi'an Jiaotong-Liverpool University / University of Liverpool</h4>
+          </div>
           <span class="tl-meta">Suzhou, China · Sep 2021 – Jul 2025</span>
         </div>
         <p class="tl-role">B.Sc. in Financial Mathematics, First Class Honours</p>
@@ -201,9 +213,9 @@
         </div>
         <p class="tl-role">Research Intern</p>
         <p class="tl-desc">
-          Multimodal large language models and efficient AI systems, under the guidance
-          of Yueqian Lin, Yudong Liu, and Prof. Yiran Chen. Investigating efficient
-          inference techniques for vision-language models.
+          Multimodal large language models and efficient inference for
+          vision-language models, under the guidance of PhD candidate Yueqian Lin,
+          in the lab of Prof. Yiran Chen and Prof. Hai Li.
         </p>
       </li>
       <li>
@@ -228,10 +240,35 @@
     </ul>
   </div>
 
+  <!-- The one block on the site written in a loose voice. Keep it that way:
+       About stays measured, this is where the person shows. -->
+  <div class="subsection">
+    <h2 class="subsection-title">Outside the Lab</h2>
+    <div class="prose">
+      <p>
+        I lift, play basketball, and swim. Lifting is the one that stuck — it
+        rewards the same stubbornness research does: pick a number, chase it for
+        months, and be honest with yourself about whether the last rep counted.
+        Basketball is the one I take least seriously and enjoy most.
+      </p>
+    </div>
+    <ul class="tags">
+      <li class="tag">Strength Training</li>
+      <li class="tag">Basketball</li>
+      <li class="tag">Swimming</li>
+    </ul>
+  </div>
+
 </main>
 
 </div><!-- /.layout -->
 </div><!-- /.container -->
+
+<!-- Corner stamp. Hard-coded; bump every page with the sed command in the README. -->
+<div class="stamp" role="status" aria-label="Page last updated">
+  <span class="dot" aria-hidden="true"></span>
+  Updated <time datetime="2026-08-23">2026-08-23</time>
+</div>
 
 <footer class="site-footer">
   <div class="container">

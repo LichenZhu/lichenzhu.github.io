@@ -7,6 +7,7 @@
      1. Tokens            6. Sidebar             10. Timeline
      2. Base              7. Section furniture   11. Footer
      3. Backdrop          8. Publication cards   12. Responsive
+     3b. Duke bar        10d. Corner stamp
      4. Layout            9. News                13. Motion / print
      5. Header / nav
    ========================================================================== */
@@ -43,14 +44,16 @@
 
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display",
           "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Display face for the name and section titles only; body stays system. */
+  --display: "Space Grotesk", var(--sans);
   --mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo,
           Consolas, "Liberation Mono", monospace;
 
-  --container: 1180px;
-  --gutter: 2rem;
+  --container: 1340px;
+  --gutter: 2.5rem;
   --header-h: 62px;
-  --sidebar-w: 268px;
-  --col-gap: 4rem;
+  --sidebar-w: 300px;
+  --col-gap: 4.5rem;
 
   --r-sm: 4px;
   --r-md: 8px;
@@ -71,11 +74,13 @@
     --muted:     #69717f;
     --faint:     #98a0ae;
 
-    --accent:     #1f6feb;
-    --accent-2:   #6247e8;
-    --accent-ink: #1a5fce;
-    --accent-dim: rgba(31, 111, 235, .09);
-    --glow:       rgba(31, 111, 235, .18);
+    /* On white, Duke Blue can carry the accent directly. */
+    --duke:       #012169;
+    --accent:     #012169;
+    --accent-2:   #00539b;
+    --accent-ink: #012169;
+    --accent-dim: rgba(1, 33, 105, .07);
+    --glow:       rgba(1, 33, 105, .16);
 
     --award:      #8a6a1f;
     --award-dim:  rgba(138, 106, 31, .10);
@@ -206,6 +211,19 @@ li { list-style: none; }
   opacity: .55;
 }
 
+/* 3b. Institutional bar --------------------------------------------------
+   A 3px Duke-blue rule pinned above everything. The one unambiguous piece of
+   university branding on the page; everything else is derived colour.
+   ------------------------------------------------------------------------ */
+
+.duke-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  z-index: 60;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 40%, var(--duke) 100%);
+}
+
 /* 4. Layout -------------------------------------------------------------- */
 
 .container {
@@ -216,7 +234,19 @@ li { list-style: none; }
 }
 .container--narrow { max-width: 940px; }
 
+/* The rule between the two columns. A sticky sidebar cannot carry a
+   full-height border, so the divider is drawn on the grid itself. */
+.layout::before {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: calc(var(--sidebar-w) + var(--col-gap) / 2);
+  width: 1px;
+  background: linear-gradient(180deg, var(--rule-2), var(--rule) 26%, transparent 92%);
+}
+
 .layout {
+  position: relative;
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   gap: var(--col-gap);
@@ -231,7 +261,7 @@ li { list-style: none; }
 
 .site-header {
   position: sticky;
-  top: 0;
+  top: 3px;
   z-index: 50;
   border-bottom: 1px solid transparent;
   transition: border-color .25s ease, background-color .25s ease;
@@ -251,6 +281,7 @@ li { list-style: none; }
 }
 
 .nav-brand {
+  font-family: var(--display);
   display: inline-flex;
   align-items: center;
   gap: .6rem;
@@ -330,16 +361,29 @@ li { list-style: none; }
 }
 
 .sidebar-name {
-  font-size: 1.72rem;
-  letter-spacing: -0.035em;
-  margin-bottom: .55rem;
+  font-family: var(--display);
+  font-size: 2.05rem;
+  font-weight: 700;
+  letter-spacing: -0.042em;
+  margin-bottom: .7rem;
 }
 
 .sidebar-role {
-  font-size: .845rem;
-  line-height: 1.6;
+  font-size: .84rem;
+  line-height: 1.62;
   color: var(--muted);
   margin-bottom: 1.4rem;
+}
+/* The role and the institution carry the weight; the connective text does not. */
+.sidebar-role strong { color: var(--ink); font-weight: 600; letter-spacing: -0.005em; }
+.sidebar-role .unit {
+  display: block;
+  font-family: var(--mono);
+  font-size: .655rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: .3rem;
 }
 .sidebar-role a { color: var(--body); box-shadow: inset 0 -1px 0 0 var(--rule); }
 .sidebar-role a:hover { color: var(--accent-ink); box-shadow: inset 0 -1px 0 0 var(--accent); }
@@ -379,7 +423,9 @@ li { list-style: none; }
 }
 
 .section-title {
-  font-size: 1.02rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.06rem;
   letter-spacing: -0.012em;
   white-space: nowrap;
 }
@@ -402,12 +448,22 @@ li { list-style: none; }
 .section-link .arrow { transition: transform .2s ease; }
 .section-link:hover .arrow { transform: translateX(3px); }
 
-.prose { max-width: 66ch; font-size: 1rem; line-height: 1.78; }
+.prose { max-width: 72ch; font-size: 1rem; line-height: 1.78; }
 .prose p + p { margin-top: 1.05rem; }
 .prose strong { color: var(--ink); font-weight: 600; }
 
-/* Research interest tags */
+/* Labelled tag group (research interests, hobbies) */
+.tags-label {
+  font-family: var(--mono);
+  font-size: .655rem;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 1.9rem 0 .75rem;
+}
 .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.75rem; }
+.tags-label + .tags { margin-top: 0; }
 .tag {
   font-family: var(--mono);
   font-size: .705rem;
@@ -456,7 +512,7 @@ li { list-style: none; }
 
 .pub-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
   gap: 1.15rem;
 }
 
@@ -758,7 +814,20 @@ li { list-style: none; }
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
-.tl-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem 1rem; }
+.tl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem 1rem; }
+
+/* Institution marks. The files in assets/images/logos/ are placeholders —
+   drop the real logo in under the same name and this needs no change. */
+.tl-id { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+.tl-logo {
+  width: 30px; height: 30px;
+  flex: none;
+  object-fit: contain;
+  border-radius: 6px;
+  background: var(--bg-1);
+  border: 1px solid var(--rule);
+}
+.tl-logo + .tl-logo { margin-left: -.3rem; }
 .tl-org { font-size: .965rem; letter-spacing: -0.015em; }
 .tl-meta { font-size: .705rem; letter-spacing: .02em; color: var(--faint); white-space: nowrap; }
 .tl-role { font-size: .875rem; color: var(--body); margin: .18rem 0 0; }
@@ -783,7 +852,7 @@ li { list-style: none; }
 /* 10b. Publications page ------------------------------------------------- */
 
 .page-head { padding: 0 0 2.5rem; }
-.page-title { font-size: 2.1rem; letter-spacing: -0.038em; margin-bottom: .6rem; }
+.page-title { font-family: var(--display); font-weight: 700; font-size: 2.3rem; letter-spacing: -0.042em; margin-bottom: .6rem; }
 .page-lede { font-size: .975rem; color: var(--muted); max-width: 58ch; }
 .page-body { padding-bottom: 1.5rem; }
 
@@ -803,12 +872,46 @@ li { list-style: none; }
 
 .error-page { min-height: 62vh; display: grid; place-content: center; text-align: center; padding: 4rem 0; }
 .error-code { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-.error-title { font-size: 2.1rem; letter-spacing: -0.038em; margin-bottom: .8rem; }
+.error-title { font-family: var(--display); font-weight: 700; font-size: 2.3rem; letter-spacing: -0.042em; margin-bottom: .8rem; }
 .error-text { color: var(--muted); margin-bottom: 1.8rem; }
+
+/* 10d. Corner stamp ------------------------------------------------------
+   Fixed bottom-right, showing when the page was last touched. The date is
+   hard-coded per page — see the bump command in the README.
+   ------------------------------------------------------------------------ */
+
+.stamp {
+  position: fixed;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .38rem .7rem;
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  backdrop-filter: saturate(1.4) blur(12px);
+  font-family: var(--mono);
+  font-size: .615rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--faint);
+  pointer-events: none;
+}
+.stamp .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  flex: none;
+}
 
 /* 11. Footer ------------------------------------------------------------- */
 
-.site-footer { margin-top: 3rem; border-top: 1px solid var(--rule); padding: 2rem 0 3rem; }
+.site-footer { margin-top: 3rem; border-top: 1px solid var(--rule); padding: 2rem 0 4.75rem; }
 .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .7rem 1.5rem; }
 .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.3rem; font-size: .82rem; }
 .footer-links a { color: var(--muted); }
@@ -818,13 +921,19 @@ li { list-style: none; }
 
 /* 12. Responsive --------------------------------------------------------- */
 
+@media (max-width: 1180px) {
+  :root { --container: 1100px; --sidebar-w: 250px; --col-gap: 3.25rem; }
+  .sidebar-name { font-size: 1.7rem; }
+}
+
 @media (max-width: 1040px) {
-  :root { --sidebar-w: 228px; --col-gap: 3rem; }
-  .sidebar-name { font-size: 1.5rem; }
+  :root { --sidebar-w: 228px; --col-gap: 2.75rem; }
+  .sidebar-name { font-size: 1.55rem; }
 }
 
 @media (max-width: 840px) {
   .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 2.75rem; }
+  .layout::before { display: none; }
 
   .sidebar {
     position: static;
@@ -871,7 +980,9 @@ li { list-style: none; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar-portrait { grid-row: auto; max-width: 150px; margin-bottom: 1.3rem; }
-  .sidebar-name { font-size: 1.85rem; }
+  .sidebar-name { font-size: 2rem; }
+  .stamp { display: none; }   /* crowds the footer at this width */
+  .site-footer { padding-bottom: 2.5rem; }
 
   .section { padding: 2.5rem 0; }
   .section-head { gap: .7rem; }
@@ -923,7 +1034,8 @@ li { list-style: none; }
 
 @media print {
   .site-header, .nav-toggle, .news-toggle, .skip-link,
-  .pub-hint, .pub-modal, .backdrop { display: none !important; }
+  .pub-hint, .pub-modal, .backdrop, .stamp, .duke-bar { display: none !important; }
+  .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
   a { color: #000; }
   .layout { display: block; }

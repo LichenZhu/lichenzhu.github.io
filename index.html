@@ -31,6 +31,9 @@
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" as="image" href="assets/images/profile/lichen-zhu.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 
 <!-- Marks the document as scripted before first paint, so the publication
@@ -39,6 +42,7 @@
 </head>
 
 <body>
+<div class="duke-bar" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- Decorative only: dot grid + accent bloom, fixed behind everything. -->
@@ -80,9 +84,7 @@
       <ul class="nav-list" id="nav-list">
         <li><a href="index.html" aria-current="page">About</a></li>
         <li><a href="publications.html">Publications</a></li>
-        <li><a href="news.html">News</a></li>
         <li><a href="experience.html">Experience</a></li>
-        <li><a href="assets/files/Lichen_Zhu_CV.pdf">CV</a></li>
       </ul>
     </nav>
   </div>
@@ -106,10 +108,10 @@
   <h1 class="sidebar-name">Lichen Zhu</h1>
 
   <p class="sidebar-role">
-    M.S. Student, Electrical &amp; Computer Engineering,
-    <a href="https://ece.duke.edu/">Duke University</a>
+    <span class="unit">Duke University · Pratt School of Engineering</span>
+    <strong>M.S. Student</strong>, Electrical &amp; Computer Engineering
     <span class="sidebar-role-sep"></span>
-    Research Intern,
+    <strong>Research Intern</strong>,
     <a href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary Intelligence</a>
   </p>
 
@@ -174,28 +176,25 @@
   <div class="prose">
     <p>
       I am a Master's student in Electrical &amp; Computer Engineering at
-      <a href="https://ece.duke.edu/">Duke University</a>, working in the
+      <a href="https://ece.duke.edu/">Duke University</a>, where I work in the
       <a href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary
-      Intelligence</a> with <a href="https://yueqianlin.com/">Yueqian Lin</a> and
-      Yudong Liu, under Prof. Yiran Chen and Prof. Hai Li.
+      Intelligence</a> — directed by Prof. Yiran Chen and Prof. Hai Li — under the
+      guidance of PhD candidate <a href="https://yueqianlin.com/">Yueqian Lin</a>.
     </p>
     <p>
-      My work is on multimodal large language models — how they store, compress,
+      My work is on multimodal large language models: how they store, compress,
       and retrieve information over long horizons. Recent projects ask what a
       personal assistant forgets once its conversation memory is compressed, and
       why video models fail to pick out the evidence a question actually depends on.
     </p>
     <p>
-      Before Duke I read Financial Mathematics at
-      <a href="https://www.xjtlu.edu.cn/en">Xi'an Jiaotong-Liverpool University</a>
-      and the <a href="https://www.liverpool.ac.uk/">University of Liverpool</a>,
-      where my dissertation applied stacked deep learning models to credit-risk
-      prediction. Always glad to talk about research —
+      Always glad to talk about research —
       <a href="mailto:lichen.zhu@duke.edu">get in touch</a>.
     </p>
   </div>
 
   <!-- RESEARCH INTEREST TAGS — add or remove <li> items freely. -->
+  <p class="tags-label">Research Interests</p>
   <ul class="tags">
     <li class="tag">Multimodal LLMs</li>
     <li class="tag">Long-Form Video Understanding</li>
@@ -406,32 +405,6 @@
 </section>
 
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     OUTSIDE THE LAB — the one section on the site written in a looser voice.
-     Keep it that way; About stays measured, this is where the person shows.
-     ═══════════════════════════════════════════════════════════════════════ -->
-<section class="section" id="interests" aria-labelledby="interests-title">
-  <div class="section-head">
-    <h2 class="section-title" id="interests-title">Outside the Lab</h2>
-    <span class="section-rule" aria-hidden="true"></span>
-  </div>
-
-  <div class="prose">
-    <p>
-      I lift, play basketball, and swim. Lifting is the one that stuck — it
-      rewards the same stubbornness research does: pick a number, chase it for
-      months, and be honest with yourself about whether the last rep counted.
-      Basketball is the one I take least seriously and enjoy most.
-    </p>
-  </div>
-
-  <ul class="tags">
-    <li class="tag">Strength Training</li>
-    <li class="tag">Basketball</li>
-    <li class="tag">Swimming</li>
-  </ul>
-</section>
-
 </main>
 
 </div><!-- /.layout -->
@@ -448,6 +421,12 @@
   </button>
   <div class="pub-modal-body" id="pub-modal-body"></div>
 </dialog>
+
+<!-- Corner stamp. Hard-coded; bump every page with the sed command in the README. -->
+<div class="stamp" role="status" aria-label="Page last updated">
+  <span class="dot" aria-hidden="true"></span>
+  Updated <time datetime="2026-08-23">2026-08-23</time>
+</div>
 
 <footer class="site-footer">
   <div class="container">

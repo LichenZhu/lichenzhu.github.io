@@ -14,6 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
+  images/logos/             institution marks — PLACEHOLDERS, see below
   images/profile/           profile photo
   images/publications/      teaser figures
   files/Lichen_Zhu_CV.pdf   CV
@@ -39,9 +40,14 @@ nothing else. To retune either theme, edit token values — no rule below sectio
 of the stylesheet needs to change. There is no manual toggle; the site follows
 the reader's system setting.
 
-Two typefaces, both from the system stack, no web-font requests:
+Three typefaces:
 
-- **Sans** for everything that is prose or a heading.
+- **Display** — Space Grotesk, the site's only third-party request, loaded from
+  Google Fonts. Used for the name, page titles, section titles and the brand.
+  If you would rather have no external request, delete the two `preconnect`
+  links and the `fonts.googleapis.com` stylesheet from all five pages; the
+  `--display` token falls back to the system sans and nothing breaks.
+- **Sans** (system) for everything that is prose or a heading.
 - **Mono** for everything that is *data* — venue badges, news dates, timeline
   ranges, tags. That split is the main
   reason the page reads as technical rather than decorative, so keep it: if you
@@ -51,6 +57,13 @@ Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
 Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
 for the bands within.
+
+**Duke.** `--duke` is Duke Blue, `#012169`. It is far too dark to carry an
+accent on a near-black page, so on the dark theme it stays as the deep plate —
+the nav mark, the right end of the top bar — and the working accent is a bright
+derivative. On the light theme Duke Blue *is* the accent directly. The 3px
+`.duke-bar` fixed across the top of every page is the one piece of unambiguous
+university branding; everything else is derived colour.
 
 **Two voices.** `About` stays measured — it is what a prospective advisor or a
 reader of your papers lands on. `Outside the Lab` is the one section written
@@ -65,7 +78,9 @@ and Karpathy's is a bare icon row. A gradient CTA is a landing-page device;
 on a researcher's page it reads as selling something. If you ever do add a
 button, save it for an action that warrants one — booking a meeting, say.
 
-Three effects carry the rest:
+Four effects carry the rest:
+
+- **`.duke-bar`** — the institutional rule described above.
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
   below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
@@ -73,6 +88,8 @@ Three effects carry the rest:
   and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
   `main.js` writes on pointer move (one write per frame, hover-capable pointers
   only). With JS off they fall back to the card centre.
+- **The column divider** — a sticky sidebar cannot carry a full-height border,
+  so the rule between the two columns is drawn as `.layout::before`.
 - **Scroll reveal** — `main.js` adds `.reveal` to a fixed selector list and an
   IntersectionObserver adds `.is-in`. The hidden state is gated behind the `js`
   class *and* backed by a sweep that un-hides anything still invisible on
@@ -82,7 +99,9 @@ All three are disabled under `prefers-reduced-motion: reduce`.
 
 ## Pages, not scroll anchors
 
-The top nav navigates between real pages; nothing in it is a `#` link. Each
+The top nav has three items — About, Publications, Experience. `news.html` is
+deliberately not among them; it is reached from the homepage's "All news →"
+link, and the CV from the sidebar rail. Nothing in the nav is a `#` link. Each
 page is a complete document — there is no build step and no templating, so the
 shared shell is **physically duplicated in every page**:
 
@@ -131,7 +150,8 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | Research interest tags | `index.html` → `<ul class="tags">` |
 | Selected publications (cards) | `index.html` → `SELECTED PUBLICATIONS` |
 | Recent news (5 on the homepage) | `index.html` → `NEWS`, add a `<li>` at the top |
-| Hobbies / personal voice | `index.html` → `OUTSIDE THE LAB` |
+| Hobbies / personal voice | `experience.html` → `OUTSIDE THE LAB` |
+| Institution logos | `assets/images/logos/` — see below |
 | All publications | `publications.html`, grouped by status |
 | All news | `news.html`, grouped by year |
 | Education / experience / awards | `experience.html` |
@@ -177,6 +197,29 @@ modal, everything on the page at once.
   white diagonal — three shapes, so it survives 16px in a browser tab. The same
   mark is inlined in each page's `.nav-brand`; if you change one, change both.
 
+## Institution logos
+
+`assets/images/logos/` holds `duke.svg`, `liverpool.svg` and `xjtlu.svg`. **All
+three are placeholders** — plain lettered plates, not the real marks. Wikipedia
+carries only Duke's *seal* (which Duke's brand policy restricts to official
+documents), Liverpool's coat of arms, and no XJTLU logo at all, so none of them
+were safe to ship.
+
+Download the real logos from each university's brand or media-resources page and
+overwrite these three files, keeping the filenames. The markup in
+`experience.html` needs no change. Prefer SVG; a square-ish crop sits best in the
+30×30 slot.
+
+## The corner stamp
+
+Every page carries a fixed "Updated YYYY-MM-DD" badge in the bottom-right. There
+is no build step, so the date is hard-coded in each page. Bump them all at once
+before you publish:
+
+```sh
+sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(date +%F)\">$(date +%F)</time>|" *.html
+```
+
 ## Crawlers and structured data
 
 - `robots.txt` allows search engines and disallows the named generative-AI
@@ -196,6 +239,8 @@ modal, everything on the page at once.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
 - [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
+- [ ] **Corner stamp dates** — run the `sed` command above.
+- [ ] **Institution logos** are placeholders.
 
 ## Deploying
 
