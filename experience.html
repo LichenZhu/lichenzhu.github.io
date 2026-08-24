@@ -33,7 +33,7 @@
 <link rel="preload" as="image" href="assets/images/profile/lichen-zhu.jpg" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&family=JetBrains+Mono:wght@400..500&family=Space+Grotesk:wght@500..700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 
 <!-- Marks the document as scripted before first paint, so the publication
@@ -42,13 +42,6 @@
 </head>
 
 <body>
-<div class="duke-bar">
-  <div class="container">
-    <img src="assets/images/logos/duke.png" alt="Duke University" width="720" height="311">
-    <span class="rule" aria-hidden="true"></span>
-    <a class="unit" href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary Intelligence</a>
-  </div>
-</div>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- Decorative only: dot grid + accent bloom, fixed behind everything. -->
@@ -62,19 +55,10 @@
   <div class="container">
     <nav class="nav" aria-label="Primary">
       <a class="nav-brand" href="index.html">
-        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
-          <defs>
-            <linearGradient id="nm-plate" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#193a63"/><stop offset="1" stop-color="#080f1c"/></linearGradient>
-            <linearGradient id="nm-bar" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#4d9cff"/><stop offset="1" stop-color="#7b6cff"/></linearGradient>
-          </defs>
-          <rect width="64" height="64" rx="14" fill="url(#nm-plate)"/>
-          <rect x="15" y="14" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
-          <path d="M44 25.5L20 39.5" stroke="#fff" stroke-width="8.5" stroke-linecap="round"/>
-          <rect x="15" y="42.5" width="34" height="7.5" rx="2.5" fill="url(#nm-bar)"/>
-        </svg>
-        Lichen Zhu
+        <img class="brand-mark" src="assets/images/logos/duke.png"
+             alt="Duke University" width="720" height="311">
+        <span class="brand-rule" aria-hidden="true"></span>
+        <span class="brand-unit">Center for Computational<br>Evolutionary Intelligence</span>
       </a>
 
       <button class="nav-toggle" type="button" aria-expanded="false"
@@ -181,31 +165,43 @@
 <!-- Add a new <li> at the TOP of the relevant <ul> to keep reverse-chronology. -->
 <div class="subsection">
     <h3 class="subsection-title">Education</h3>
-    <ul class="timeline">
-      <li>
-        <div class="tl-marks">
+
+    <!-- ┌── EDUCATION CARDS ────────────────────────────────────────────┐
+         │  Cards rather than timeline rows: each institution's logos    │
+         │  differ wildly in proportion, and a card gives each set its    │
+         │  own row so nothing has to line up with anything else.         │
+         │  Logos live in assets/images/logos/ — see the README.          │
+         └────────────────────────────────────────────────────────────────┘ -->
+    <ul class="edu-grid">
+
+      <li class="edu-card">
+        <div class="edu-marks">
           <span class="tl-mark"><img src="assets/images/logos/duke.png" alt=""
                 width="720" height="311" loading="lazy"></span>
         </div>
-        <div class="tl-head">
-          <h4 class="tl-org">Duke University</h4>
-          <span class="tl-meta"><span class="tl-place">Durham, NC</span><span class="tl-when">Sep 2025 – Jul 2027</span></span>
-        </div>
-        <p class="tl-role">M.S. in Electrical &amp; Computer Engineering</p>
+        <h4 class="edu-org">Duke University</h4>
+        <p class="edu-degree">M.S. in Electrical &amp; Computer Engineering</p>
+        <p class="edu-meta">
+          <span>Durham, NC</span>
+          <span>Sep 2025 &ndash; Jul 2027</span>
+        </p>
       </li>
-      <li>
-        <div class="tl-marks">
+
+      <li class="edu-card">
+        <div class="edu-marks">
           <span class="tl-mark tl-mark--tall"><img src="assets/images/logos/xjtlu.png" alt=""
                 width="360" height="448" loading="lazy"></span>
           <span class="tl-mark"><img src="assets/images/logos/liverpool.svg" alt=""
                 width="567" height="145" loading="lazy"></span>
         </div>
-        <div class="tl-head">
-          <h4 class="tl-org">Xi'an Jiaotong-Liverpool University / University of Liverpool</h4>
-          <span class="tl-meta"><span class="tl-place">Suzhou, China</span><span class="tl-when">Sep 2021 – Jul 2025</span></span>
-        </div>
-        <p class="tl-role">B.Sc. in Financial Mathematics, First Class Honours</p>
+        <h4 class="edu-org">Xi&rsquo;an Jiaotong-Liverpool University<br>University of Liverpool</h4>
+        <p class="edu-degree">B.Sc. in Financial Mathematics, First Class Honours</p>
+        <p class="edu-meta">
+          <span>Suzhou, China</span>
+          <span>Sep 2021 &ndash; Jul 2025</span>
+        </p>
       </li>
+
     </ul>
   </div>
 

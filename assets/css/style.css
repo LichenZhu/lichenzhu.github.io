@@ -7,7 +7,7 @@
      1. Tokens            6. Sidebar             10. Timeline
      2. Base              7. Section furniture   11. Footer
      3. Backdrop          8. Publication cards   12. Responsive
-     3b. Duke bar        10d. Corner stamp
+                         10d. Corner stamp
      4. Layout            9. News                13. Motion / print
      5. Header / nav
    ========================================================================== */
@@ -42,21 +42,50 @@
   --award:      #e0b968;
   --award-dim:  rgba(224, 185, 104, .12);
 
-  /* Duke Blue does not change with the theme; declared once, here, so
-     .duke-bar cannot silently lose its colour on dark (var(--duke) was
-     previously undefined outside the light-theme block). */
+  /* Duke Blue does not change with the theme — the banner is institutional
+     livery, not page chrome. Declared once, here, so it cannot go undefined
+     on dark the way it silently did before. */
   --duke:       #012169;
 
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display",
-          "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
-  /* Display face for the name and section titles only; body stays system. */
-  --display: "Space Grotesk", var(--sans);
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo,
+  /* Three faces, three jobs, no overlap:
+       --sans     prose and UI
+       --display  the name, page titles, section titles
+       --mono     every piece of data — dates, venues, labels, counts
+     All three are variable fonts; the latin subsets total about 100 KB. */
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+  --display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont,
+             "Segoe UI", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
           Consolas, "Liberation Mono", monospace;
+
+  /* ── Type scale ────────────────────────────────────────────────────────
+     Replaces 31 ad-hoc font-sizes. Every rule below picks from these ten
+     steps; if a new size feels necessary, the scale is probably wrong. */
+  --t-micro: .6875rem;   /* 11px — badges, the corner stamp             */
+  --t-label: .75rem;     /* 12px — mono eyebrows, dates, timeline meta  */
+  --t-fine:  .8125rem;   /* 13px — authors, venues, nav, link pills     */
+  --t-small: .875rem;    /* 14px — sidebar role, roles, descriptions    */
+  --t-body:  1rem;       /* 16px — prose                               */
+  --t-title: 1.0625rem;  /* 17px — card and entry titles               */
+  --t-head:  1.1875rem;  /* 19px — section titles                      */
+  --t-page:  2.25rem;    /* 36px — page titles, the name               */
+
+  /* ── Line heights ─────────────────────────────────────────────────── */
+  --lh-tight:   1.15;    /* display                                    */
+  --lh-snug:    1.35;    /* headings, card titles                      */
+  --lh-normal:  1.55;    /* UI text, metadata                          */
+  --lh-relaxed: 1.72;    /* prose                                      */
+
+  /* ── Tracking ─────────────────────────────────────────────────────── */
+  --tr-display: -.035em; /* large display text needs pulling in        */
+  --tr-head:    -.018em;
+  --tr-body:    0;       /* Inter is drawn for zero at text sizes      */
+  --tr-caps:    .13em;   /* uppercase mono labels need opening up      */
 
   --container: 1340px;
   --gutter: 2.5rem;
-  --header-h: 62px;
+  --header-h: 60px;
   --sidebar-w: 300px;
   --col-gap: 4.5rem;
 
@@ -108,9 +137,14 @@ body {
   background: var(--bg);
   color: var(--body);
   font-family: var(--sans);
-  font-size: 15.5px;
-  line-height: 1.7;
-  font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
+  font-size: var(--t-body);
+  line-height: var(--lh-relaxed);
+  letter-spacing: var(--tr-body);
+  /* cv05 gives the l a tail, which stops Il1 collapsing in author initials
+     and venue acronyms. Optical sizing lets Inter thin its own hairlines as
+     the display size grows. */
+  font-feature-settings: "kern" 1, "liga" 1, "cv05" 1;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-wrap: break-word;
@@ -119,10 +153,15 @@ body {
 h1, h2, h3, h4 {
   color: var(--ink);
   font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.022em;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-head);
   margin: 0;
+  /* Stops a heading dropping one orphan word onto its own line. */
+  text-wrap: balance;
 }
+
+/* Avoids single-word last lines in running text. */
+p, .prose li { text-wrap: pretty; }
 
 p { margin: 0 0 1rem; }
 p:last-child { margin-bottom: 0; }
@@ -133,19 +172,33 @@ a:hover { color: var(--ink); }
 /* Inline prose links: hairline underline that brightens on hover. */
 .prose a, .pub-summary a {
   color: var(--ink);
-  box-shadow: inset 0 -1px 0 0 var(--rule-2);
-  transition: box-shadow .18s ease, color .18s ease;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-2);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  text-decoration-skip-ink: auto;
+  transition: text-decoration-color .18s ease, color .18s ease;
 }
 .prose a:hover, .pub-summary a:hover {
   color: var(--accent-ink);
-  box-shadow: inset 0 -1px 0 0 var(--accent);
+  text-decoration-color: var(--accent);
 }
 
 img { max-width: 100%; height: auto; display: block; }
 ul, ol { margin: 0; padding: 0; }
 li { list-style: none; }
 
-::selection { background: var(--accent); color: #fff; }
+::selection { background: var(--accent); color: var(--bg); }
+
+html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--rule-2);
+  border-radius: 99px;
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -156,15 +209,17 @@ li { list-style: none; }
 /* Every piece of metadata on this site is set in mono. It is the one
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
-.subsection-title, .group-title, .error-code, .honor-year {
+.subsection-title, .group-title, .error-code, .honor-year, .tags-label,
+.stamp, .footer-meta, .brand-unit, .tag {
   font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "kern" 1;
 }
 
 .skip-link {
   position: absolute; left: -9999px; top: 0; z-index: 200;
   background: var(--bg-1); color: var(--accent-ink);
-  padding: .7rem 1.1rem; font-size: .85rem;
+  padding: .7rem 1.1rem; font-size: var(--t-fine);
   border: 1px solid var(--rule-2); border-radius: var(--r-sm);
 }
 .skip-link:focus { left: .75rem; top: .75rem; }
@@ -212,51 +267,6 @@ li { list-style: none; }
   opacity: .55;
 }
 
-/* 3b. Institutional bar --------------------------------------------------
-   A 3px Duke-blue rule pinned above everything. The one unambiguous piece of
-   university branding on the page; everything else is derived colour.
-   ------------------------------------------------------------------------ */
-
-.duke-bar {
-  position: relative;
-  z-index: 60;
-  background: var(--duke);
-  border-bottom: 1px solid rgba(255, 255, 255, .10);
-}
-.duke-bar .container {
-  display: flex;
-  align-items: center;
-  gap: .85rem;
-  min-height: 40px;
-  padding-top: .3rem;
-  padding-bottom: .3rem;
-}
-/* The wordmark file is navy on transparent — the same navy as this bar.
-   brightness(0) flattens it to black, invert(1) lifts it to white; the alpha
-   channel, and so the letterforms, are untouched. */
-.duke-bar img {
-  height: 17px;
-  width: auto;
-  filter: brightness(0) invert(1);
-  opacity: .95;
-  flex: none;
-}
-.duke-bar .rule {
-  width: 1px;
-  height: 17px;
-  background: rgba(255, 255, 255, .28);
-  flex: none;
-}
-.duke-bar .unit {
-  font-family: var(--mono);
-  font-size: .62rem;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, .82);
-  line-height: 1.3;
-}
-.duke-bar a.unit:hover { color: #fff; }
-
 /* 4. Layout -------------------------------------------------------------- */
 
 .container {
@@ -292,48 +302,70 @@ li { list-style: none; }
 
 /* 5. Header / navigation ------------------------------------------------- */
 
+/* The banner is Duke navy in both themes — it is institutional livery, not
+   page chrome, so it does not follow the light/dark palette. Every colour
+   inside it is therefore written against navy, not against a token. */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid transparent;
-  transition: border-color .25s ease, background-color .25s ease;
+  background: var(--duke);
+  border-bottom: 1px solid rgba(255, 255, 255, .13);
+  transition: box-shadow .25s ease;
 }
-.site-header.is-scrolled {
-  border-bottom-color: var(--rule);
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
-  -webkit-backdrop-filter: saturate(1.4) blur(14px);
-  backdrop-filter: saturate(1.4) blur(14px);
-}
+.site-header.is-scrolled { box-shadow: 0 10px 30px -14px rgba(0, 0, 0, .75); }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--header-h);
+  gap: 1.5rem;
+  min-height: var(--header-h);
 }
 
 .nav-brand {
-  font-family: var(--display);
   display: inline-flex;
   align-items: center;
-  gap: .6rem;
-  color: var(--ink);
-  font-size: .92rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
+  gap: .85rem;
+  padding: .5rem 0;
+  min-width: 0;
 }
-.nav-brand:hover { color: var(--ink); }
-.nav-brand .mark { width: 20px; height: 20px; border-radius: 5px; flex: none; }
+/* The wordmark is navy on transparent — the same navy as this bar — so it is
+   flipped to white in CSS. brightness(0) flattens every opaque pixel to
+   black, invert(1) lifts it to white; alpha, and so the letterforms, survive.
+   No second asset needed. */
+.brand-mark {
+  height: 21px;
+  width: auto;
+  flex: none;
+  filter: brightness(0) invert(1);
+  opacity: .97;
+}
+.brand-rule {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, .30);
+  flex: none;
+}
+.brand-unit {
+  font-family: var(--mono);
+  font-size: .625rem;
+  font-weight: 400;
+  letter-spacing: var(--tr-caps);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .80);
+  line-height: 1.42;
+  transition: color .15s ease;
+}
+.nav-brand:hover .brand-unit { color: #fff; }
 
 .nav-list { display: flex; align-items: center; gap: 1.75rem; }
 
 .nav-list a {
   position: relative;
-  font-size: .82rem;
-  letter-spacing: .01em;
-  color: var(--muted);
+  font-size: var(--t-fine);
+  font-weight: 500;
+  color: rgba(255, 255, 255, .74);
   padding: .4rem 0;
   transition: color .15s ease;
 }
@@ -341,26 +373,26 @@ li { list-style: none; }
   content: "";
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 1px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  height: 1.5px;
+  background: #fff;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform .25s cubic-bezier(.3, 0, .2, 1);
 }
-.nav-list a:hover { color: var(--ink); }
+.nav-list a:hover { color: #fff; }
 .nav-list a.is-active,
-.nav-list a[aria-current="page"] { color: var(--ink); }
+.nav-list a[aria-current="page"] { color: #fff; }
 .nav-list a.is-active::after,
 .nav-list a[aria-current="page"]::after { transform: scaleX(1); }
 
 .nav-toggle {
   display: none;
-  background: var(--bg-1);
-  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .22);
   border-radius: var(--r-sm);
   padding: .4rem .5rem;
   cursor: pointer;
-  color: var(--ink);
+  color: #fff;
   line-height: 0;
 }
 .nav-toggle svg { width: 18px; height: 18px; }
@@ -375,6 +407,7 @@ li { list-style: none; }
 .sidebar-portrait {
   position: relative;
   width: 100%;
+  max-width: 184px;
   border-radius: var(--r-lg);
   overflow: hidden;
   margin-bottom: 1.5rem;
@@ -395,15 +428,16 @@ li { list-style: none; }
 
 .sidebar-name {
   font-family: var(--display);
-  font-size: 2.05rem;
+  font-size: var(--t-page);
   font-weight: 700;
-  letter-spacing: -0.042em;
-  margin-bottom: .7rem;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-display);
+  margin-bottom: .8rem;
 }
 
 .sidebar-role {
-  font-size: .84rem;
-  line-height: 1.62;
+  font-size: var(--t-small);
+  line-height: var(--lh-normal);
   color: var(--muted);
   margin-bottom: 1.4rem;
 }
@@ -427,7 +461,7 @@ li { list-style: none; }
   padding: .42rem .55rem;
   margin: 0 -.55rem;
   border-radius: var(--r-sm);
-  font-size: .84rem;
+  font-size: var(--t-small);
   color: var(--body);
   transition: color .15s ease, background-color .15s ease;
 }
@@ -449,8 +483,8 @@ li { list-style: none; }
 .section-title {
   font-family: var(--display);
   font-weight: 600;
-  font-size: 1.06rem;
-  letter-spacing: -0.012em;
+  font-size: var(--t-head);
+  letter-spacing: var(--tr-head);
   white-space: nowrap;
 }
 
@@ -461,7 +495,7 @@ li { list-style: none; }
 }
 
 .section-link {
-  font-size: .78rem;
+  font-size: var(--t-fine);
   color: var(--muted);
   white-space: nowrap;
   display: inline-flex;
@@ -472,16 +506,15 @@ li { list-style: none; }
 .section-link .arrow { transition: transform .2s ease; }
 .section-link:hover .arrow { transform: translateX(3px); }
 
-.prose { max-width: 72ch; font-size: 1rem; line-height: 1.78; }
+.prose { max-width: 68ch; font-size: var(--t-body); line-height: var(--lh-relaxed); }
 .prose p + p { margin-top: 1.05rem; }
 .prose strong { color: var(--ink); font-weight: 600; }
 
 /* Labelled tag group (research interests, hobbies) */
 .tags-label {
-  font-family: var(--mono);
-  font-size: .655rem;
+  font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: .16em;
+  letter-spacing: var(--tr-caps);
   text-transform: uppercase;
   color: var(--muted);
   margin: 1.9rem 0 .75rem;
@@ -489,9 +522,8 @@ li { list-style: none; }
 .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.75rem; }
 .tags-label + .tags { margin-top: 0; }
 .tag {
-  font-family: var(--mono);
-  font-size: .705rem;
-  letter-spacing: .04em;
+  font-size: var(--t-label);
+  letter-spacing: .03em;
   color: var(--muted);
   background: var(--bg-1);
   border: 1px solid var(--rule);
@@ -505,9 +537,9 @@ li { list-style: none; }
 /* Badges */
 .badges { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .7rem; }
 .badge {
-  font-size: .655rem;
+  font-size: var(--t-micro);
   font-weight: 500;
-  letter-spacing: .1em;
+  letter-spacing: .11em;
   text-transform: uppercase;
   padding: .26rem .52rem;
   border-radius: var(--r-sm);
@@ -614,28 +646,37 @@ li { list-style: none; }
   padding: 1.05rem 1.15rem 1.15rem;
 }
 
-.pub-title { font-size: .965rem; line-height: 1.45; margin-bottom: .45rem; }
+.pub-title {
+  font-size: var(--t-title);
+  line-height: var(--lh-snug);
+  margin-bottom: .45rem;
+}
 
 /* The title is the button; ::after stretches its hit area over the card. */
 .pub-open {
   font: inherit; color: inherit; background: none; border: 0;
   padding: 0; margin: 0; text-align: left; cursor: default;
-  letter-spacing: -0.015em;
+  letter-spacing: var(--tr-head);
   transition: color .2s ease;
 }
 .js .pub-open { cursor: pointer; }
 .js .pub-open::after { content: ""; position: absolute; inset: 0; z-index: 3; }
 .js .pub-card:hover .pub-open { color: var(--accent-ink); }
 
-.pub-venue { font-size: .79rem; color: var(--muted); line-height: 1.55; margin-bottom: .95rem; }
+.pub-venue {
+  font-size: var(--t-fine);
+  color: var(--muted);
+  line-height: var(--lh-normal);
+  margin-bottom: .95rem;
+}
 
 .pub-hint {
   display: none;
   align-items: center;
   gap: .35rem;
   margin: auto 0 0;
-  font-size: .655rem;
-  letter-spacing: .12em;
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-caps);
   text-transform: uppercase;
   color: var(--muted);
   transition: color .2s ease;
@@ -649,13 +690,23 @@ li { list-style: none; }
 .pub-detail { padding: 1.05rem 1.15rem 1.2rem; border-top: 1px solid var(--rule); }
 .js .pub-detail { display: none; }
 
-.pub-authors { font-size: .82rem; color: var(--muted); line-height: 1.65; margin-bottom: .25rem; }
+.pub-authors {
+  font-size: var(--t-fine);
+  color: var(--muted);
+  line-height: var(--lh-normal);
+  margin-bottom: .25rem;
+}
 .author-me { color: var(--ink); font-weight: 600; }
-.pub-summary { font-size: .89rem; line-height: 1.68; color: var(--body); margin-bottom: .8rem; }
+.pub-summary {
+  font-size: var(--t-small);
+  line-height: var(--lh-relaxed);
+  color: var(--body);
+  margin-bottom: .8rem;
+}
 
 .pub-links {
   display: flex; flex-wrap: wrap; align-items: center;
-  gap: .4rem .55rem; font-size: .78rem; margin-bottom: 0;
+  gap: .4rem .55rem; font-size: var(--t-fine); margin-bottom: 0;
 }
 .pub-links a {
   display: inline-flex; align-items: center; gap: .35rem;
@@ -697,7 +748,14 @@ li { list-style: none; }
   border-radius: var(--r-lg);
 }
 .pub-modal-body .pub-detail { padding: 0; border-top: 0; display: block; }
-.pub-modal-title { font-size: 1.22rem; line-height: 1.35; letter-spacing: -0.025em; margin-bottom: .7rem; padding-right: 2.2rem; }
+.pub-modal-title {
+  font-family: var(--display);
+  font-size: 1.375rem;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-head);
+  margin-bottom: .7rem;
+  padding-right: 2.2rem;
+}
 .pub-modal-figure { margin: 0 0 1.2rem; }
 .pub-modal-figure img {
   width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
@@ -746,13 +804,32 @@ li { list-style: none; }
 }
 
 .entry-body { min-width: 0; }
-.entry-title { font-size: 1.02rem; line-height: 1.42; letter-spacing: -0.018em; margin-bottom: .45rem; }
+.entry-title {
+  font-size: var(--t-title);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-head);
+  margin-bottom: .45rem;
+}
 .entry-title a { color: var(--ink); }
 .entry-title a:hover { color: var(--accent-ink); }
-.entry-authors { font-size: .82rem; color: var(--muted); line-height: 1.65; margin-bottom: .25rem; }
-.entry-venue { font-size: .82rem; color: var(--body); margin-bottom: .6rem; }
-.entry-summary { font-size: .89rem; line-height: 1.68; color: var(--body); max-width: 62ch; margin-bottom: .8rem; }
-.entry-links { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .55rem; font-size: .78rem; margin-bottom: 0; }
+.entry-authors {
+  font-size: var(--t-fine);
+  color: var(--muted);
+  line-height: var(--lh-normal);
+  margin-bottom: .25rem;
+}
+.entry-venue { font-size: var(--t-fine); color: var(--body); margin-bottom: .6rem; }
+.entry-summary {
+  font-size: var(--t-small);
+  line-height: var(--lh-relaxed);
+  color: var(--body);
+  max-width: 64ch;
+  margin-bottom: .8rem;
+}
+.entry-links {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .4rem .55rem; font-size: var(--t-fine); margin-bottom: 0;
+}
 .entry-links a {
   display: inline-flex; padding: .28rem .62rem;
   border: 1px solid var(--rule-2); border-radius: 100px; color: var(--body);
@@ -767,15 +844,15 @@ li { list-style: none; }
   grid-template-columns: 84px minmax(0, 1fr);
   gap: 1.4rem;
   padding: .62rem 0;
-  font-size: .9rem;
-  line-height: 1.68;
+  font-size: var(--t-small);
+  line-height: var(--lh-relaxed);
 }
 .news-list em { color: var(--ink); font-style: normal; font-weight: 500; }
 .news-list strong { color: var(--ink); font-weight: 600; }
 
 .news-date {
-  font-size: .675rem;
-  letter-spacing: .06em;
+  font-size: var(--t-label);
+  letter-spacing: .05em;
   text-transform: uppercase;
   color: var(--muted);
   padding-top: .34rem;
@@ -794,7 +871,7 @@ li { list-style: none; }
   border-radius: 100px;
   padding: .42rem .95rem;
   font: inherit;
-  font-size: .78rem;
+  font-size: var(--t-fine);
   color: var(--muted);
   cursor: pointer;
   transition: color .16s ease, border-color .16s ease;
@@ -808,12 +885,69 @@ li { list-style: none; }
 .subsection + .subsection { margin-top: 2.75rem; }
 
 .subsection-title {
-  font-size: .655rem;
+  font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: .16em;
+  letter-spacing: var(--tr-caps);
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 1.25rem;
+}
+
+/* Education cards. The three institution marks are a 2.3:1 wordmark, a
+   0.8:1 shield and a 3.9:1 lockup; giving each card its own logo row means
+   none of them has to align with any other. */
+.edu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.15rem;
+  margin-bottom: 2.75rem;
+}
+
+.edu-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem 1.4rem 1.25rem;
+  background: var(--bg-1);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  transition: border-color .2s ease, background-color .2s ease;
+}
+@media (hover: hover) {
+  .edu-card:hover { border-color: var(--rule-2); background: var(--bg-2); }
+}
+
+.edu-marks {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  margin-bottom: 1.1rem;
+}
+
+.edu-org {
+  font-size: var(--t-title);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-head);
+  margin-bottom: .3rem;
+}
+
+.edu-degree {
+  font-size: var(--t-small);
+  line-height: var(--lh-normal);
+  color: var(--body);
+  margin-bottom: 1rem;
+}
+
+.edu-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem 1.3rem;
+  margin: auto 0 0;
+  padding-top: .9rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: var(--t-label);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--muted);
 }
 
 .timeline { border-left: 1px solid var(--rule); }
@@ -827,7 +961,6 @@ li { list-style: none; }
   border-radius: 50%;
   background: var(--faint);
 }
-.timeline > li:has(.tl-marks)::before { top: 1.7rem; }
 .timeline > li:first-child::before {
   background: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-dim);
@@ -835,22 +968,12 @@ li { list-style: none; }
 
 .tl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem 1rem; }
 
-/* Institution marks. The three logos have wildly different proportions —
-   a 2.3:1 wordmark, a 0.8:1 shield, a 3.9:1 lockup — so they are normalised
-   by HEIGHT and given their natural width. They sit on their own row above
-   the organisation name rather than beside it, which keeps every row's text
-   starting at the same x.
+/* Institution mark chips, used by the education cards.
 
    The chip is white in both themes. All three marks are dark-on-light
-   artwork, and a white chip is the only treatment that carries them without
-   recolouring somebody's trademark. On the dark theme the chip is held just
-   under full brightness so it does not glare, and lifts on hover. */
-.tl-marks {
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-  margin-bottom: .8rem;
-}
+   artwork, and a white chip is the only treatment that carries every one of
+   them without recolouring somebody's trademark. On the dark theme it is
+   held just under full brightness so it does not glare, and lifts on hover. */
 .tl-mark {
   display: grid;
   place-items: center;
@@ -862,7 +985,7 @@ li { list-style: none; }
   opacity: .9;
   transition: opacity .2s ease, border-color .2s ease;
 }
-.timeline > li:hover .tl-mark { opacity: 1; border-color: var(--accent); }
+.edu-card:hover .tl-mark { opacity: 1; border-color: var(--accent); }
 /* Sized by explicit height, not max-height: the Liverpool file carries only a
    viewBox, and under max-height its width collapses to nothing. */
 .tl-mark img {
@@ -873,23 +996,28 @@ li { list-style: none; }
 /* A portrait shield set to a wordmark's height reads as a speck. Tall marks
    get their own height so every chip carries the same optical weight. */
 .tl-mark--tall img { height: 42px; }
-.tl-org { font-size: .965rem; letter-spacing: -0.015em; }
+.tl-org { font-size: var(--t-title); letter-spacing: var(--tr-head); }
 .tl-meta {
   display: flex;
   gap: 1.4rem;
-  font-size: .705rem;
-  letter-spacing: .02em;
+  font-size: var(--t-label);
   color: var(--muted);
   white-space: nowrap;
 }
-.tl-role { font-size: .875rem; color: var(--body); margin: .18rem 0 0; }
-.tl-desc { font-size: .85rem; color: var(--muted); margin: .35rem 0 0; max-width: 66ch; }
+.tl-role { font-size: var(--t-small); color: var(--body); margin: .18rem 0 0; }
+.tl-desc {
+  font-size: var(--t-small);
+  line-height: var(--lh-relaxed);
+  color: var(--muted);
+  margin: .4rem 0 0;
+  max-width: 66ch;
+}
 
 .honors > li {
   position: relative;
   padding-left: 1.15rem;
-  font-size: .89rem;
-  line-height: 1.65;
+  font-size: var(--t-small);
+  line-height: var(--lh-normal);
   margin-bottom: .55rem;
 }
 .honors > li::before {
@@ -899,20 +1027,32 @@ li { list-style: none; }
   border-radius: 50%;
   background: var(--rule-2);
 }
-.honors .honor-year { color: var(--muted); font-size: .72rem; letter-spacing: .04em; margin-left: .6rem; }
+.honors .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
 
 /* 10b. Publications page ------------------------------------------------- */
 
 .page-head { padding: 0 0 2.5rem; }
-.page-title { font-family: var(--display); font-weight: 700; font-size: 2.3rem; letter-spacing: -0.042em; margin-bottom: .6rem; }
-.page-lede { font-size: .975rem; color: var(--muted); max-width: 58ch; }
+.page-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--t-page);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-display);
+  margin-bottom: .65rem;
+}
+.page-lede {
+  font-size: var(--t-body);
+  line-height: var(--lh-relaxed);
+  color: var(--muted);
+  max-width: 58ch;
+}
 .page-body { padding-bottom: 1.5rem; }
 
 .group + .group { margin-top: 3.25rem; }
 .group-title {
-  font-size: .655rem;
+  font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: .16em;
+  letter-spacing: var(--tr-caps);
   text-transform: uppercase;
   color: var(--muted);
   padding-bottom: .7rem;
@@ -923,8 +1063,21 @@ li { list-style: none; }
 /* 10c. Error page -------------------------------------------------------- */
 
 .error-page { min-height: 62vh; display: grid; place-content: center; text-align: center; padding: 4rem 0; }
-.error-code { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
-.error-title { font-family: var(--display); font-weight: 700; font-size: 2.3rem; letter-spacing: -0.042em; margin-bottom: .8rem; }
+.error-code {
+  font-size: var(--t-label);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.error-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--t-page);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-display);
+  margin-bottom: .8rem;
+}
 .error-text { color: var(--muted); margin-bottom: 1.8rem; }
 
 /* 10d. Corner stamp ------------------------------------------------------
@@ -946,9 +1099,8 @@ li { list-style: none; }
   background: color-mix(in srgb, var(--bg) 78%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(12px);
   backdrop-filter: saturate(1.4) blur(12px);
-  font-family: var(--mono);
-  font-size: .615rem;
-  letter-spacing: .13em;
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-caps);
   text-transform: uppercase;
   color: var(--muted);
   pointer-events: none;
@@ -965,22 +1117,25 @@ li { list-style: none; }
 
 .site-footer { margin-top: 3rem; border-top: 1px solid var(--rule); padding: 2rem 0 4.75rem; }
 .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .7rem 1.5rem; }
-.footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.3rem; font-size: .82rem; }
+.footer-links {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .4rem 1.3rem; font-size: var(--t-fine);
+}
 .footer-links a { color: var(--muted); }
 .footer-links a:hover { color: var(--ink); }
-.footer-name { color: var(--ink); font-weight: 600; letter-spacing: -0.015em; }
-.footer-meta { font-family: var(--mono); font-size: .705rem; letter-spacing: .04em; color: var(--muted); }
+.footer-name { color: var(--ink); font-weight: 600; letter-spacing: var(--tr-head); }
+.footer-meta { font-size: var(--t-label); color: var(--muted); }
 
 /* 12. Responsive --------------------------------------------------------- */
 
 @media (max-width: 1180px) {
   :root { --container: 1100px; --sidebar-w: 250px; --col-gap: 3.25rem; }
-  .sidebar-name { font-size: 1.7rem; }
+  .sidebar-name { font-size: 1.9rem; }
 }
 
 @media (max-width: 1040px) {
   :root { --sidebar-w: 228px; --col-gap: 2.75rem; }
-  .sidebar-name { font-size: 1.55rem; }
+  .sidebar-name { font-size: 1.75rem; }
 }
 
 @media (max-width: 840px) {
@@ -997,7 +1152,7 @@ li { list-style: none; }
     border-bottom: 1px solid var(--rule);
     margin-bottom: 2.75rem;
   }
-  .sidebar-portrait { grid-row: span 3; margin-bottom: 0; }
+  .sidebar-portrait { grid-row: span 3; margin-bottom: 0; max-width: 152px; }
   .sidebar-links {
     flex-direction: row;
     flex-wrap: wrap;
@@ -1009,41 +1164,45 @@ li { list-style: none; }
 
 @media (max-width: 720px) {
   :root { --gutter: 1.35rem; }
-  body { font-size: 16px; }
+  body { font-size: var(--t-body); }
 
   .nav-toggle { display: block; }
   .nav-list {
     display: none;
     position: absolute;
-    left: 0; right: 0; top: var(--header-h);
+    left: 0; right: 0; top: 100%;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: var(--bg-1);
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+    background: var(--duke);
+    border-top: 1px solid rgba(255, 255, 255, .13);
+    box-shadow: 0 14px 30px -16px rgba(0, 0, 0, .8);
     padding: .4rem var(--gutter) .9rem;
   }
   .nav-list.is-open { display: flex; }
-  .nav-list a { padding: .75rem 0; font-size: .92rem; border-bottom: 1px solid var(--rule); }
+  .nav-list a {
+    padding: .8rem 0;
+    font-size: var(--t-small);
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+  }
   .nav-list li:last-child a { border-bottom: 0; }
   .nav-list a::after { display: none; }
-  .nav-list a.is-active { color: var(--accent-ink); }
 
-  .duke-bar .container { min-height: 34px; gap: .6rem; }
-  .duke-bar img { height: 15px; }
-  .duke-bar .unit { font-size: .55rem; letter-spacing: .1em; }
+  .nav-brand { gap: .6rem; }
+  .brand-mark { height: 18px; }
+  .brand-rule { height: 24px; }
+  .brand-unit { font-size: .5rem; letter-spacing: .1em; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .sidebar-portrait { grid-row: auto; max-width: 150px; margin-bottom: 1.3rem; }
-  .sidebar-name { font-size: 2rem; }
+  .sidebar-portrait { grid-row: auto; max-width: 140px; margin-bottom: 1.3rem; }
+  .sidebar-name { font-size: 2.1rem; }
   .stamp { display: none; }   /* crowds the footer at this width */
   .site-footer { padding-bottom: 2.5rem; }
 
   .section { padding: 2.5rem 0; }
   .section-head { gap: .7rem; }
   .page-head { padding: 0 0 2rem; }
-  .page-title, .error-title { font-size: 1.75rem; }
+  .page-title, .error-title { font-size: 1.9rem; }
 
   .pub-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 
@@ -1090,7 +1249,7 @@ li { list-style: none; }
 
 @media print {
   .site-header, .nav-toggle, .news-toggle, .skip-link,
-  .pub-hint, .pub-modal, .backdrop, .stamp, .duke-bar { display: none !important; }
+  .pub-hint, .pub-modal, .backdrop, .stamp { display: none !important; }
   .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
   a { color: #000; }

@@ -40,31 +40,41 @@ nothing else. To retune either theme, edit token values — no rule below sectio
 of the stylesheet needs to change. There is no manual toggle; the site follows
 the reader's system setting.
 
-Three typefaces:
+Three typefaces, three jobs, no overlap — all variable, all from one Google
+Fonts request, about 100 KB of latin subsets between them:
 
-- **Display** — Space Grotesk, the site's only third-party request, loaded from
-  Google Fonts. Used for the name, page titles, section titles and the brand.
-  If you would rather have no external request, delete the two `preconnect`
-  links and the `fonts.googleapis.com` stylesheet from all five pages; the
-  `--display` token falls back to the system sans and nothing breaks.
-- **Sans** (system) for everything that is prose or a heading.
-- **Mono** for everything that is *data* — venue badges, news dates, timeline
-  ranges, tags. That split is the main
-  reason the page reads as technical rather than decorative, so keep it: if you
-  add a new piece of metadata, give it the `mono` class.
+- **Display** — Space Grotesk. The name, page titles, section titles, the
+  modal title.
+- **Sans** — Inter. Prose and UI.
+- **Mono** — JetBrains Mono, for everything that is *data*: venue badges, news
+  dates, timeline ranges, tags, the corner stamp, the banner unit name. That
+  split is the main reason the page reads as technical rather than decorative,
+  so keep it — if you add a new piece of metadata, add its selector to the
+  `.mono` rule group in section 2.
+
+Every stack degrades to system faces, so deleting the two `preconnect` links
+and the `fonts.googleapis.com` stylesheet from all five pages leaves a working,
+if plainer, site.
+
+**The type scale is closed.** `--t-micro` through `--t-page`, and `--lh-*` /
+`--tr-*` for line height and tracking, are declared in section 1 and every rule
+picks from them. They replaced 31 ad-hoc font sizes and 12 line heights that had
+accumulated one iteration at a time. If a new size seems necessary, the scale is
+probably wrong — change the token, not the rule.
 
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
 Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
 for the bands within.
 
-**Duke.** Every page opens with `.duke-bar`, a navy institutional strip
-carrying the Duke wordmark and the CEI name — the same lockup convention the
-lab's other pages use. The wordmark file is navy on transparent, i.e. the same
-colour as the strip, so it is flipped to white with `brightness(0) invert(1)`:
-that flattens every opaque pixel to black then lifts it to white, leaving the
-alpha channel and therefore the letterforms untouched. No white variant of the
-asset is needed.
+**Duke.** The header *is* the institutional banner: Duke navy, wordmark and CEI
+name on the left, navigation on the right, one bar. It stays navy in both themes
+because it is institutional livery rather than page chrome, so every colour
+inside `.site-header` is written against navy directly instead of against a
+token. The wordmark file is navy on transparent — the same navy as the bar — so
+it is flipped to white with `brightness(0) invert(1)`: that flattens every opaque
+pixel to black then lifts it to white, leaving the alpha channel and therefore
+the letterforms untouched. No white variant of the asset is needed.
 
 `--duke` is Duke Blue, `#012169`. It is far too dark to carry an
 accent on a near-black page, so on the dark theme it stays as the deep plate —
@@ -88,7 +98,6 @@ button, save it for an action that warrants one — booking a meeting, say.
 
 Four effects carry the rest:
 
-- **`.duke-bar`** — the institutional rule described above.
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
   below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
@@ -160,6 +169,7 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | Recent news (5 on the homepage) | `index.html` → `NEWS`, add a `<li>` at the top |
 | Hobbies / personal voice | `experience.html` → `OUTSIDE THE LAB` |
 | Institution logos | `assets/images/logos/`, shown in `experience.html` |
+| Education entries | `experience.html` → `EDUCATION CARDS` |
 | All publications | `publications.html`, grouped by status |
 | All news | `news.html`, grouped by year |
 | Education / experience / awards | `experience.html` |
@@ -229,9 +239,9 @@ shield, a 3.9:1 lockup. They are handled like this:
   dark-on-light artwork, and a white chip is the only treatment that carries
   every one of them without recolouring somebody's trademark. On the dark theme
   the chip is held just under full brightness so it does not glare.
-- Chips sit on **their own row above the organisation name**, not beside it. Put
-  beside it and each row's text would start at a different x — a Duke chip is
-  94px wide, the XJTLU + Liverpool pair is 230px — and the list looks broken.
+- Education is a **card grid**, not timeline rows. Each card carries its own
+  logo row, so a 94px Duke chip and a 230px XJTLU + Liverpool pair never have to
+  line up with each other — which is exactly what went wrong when they were rows.
 - Marks are normalised by **height, not by box**. Wordmarks get 30px; add
   `tl-mark--tall` for a portrait mark like the XJTLU shield and it gets 42px, so
   every chip carries the same optical weight.
