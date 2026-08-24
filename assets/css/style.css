@@ -149,7 +149,7 @@ li { list-style: none; }
 
 /* Every piece of metadata on this site is set in mono. It is the one
    consistent signal that separates data from prose. */
-.mono, .badge, .news-date, .tl-meta, .section-index, .pub-hint,
+.mono, .badge, .news-date, .tl-meta, .pub-hint,
 .subsection-title, .group-title, .error-code, .honor-year {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
@@ -376,14 +376,6 @@ li { list-style: none; }
   align-items: center;
   gap: .9rem;
   margin-bottom: 2rem;
-}
-
-.section-index {
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .1em;
-  color: var(--accent);
-  padding-top: 1px;
 }
 
 .section-title {

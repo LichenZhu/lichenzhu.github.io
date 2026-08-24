@@ -43,14 +43,19 @@ Two typefaces, both from the system stack, no web-font requests:
 
 - **Sans** for everything that is prose or a heading.
 - **Mono** for everything that is *data* — venue badges, news dates, timeline
-  ranges, section indices, tags, the file-type chip. That split is the main
+  ranges, tags. That split is the main
   reason the page reads as technical rather than decorative, so keep it: if you
   add a new piece of metadata, give it the `mono` class.
 
-Section headings on the homepage are `01 / About` — a mono index, the title,
-then a hairline that runs to the right edge. Numbers are hand-written, so
-renumber them if you reorder sections. Inner pages use a `.page-head` (large
-title + lede) instead, and `.group-title` for the bands within.
+Section headings on the homepage are the title followed by a hairline that runs
+to the right edge, with an optional link ("All news →") pinned to the far end.
+Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
+for the bands within.
+
+**Two voices.** `About` stays measured — it is what a prospective advisor or a
+reader of your papers lands on. `Outside the Lab` is the one section written
+loosely, and it is the only one that should be. Do not let the register bleed
+between them.
 
 **No call-to-action buttons.** The CV is a plain link in the sidebar rail,
 alongside Email and GitHub — not a download button. This follows what the
@@ -126,6 +131,7 @@ contain a boxed `TO ADD A ...` note with the exact block to copy.
 | Research interest tags | `index.html` → `<ul class="tags">` |
 | Selected publications (cards) | `index.html` → `SELECTED PUBLICATIONS` |
 | Recent news (5 on the homepage) | `index.html` → `NEWS`, add a `<li>` at the top |
+| Hobbies / personal voice | `index.html` → `OUTSIDE THE LAB` |
 | All publications | `publications.html`, grouped by status |
 | All news | `news.html`, grouped by year |
 | Education / experience / awards | `experience.html` |
