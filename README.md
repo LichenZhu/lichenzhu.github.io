@@ -247,7 +247,7 @@ modal, everything on the page at once.
   authoritative entry to copy; a citation someone pastes into a paper must not
   be something this site guessed. Add the rest when the proceedings appear.
 - **Missing links are fine.** Delete any `Paper` / `Code` / `Project` / `Demo`
-  link you don't have along with its `<span class="sep">·</span>`.
+  pill you don't have; the row is a flex container, so nothing else moves.
 - **No teaser image?** On a card, delete the whole `<div class="pub-thumb">`. In
   a `publications.html` entry, add `entry--notease` to the `<article>` and delete
   the `<figure>`.
@@ -346,13 +346,24 @@ punctuation. Keep it that way when you add entries.
 
 ## The corner stamp
 
-Every page carries a fixed "Updated YYYY-MM-DD" badge in the bottom-right. There
-is no build step, so the date is hard-coded in each page. Bump them all at once
-before you publish:
+Every page carries an "Updated YYYY-MM-DD" badge — pinned bottom-right on
+desktop, and in the flow above the footer on a phone, where a fixed pill would
+sit on top of the content.
+
+There is no build step, so the date is written into each page. It used to be one
+value copied into all five, which meant it said the same thing everywhere and
+was wrong the moment a single page changed. `tools/stamp.py` reads the real date
+out of git instead — the last commit that touched that file, or today if the
+file has uncommitted changes, since that is the date the edit in progress will
+land on:
 
 ```sh
-sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(date +%F)\">$(date +%F)</time>|" *.html
+python3 tools/stamp.py          # rewrite every page's stamp
+python3 tools/stamp.py --check  # report drift, change nothing, exit 1 if any
 ```
+
+The script is a convenience, not a dependency: the site is complete without ever
+running it. Run it as the last thing before a commit.
 
 ## Crawlers and structured data
 
@@ -374,7 +385,7 @@ sed -i '' -E "s|<time datetime=\"[0-9-]+\">[0-9-]+</time>|<time datetime=\"$(dat
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
 - [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
-- [ ] **Corner stamp dates** — run the `sed` command above.
+- [ ] **Corner stamps** — run `python3 tools/stamp.py` before committing.
 
 ## Files that are not deployed
 

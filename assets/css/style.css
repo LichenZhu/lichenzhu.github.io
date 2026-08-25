@@ -1430,7 +1430,15 @@ img.fig-mark { padding: 17% 34%; }
   /* Larger than at 1040px, deliberately: below this width the sidebar stops
      being a 300px rail and spans the column, so the name has room again. */
   .sidebar-name { font-size: 2.35rem; }
-  .stamp { display: none; }   /* crowds the footer at this width */
+  /* Fixed, it would sit on top of the content at this width — but hiding it
+     meant no page carried a modified date on a phone at all. It joins the flow
+     above the footer instead. */
+  .stamp {
+    position: static;
+    margin: 0 var(--gutter) 1.4rem;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   .site-footer { padding-bottom: 2.5rem; }
 
   .section-head { gap: .7rem; }
