@@ -579,9 +579,9 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   border-radius: 100px;
   padding: .3rem .7rem;
   white-space: nowrap;
-  transition: color .15s ease, border-color .15s ease;
 }
-.tag:hover { color: var(--ink); border-color: var(--rule-2); }
+/* No :hover here on purpose — these are labels, not controls. A pill that
+   lights up under the cursor and then does nothing when clicked is a lie. */
 
 /* Badges */
 .badges { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .7rem; }
@@ -756,11 +756,16 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   margin-bottom: .8rem;
 }
 
-.pub-links {
-  display: flex; flex-wrap: wrap; align-items: center;
+/* Artifact row: one pill per thing a reader can actually fetch — Paper, Code,
+   Project, Demo, BibTeX. The card row and the entry row were the same rule
+   written twice; they are one rule now, so a new pill only has to be added
+   here. align-items is flex-start because an open BibTeX panel is tall and
+   the pills beside it must not centre against it. */
+.pub-links, .entry-links {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
   gap: .4rem .55rem; font-size: var(--t-fine); margin-bottom: 0;
 }
-.pub-links a {
+.pub-links a, .entry-links a, .bibtex > summary {
   display: inline-flex; align-items: center; gap: .35rem;
   padding: .28rem .62rem;
   border: 1px solid var(--rule-2);
@@ -768,7 +773,55 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   color: var(--body);
   transition: color .16s ease, border-color .16s ease, background-color .16s ease;
 }
-.pub-links a:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-dim); }
+.pub-links a:hover, .entry-links a:hover, .bibtex > summary:hover {
+  color: var(--ink); border-color: var(--accent); background: var(--accent-dim);
+}
+
+/* BibTeX. A <details>, so it opens, closes and takes keyboard focus with no
+   script at all; main.js only adds the copy button on top. The text is
+   arxiv.org/bibtex/<id> verbatim — nothing here is hand-written, because a
+   citation people paste into a paper must not be something we guessed. */
+.bibtex { min-width: 0; }
+/* Closed it is one more pill in the row; open it takes a row of its own so
+   the panel is full width and the pills beside it do not get pushed around. */
+.bibtex[open] { flex-basis: 100%; }
+.bibtex > summary {
+  font-family: var(--mono);
+  font-size: var(--t-label);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.bibtex > summary::-webkit-details-marker { display: none; }
+.bibtex > summary::after { content: "+"; opacity: .6; }
+.bibtex[open] > summary::after { content: "\2212"; }
+.bibtex-panel { position: relative; }
+.bibtex pre {
+  margin: .55rem 0 0;
+  padding: 2.5rem 1rem .95rem;   /* top band kept clear for the copy button */
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  font-family: var(--mono);
+  font-size: var(--t-label);
+  line-height: 1.65;
+  color: var(--body);
+  overflow-x: auto;
+  tab-size: 2;
+}
+.bibtex-copy {
+  position: absolute; top: .95rem; right: .6rem;
+  font: inherit; font-family: var(--mono); font-size: var(--t-micro);
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: .22rem .5rem;
+  color: var(--muted);
+  background: var(--bg-1);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: color .16s ease, border-color .16s ease;
+}
+.bibtex-copy:hover { color: var(--ink); border-color: var(--accent); }
 
 /* Modal */
 .pub-modal {
@@ -884,16 +937,6 @@ img.fig-mark { padding: 17% 34%; }
   max-width: 64ch;
   margin-bottom: .8rem;
 }
-.entry-links {
-  display: flex; flex-wrap: wrap; align-items: center;
-  gap: .4rem .55rem; font-size: var(--t-fine); margin-bottom: 0;
-}
-.entry-links a {
-  display: inline-flex; padding: .28rem .62rem;
-  border: 1px solid var(--rule-2); border-radius: 100px; color: var(--body);
-  transition: color .16s ease, border-color .16s ease, background-color .16s ease;
-}
-.entry-links a:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-dim); }
 
 /* 9. News --------------------------------------------------------------- */
 
@@ -1089,7 +1132,9 @@ img.fig-mark { padding: 17% 34%; }
   opacity: .9;
   transition: opacity .2s ease, border-color .2s ease;
 }
-.edu-card:hover .tl-mark { opacity: 1; border-color: var(--accent); }
+/* Lift the marks, but not to the accent: accent means interactive on this
+   site, and the card is not. */
+.edu-card:hover .tl-mark { opacity: 1; border-color: var(--rule-2); }
 /* Sized by explicit height, not max-height: the Liverpool file carries only a
    viewBox, and under max-height its width collapses to nothing. */
 .tl-mark img {
@@ -1305,6 +1350,8 @@ img.fig-mark { padding: 17% 34%; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar-portrait { grid-row: auto; max-width: 140px; margin-bottom: 1.3rem; }
+  /* Larger than at 1040px, deliberately: below this width the sidebar stops
+     being a 300px rail and spans the column, so the name has room again. */
   .sidebar-name { font-size: 2.35rem; }
   .stamp { display: none; }   /* crowds the footer at this width */
   .site-footer { padding-bottom: 2.5rem; }

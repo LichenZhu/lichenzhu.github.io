@@ -236,6 +236,16 @@ modal, everything on the page at once.
 - **Badges** come in three flavours: `badge` (accent, for accepted venues),
   `badge badge--muted` (grey, for preprints and arXiv), and
   `badge badge--award` (for Oral, Spotlight, Best Paper).
+- **BibTeX** goes in a `<details class="bibtex">` *inside* the `.pub-links` /
+  `.entry-links` row — closed it is one more pill, open it takes a row of its
+  own. It needs no JavaScript; `main.js` only adds the copy button, and it does
+  so through a delegated click handler because the modal clones a card's
+  `.pub-detail` and a cloned node does not carry its listeners.
+
+  **Paste the text from `arxiv.org/bibtex/<id>`, do not write it by hand.** Only
+  the two arXiv papers carry a block, because those are the only two with an
+  authoritative entry to copy; a citation someone pastes into a paper must not
+  be something this site guessed. Add the rest when the proceedings appear.
 - **Missing links are fine.** Delete any `Paper` / `Code` / `Project` / `Demo`
   link you don't have along with its `<span class="sep">·</span>`.
 - **No teaser image?** On a card, delete the whole `<div class="pub-thumb">`. In

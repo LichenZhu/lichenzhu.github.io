@@ -135,6 +135,46 @@
     });
   }
 
+  /* --- BibTeX copy button -----------------------------------------------
+     The <details> already opens, closes and takes keyboard focus on its own;
+     this only adds the convenience on top. The click is delegated rather than
+     bound per button, because the modal clones a card's .pub-detail — and a
+     cloned node does not carry its listeners, so a bound handler would leave
+     the button dead inside the dialog.
+     -------------------------------------------------------------------- */
+  var canCopy = navigator.clipboard && window.isSecureContext;
+
+  if (canCopy) {
+    Array.prototype.forEach.call(document.querySelectorAll('.bibtex pre'), function (pre) {
+      var panel = document.createElement('div');
+      panel.className = 'bibtex-panel';
+      pre.parentNode.insertBefore(panel, pre);
+      panel.appendChild(pre);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bibtex-copy';
+      btn.textContent = 'Copy';
+      panel.appendChild(btn);
+    });
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.bibtex-copy');
+      if (!btn) { return; }
+      var pre = btn.parentNode.querySelector('pre');
+      if (!pre) { return; }
+
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        btn.textContent = 'Copied';
+        clearTimeout(btn._reset);
+        btn._reset = setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+      }, function () {
+        // Denied or unavailable: the <pre> is still selectable text.
+        btn.textContent = 'Select it';
+      });
+    });
+  }
+
   /* --- Reveal earlier news ---------------------------------------------- */
   var newsToggle = document.querySelector('.news-toggle');
   if (newsToggle) {
