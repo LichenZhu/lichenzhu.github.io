@@ -1508,10 +1508,11 @@ img.fig-mark { padding: 17% 34%; }
 
 @media print {
   .site-header, .nav-toggle, .news-toggle, .skip-link,
-  .pub-hint, .pub-modal, .backdrop, .stamp { display: none !important; }
+  .pub-hint, .pub-modal, .photo-modal, .backdrop, .stamp,
+  .gallery { display: none !important; }
   .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
-  a { color: #000; }
+  a { color: #000 !important; text-decoration: none !important; }
   .layout { display: block; }
   .sidebar { position: static; margin-bottom: 2rem; }
   .pub-grid { display: block; }
@@ -1519,4 +1520,18 @@ img.fig-mark { padding: 17% 34%; }
   .js .pub-detail { display: block !important; }
   .js .reveal { opacity: 1 !important; transform: none !important; }
   .entry { break-inside: avoid; }
+  /* On paper a link is only useful if you can read where it goes — but only
+     where the destination is a specific thing. The sidebar already says
+     "GitHub" and "Google Scholar" in words; printing those URLs just wraps two
+     ugly lines into the identity block. */
+  .prose a[href^="http"]::after,
+  .entry-links a[href^="http"]::after,
+  .pub-links a[href^="http"]::after,
+  .news-list a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8.5pt;
+    color: #444;
+    word-break: break-all;
+  }
+  .bibtex, .interests { break-inside: avoid; }
 }

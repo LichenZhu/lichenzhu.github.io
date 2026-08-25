@@ -358,14 +358,16 @@ file has uncommitted changes, since that is the date the edit in progress will
 land on:
 
 ```sh
-python3 tools/stamp.py          # rewrite every page's stamp and the CV date
+python3 tools/stamp.py          # rewrite the stamps, the CV date and the sitemap
 python3 tools/stamp.py --check  # report drift, change nothing, exit 1 if any
 ```
 
-It maintains one other date: the `Aug 2026` beside the **Curriculum Vitae** link
-in the sidebar, read from the PDF's own git history. A CV with no date on it
-could be three years old — `tridao.me` prints "CV (updated 01/2026)" for the
-same reason.
+It maintains two other dates from the same source. The `Aug 2026` beside the
+**Curriculum Vitae** link comes from the PDF's own git history — a CV with no
+date on it could be three years old, which is why `tridao.me` prints "CV
+(updated 01/2026)". And every `<lastmod>` in `sitemap.xml` is set from the page
+its `<loc>` points at, so the three dates on this site can no longer disagree
+with each other.
 
 The script is a convenience, not a dependency: the site is complete without ever
 running it. Run it as the last thing before a commit.
@@ -394,7 +396,8 @@ Keep the id when you edit an entry — an id that changes is a link that breaks.
       needs to change.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
-- [ ] **`sitemap.xml`** `<lastmod>` dates, and a new `<url>` for any page you add.
+- [ ] **`sitemap.xml`** needs a new `<url>` for any page you add. The
+      `<lastmod>` dates are handled by `tools/stamp.py`.
 - [ ] **Corner stamps** — run `python3 tools/stamp.py` before committing.
 
 ## Files that are not deployed

@@ -156,6 +156,9 @@
       lastTile = link;
       photoImg.src = link.getAttribute('href');
       photoImg.alt = thumb ? thumb.alt : '';
+      // Name the dialog after the photograph rather than leaving the generic
+      // label the markup ships with.
+      photoModal.setAttribute('aria-label', photoImg.alt || 'Photograph');
       photoModal.showModal();
     });
 

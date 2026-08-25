@@ -21,7 +21,7 @@ import sys
 
 STAMP = re.compile(r'<time datetime="\d{4}-\d\d-\d\d">\d{4}-\d\d-\d\d</time>')
 CVDATE = re.compile(r'<span class="cv-date">[^<]*</span>')
-CV = 'assets/files/Lichen_Zhu_CV.pdf' 
+CV = 'assets/files/Lichen_Zhu_CV.pdf'
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
@@ -73,8 +73,39 @@ def main():
             text = CVDATE.sub(want_cv, text)
             path.write_text(text)
             print(f'{path.name:20} {want}   cv {cv}  updated')
+    drift += sitemap(check)
     if check and drift:
         sys.exit(1)
+
+
+def sitemap(check):
+    """Keep <lastmod> in step with the page each <loc> points at."""
+    path = ROOT / 'sitemap.xml'
+    if not path.exists():
+        return 0
+    text = path.read_text()
+    out, drift = text, 0
+    for block in re.findall(r'<url>.*?</url>', text, re.S):
+        loc = re.search(r'<loc>([^<]+)</loc>', block)
+        mod = re.search(r'<lastmod>([^<]+)</lastmod>', block)
+        if not loc or not mod:
+            continue
+        page = loc.group(1).rstrip('/').rsplit('/', 1)[-1] or 'index.html'
+        if not page.endswith('.html'):
+            page = 'index.html'
+        want = date_for(page)
+        if mod.group(1) == want:
+            print(f'{"sitemap " + page:20} {want}')
+            continue
+        drift += 1
+        if check:
+            print(f'{"sitemap " + page:20} {want}  (says {mod.group(1)})')
+        else:
+            out = out.replace(block, block.replace(mod.group(0), f'<lastmod>{want}</lastmod>'), 1)
+            print(f'{"sitemap " + page:20} {want}  updated')
+    if out != text and not check:
+        path.write_text(out)
+    return drift
 
 
 if __name__ == '__main__':
