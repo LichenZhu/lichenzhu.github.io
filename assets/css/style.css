@@ -1185,6 +1185,65 @@ img.fig-mark { padding: 17% 34%; }
 }
 .honors .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
 
+/* Outside the Lab: prose and interests on the left, one photograph on the
+   right. The photo is the evidence for one of the six, so it is not
+   decoration — it keeps its exposure data as a caption, in the same mono
+   voice every other piece of data on the site uses. */
+.outside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 232px;
+  gap: 2.25rem;
+  align-items: start;
+}
+.outside-text { min-width: 0; }
+
+/* A grid rather than a wrapping flex row: six pills of uneven width wrap 5+1
+   and look accidental. Fixed tracks break them 3+3 on desktop and 2+2+2 on a
+   phone, and justify-items keeps each pill its own width inside its track. */
+.interests {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  justify-items: start;
+  gap: .5rem;
+  margin-top: 1.4rem;
+}
+.interests > li {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .34rem .75rem .34rem .6rem;
+  font-size: var(--t-fine);
+  color: var(--body);
+  background: var(--bg-1);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  white-space: nowrap;
+}
+/* No :hover — like .tag, these are labels rather than controls. */
+.interests svg {
+  width: 15px; height: 15px;
+  flex: none;
+  color: var(--muted);
+}
+
+.outside-photo { margin: 0; }
+.outside-photo img {
+  width: 100%;
+  border-radius: var(--r-md);
+  border: 1px solid var(--rule);
+}
+.outside-photo figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .2rem .85rem;
+  margin-top: .55rem;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
 /* 10b. Publications page ------------------------------------------------- */
 
 .page-head { padding: 0 0 2.5rem; }
@@ -1379,7 +1438,12 @@ img.fig-mark { padding: 17% 34%; }
   .news-photo { grid-column: 1; }
   .news-photo img { max-height: 280px; }
 
-  .tl-head { flex-direction: column; }
+  .outside { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  .outside-photo { max-width: 260px; }
+
+  /* align-items:center is a vertical rule while the row is horizontal; the
+     moment it becomes a column it starts centring the text instead. */
+  .tl-head { flex-direction: column; align-items: flex-start; }
   .tl-meta { white-space: normal; }
 
   .footer-inner { flex-direction: column; align-items: flex-start; }
