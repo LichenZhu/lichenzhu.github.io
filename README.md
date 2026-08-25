@@ -40,8 +40,8 @@ nothing else. To retune either theme, edit token values — no rule below sectio
 of the stylesheet needs to change. There is no manual toggle; the site follows
 the reader's system setting.
 
-Three typefaces, three jobs, no overlap — all variable, all from one Google
-Fonts request, about 122 KB of latin subsets between them:
+Three typefaces, three jobs, no overlap — all variable, all **self-hosted**
+from `assets/fonts/`, about 120 KB of latin subsets between them:
 
 - **Display** — EB Garamond. The name, page titles, section titles, and the CEI
   unit name in the banner. The choice is institutional, not decorative: Duke's
@@ -57,9 +57,19 @@ Fonts request, about 122 KB of latin subsets between them:
   so keep it — if you add a new piece of metadata, add its selector to the
   `.mono` rule group in section 2.
 
-Every stack degrades to system faces, so deleting the two `preconnect` links
-and the `fonts.googleapis.com` stylesheet from all five pages leaves a working,
-if plainer, site.
+The files are Google's own woff2 subsets with Google's own `unicode-range`
+values, served from this origin instead. Three reasons, in order of weight: a
+stylesheet from another host is a render blocker on infrastructure this site
+does not control, and costs a DNS lookup and a TLS handshake with two extra
+hosts before a glyph arrives; Google Fonts logs the visitor's IP, and a reader
+of an academic page should not be announced to an ad company for it; and a
+`preload` only helps for same-origin files, which is why `inter-latin` and
+`eb-garamond-latin` are preloaded in every head.
+
+`latin-ext` is shipped but never fetched — no page needs a glyph from it yet,
+and `unicode-range` means the browser will only pull it if one appears. Every
+stack still degrades to system faces, so deleting `assets/fonts/` and the
+`@font-face` block leaves a working, if plainer, site.
 
 **The type scale is closed.** `--t-micro` through `--t-display`, and `--lh-*` /
 `--tr-*` for line height and tracking, are declared in section 1 and every rule
@@ -399,6 +409,33 @@ Keep the id when you edit an entry — an id that changes is a link that breaks.
 - [ ] **`sitemap.xml`** needs a new `<url>` for any page you add. The
       `<lastmod>` dates are handled by `tools/stamp.py`.
 - [ ] **Corner stamps** — run `python3 tools/stamp.py` before committing.
+
+## Keeping the five pages honest
+
+There is no template engine, so the head, banner, sidebar and footer are
+repeated in every page. That is the one real cost of having no build step, and
+it has bitten twice: the corner stamp was copied into all five and went stale,
+and `.subsection-title` drifted away from `.group-title` until only one of them
+still had its hairline.
+
+`tools/check.py` is the cheap half of a template engine. It cannot assemble the
+pages, but it refuses to let them disagree:
+
+```sh
+python3 tools/check.py
+```
+
+It checks that the four repeated blocks are identical once `aria-current` and
+404's absolute paths are normalised away; that every local link resolves and no
+asset is unreferenced; that no middle dot, placeholder or straight apostrophe
+has crept into visible prose; that every page parses, has exactly one `<h1>`
+and skips no heading level; that the stylesheet's braces balance and no class
+is declared without being used; and that the stamps, the CV date and the
+sitemap all agree. It exits non-zero, so it can gate a commit.
+
+The first run found that `404.html` had no `nav-toggle` — which meant that
+below 720px, where `.nav-list` is `display: none` until the toggle opens it,
+the error page had no navigation at all.
 
 ## Files that are not deployed
 
