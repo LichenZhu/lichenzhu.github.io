@@ -253,18 +253,23 @@ modal, everything on the page at once.
   the `<figure>`.
 - **Older news** is hidden behind the "Show earlier news" button: give the `<li>`
   `class="news-more"` and the `hidden` attribute.
-- **Outside the Lab** is a two-column block (`.outside`): prose plus the
-  `.interests` grid on the left, one photograph on the right. The interests are
-  a grid rather than a wrapping flex row on purpose — six pills of uneven width
-  wrap 5+1 and read as an accident, while fixed tracks break them 3+3 on desktop
-  and 2+2+2 on a phone. **The icons are inline SVG**: no icon font, no extra
+- **Outside the Lab** runs full width: prose, then the `.interests` row, then
+  the `.gallery`. **The interest icons are inline SVG** — no icon font, no extra
   request, `stroke="currentColor"` so both themes are handled for free, and
   `stroke-width="1.7"` to match the sidebar set. Draw a new one at 24×24 and
-  check it at 15px before shipping — the first basketball had arcs so shallow it
+  check it at 15px before shipping: the first basketball had arcs so shallow it
   read as a crosshair at that size.
-- **The photograph there carries its exposure data as a caption**, in the same
-  mono voice as every other piece of data on the site. It is the evidence for
-  one of the six interests, so it is not decoration.
+- **The gallery keeps two files per photo.** `<name>.webp` is a 440px thumbnail,
+  lazy-loaded, and `<name>-lg.webp` is the 1200px version fetched only when a
+  photo is opened — 160 KB on the page instead of 1.1 MB. Tiles are square with
+  `object-fit: cover` because the set mixes landscape and portrait.
+- **Each tile is a real `<a>` to the full image**, so with scripting off a click
+  simply opens the file. `main.js` intercepts it and reuses the same `<dialog>`
+  pattern as the publication modal, which brings the focus trap, Escape and
+  scroll lock along for free. To add a photo, drop both sizes in
+  `assets/images/life/gallery/` and add one `<li>`.
+- **Strip the EXIF.** Every photo here went through a fresh pixel buffer, so no
+  camera data and no GPS ships. Phone photos carry coordinates.
 - **A news item on `news.html` can carry a photo.** The homepage feed stays text
   only. Add a `<figure class="news-photo">` as the
   *third* child of the `<li>` — it is pinned to grid column 2 so it lands under

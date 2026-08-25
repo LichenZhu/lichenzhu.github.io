@@ -241,24 +241,22 @@
   <div class="subsection">
     <h2 class="subsection-title">Outside the Lab</h2>
 
-    <div class="outside">
-      <div class="outside-text">
-        <div class="prose">
-          <p>
-            I lift, swim, and play basketball. Lifting is the one that stuck &mdash;
-            it rewards the same stubbornness research does: pick a number, chase it
-            for months, and be honest with yourself about whether the last rep
-            counted. Basketball is the one I take least seriously and enjoy most.
-          </p>
-          <p>
-            Away from the gym I travel with a camera, and there is almost always
-            something playing in my headphones.
-          </p>
-        </div>
+    <div class="prose">
+      <p>
+        I lift, swim, and play basketball. Lifting is the one that stuck &mdash;
+        it rewards the same stubbornness research does: pick a number, chase it
+        for months, and be honest with yourself about whether the last rep
+        counted. Basketball is the one I take least seriously and enjoy most.
+      </p>
+      <p>
+        Away from the gym I travel with a camera, and there is almost always
+        something playing in my headphones.
+      </p>
+    </div>
 
-        <!-- Icons are inline SVG on purpose: no icon font, no extra request, and
-             they inherit currentColor so both themes are handled for free. -->
-        <ul class="interests">
+    <!-- Icons are inline SVG on purpose: no icon font, no extra request, and
+         they inherit currentColor so both themes are handled for free. -->
+    <ul class="interests">
         <li>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5a2.1 2.1 0 1 0-3-3L13 8 4.8 6.2a.5.5 0 0 0-.5.8l3.5 3.5-2.3 2.3-2-.4a.5.5 0 0 0-.4.9l2.5 1.6 1.6 2.5a.5.5 0 0 0 .9-.4l-.4-2 2.3-2.3 3.5 3.5a.5.5 0 0 0 .8-.5Z"/></svg>
@@ -290,18 +288,71 @@
           Music
         </li>
         </ul>
-      </div>
 
-      <figure class="outside-photo">
-        <img src="assets/images/life/photography.jpg"
-             alt="A stack of painted boulders standing in a cobbled dockyard beside a
-                  brick warehouse, photographed at dusk"
-             loading="lazy" width="560" height="746">
-        <figcaption>
-          <span>23 mm</span><span>f/1.9</span><span>1/105 s</span><span>ISO 50</span>
-        </figcaption>
-      </figure>
-    </div>
+    <!-- Each tile is a real link to the full image, so with scripting off it
+         still opens. main.js upgrades it to the dialog below. -->
+    <ul class="gallery">
+      <li>
+        <a href="assets/images/life/gallery/chapel-blossom-lg.webp">
+          <img src="assets/images/life/gallery/chapel-blossom.webp" alt="Gothic chapel towers seen through spring blossom"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/cathedral-lantern-lg.webp">
+          <img src="assets/images/life/gallery/cathedral-lantern.webp" alt="The interior of a circular cathedral, lit blue by a stained-glass lantern"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/painted-boulders-lg.webp">
+          <img src="assets/images/life/gallery/painted-boulders.webp" alt="A stack of painted boulders in a cobbled dockyard beside a brick warehouse"
+               loading="lazy" width="330" height="440">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/mounted-police-lg.webp">
+          <img src="assets/images/life/gallery/mounted-police.webp" alt="Two mounted police riding down a city street"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/estuary-sunset-lg.webp">
+          <img src="assets/images/life/gallery/estuary-sunset.webp" alt="Pink cirrus over an estuary at sunset"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/harbour-dusk-lg.webp">
+          <img src="assets/images/life/gallery/harbour-dusk.webp" alt="Moored boats against an orange sky at dusk"
+               loading="lazy" width="330" height="440">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/red-buoy-lg.webp">
+          <img src="assets/images/life/gallery/red-buoy.webp" alt="A single red buoy on flat water under a grey sky"
+               loading="lazy" width="330" height="440">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/sea-horizon-lg.webp">
+          <img src="assets/images/life/gallery/sea-horizon.webp" alt="An empty sea horizon under a clear blue sky"
+               loading="lazy" width="440" height="245">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/hill-city-lg.webp">
+          <img src="assets/images/life/gallery/hill-city.webp" alt="A city spread out below a green hillside"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+      <li>
+        <a href="assets/images/life/gallery/cat-lg.webp">
+          <img src="assets/images/life/gallery/cat.webp" alt="A black and white cat looking straight at the camera"
+               loading="lazy" width="440" height="330">
+        </a>
+      </li>
+    </ul>
   </div>
 
 </main>
@@ -329,6 +380,16 @@
     </div>
   </div>
 </footer>
+
+<!-- One dialog for the whole gallery; main.js fills it from the clicked tile. -->
+<dialog class="photo-modal" id="photo-modal" aria-label="Photograph">
+  <button class="pub-modal-close" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" aria-hidden="true">
+      <path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <img id="photo-modal-img" src="" alt="">
+</dialog>
 
 <script src="assets/js/main.js" defer></script>
 

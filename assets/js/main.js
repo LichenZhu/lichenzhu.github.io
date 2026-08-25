@@ -135,6 +135,44 @@
     });
   }
 
+  /* --- Photo viewer -----------------------------------------------------
+     Each tile is already a link to the full image, so with scripting off the
+     gallery still works — a click just navigates to the file. Here the click
+     is intercepted and the same <dialog> pattern the publications use takes
+     over, which brings the focus trap, Escape and scroll lock with it.
+     -------------------------------------------------------------------- */
+  var photoModal = document.getElementById('photo-modal');
+  var photoImg = document.getElementById('photo-modal-img');
+
+  if (photoModal && photoImg && typeof photoModal.showModal === 'function') {
+    var lastTile = null;
+
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest('.gallery a');
+      if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) { return; }
+      e.preventDefault();
+
+      var thumb = link.querySelector('img');
+      lastTile = link;
+      photoImg.src = link.getAttribute('href');
+      photoImg.alt = thumb ? thumb.alt : '';
+      photoModal.showModal();
+    });
+
+    photoModal.addEventListener('click', function (e) {
+      // The dialog box is the image; anything else is the backdrop.
+      if (e.target.closest('.pub-modal-close') || e.target === photoModal) {
+        photoModal.close();
+      }
+    });
+
+    photoModal.addEventListener('close', function () {
+      // Drop the full-size image so it is not held in memory between views.
+      photoImg.removeAttribute('src');
+      if (lastTile) { lastTile.focus(); lastTile = null; }
+    });
+  }
+
   /* --- BibTeX copy button -----------------------------------------------
      The <details> already opens, closes and takes keyboard focus on its own;
      this only adds the convenience on top. The click is delegated rather than
