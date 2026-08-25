@@ -20,6 +20,8 @@ import subprocess
 import sys
 
 STAMP = re.compile(r'<time datetime="\d{4}-\d\d-\d\d">\d{4}-\d\d-\d\d</time>')
+CVDATE = re.compile(r'<span class="cv-date">[^<]*</span>')
+CV = 'assets/files/Lichen_Zhu_CV.pdf' 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
@@ -35,9 +37,16 @@ def date_for(name):
     return git('log', '-1', '--format=%cs', '--', name) or datetime.date.today().isoformat()
 
 
+def cv_label():
+    """Month and year the CV PDF last changed, e.g. "Aug 2026"."""
+    iso = date_for(CV)
+    return datetime.date.fromisoformat(iso).strftime('%b %Y')
+
+
 def main():
     check = '--check' in sys.argv
     drift = 0
+    cv = cv_label()
     for path in sorted(ROOT.glob('*.html')):
         text = path.read_text()
         found = STAMP.search(text)
@@ -46,15 +55,24 @@ def main():
             continue
         want = date_for(path.name)
         new = f'<time datetime="{want}">{want}</time>'
-        if found.group(0) == new:
-            print(f'{path.name:20} {want}')
+        want_cv = f'<span class="cv-date">{cv}</span>'
+
+        stamp_ok = found.group(0) == new
+        cv_ok = CVDATE.search(text) is None or CVDATE.search(text).group(0) == want_cv
+        if stamp_ok and cv_ok:
+            print(f'{path.name:20} {want}   cv {cv}')
             continue
         drift += 1
         if check:
-            print(f'{path.name:20} {want}  (file says {found.group(0)[16:26]})')
+            note = [] if stamp_ok else [f'stamp says {found.group(0)[16:26]}']
+            if not cv_ok:
+                note.append(f'cv says {CVDATE.search(text).group(0)[24:-7]}')
+            print(f'{path.name:20} {want}   cv {cv}  ({"; ".join(note)})')
         else:
-            path.write_text(STAMP.sub(new, text))
-            print(f'{path.name:20} {want}  updated')
+            text = STAMP.sub(new, text)
+            text = CVDATE.sub(want_cv, text)
+            path.write_text(text)
+            print(f'{path.name:20} {want}   cv {cv}  updated')
     if check and drift:
         sys.exit(1)
 

@@ -358,12 +358,22 @@ file has uncommitted changes, since that is the date the edit in progress will
 land on:
 
 ```sh
-python3 tools/stamp.py          # rewrite every page's stamp
+python3 tools/stamp.py          # rewrite every page's stamp and the CV date
 python3 tools/stamp.py --check  # report drift, change nothing, exit 1 if any
 ```
 
+It maintains one other date: the `Aug 2026` beside the **Curriculum Vitae** link
+in the sidebar, read from the PDF's own git history. A CV with no date on it
+could be three years old — `tridao.me` prints "CV (updated 01/2026)" for the
+same reason.
+
 The script is a convenience, not a dependency: the site is complete without ever
 running it. Run it as the last thing before a commit.
+
+**Every publication entry has an `id`** (`memory-compression`, `absent-answer`,
+`semantic-unit-aggregation`, `keyframe-sampling`, `stylevar`, `credit-risk`), so
+a single paper can be linked to directly: `publications.html#absent-answer`.
+Keep the id when you edit an entry — an id that changes is a link that breaks.
 
 ## Crawlers and structured data
 

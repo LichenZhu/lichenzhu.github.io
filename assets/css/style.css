@@ -516,6 +516,18 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 .sidebar-links a:hover { color: var(--ink); background: var(--bg-2); }
 .sidebar-links svg { width: 15px; height: 15px; flex: none; color: var(--muted); transition: color .15s ease; }
+/* A CV with no date on it could be three years old. tridao.me prints
+   "CV (updated 01/2026)" next to the link for exactly this reason; here it is
+   the same mono voice the rest of the site's data uses, and tools/stamp.py
+   keeps it honest from the PDF's own git history. */
+.cv-date {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .sidebar-links a:hover svg { color: var(--accent); }
 
 /* 7. Section furniture ---------------------------------------------------
