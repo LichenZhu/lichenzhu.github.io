@@ -414,10 +414,6 @@ Keep the id when you edit an entry — an id that changes is a link that breaks.
 ## Before you publish — things to check
 
 - [ ] **News dates** were inferred from the CV; verify each one.
-- [ ] **Teaser figures**: four are the real figures from the papers. Only
-      `keyframe-sampling` is still a hand-drawn stand-in, because that paper is
-      not public yet. Drop the real one in when it is — nothing in the CSS
-      needs to change.
 - [ ] **Author names** use the abbreviated CV form (`Y. Lin`). Expand them to
       full names if you prefer.
 - [ ] **`sitemap.xml`** needs a new `<url>` for any page you add. The
