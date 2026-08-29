@@ -20,7 +20,12 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PAGES = sorted(p.name for p in ROOT.glob('*.html'))
+# A page is an HTML file that wears the site's chrome. Search-engine
+# verification files (google*.html, BingSiteAuth.xml and friends) are one line
+# of text that happens to end in .html, and must not be held to page rules.
+PAGES = sorted(p.name for p in ROOT.glob('*.html')
+               if 'assets/css/style.css' in p.read_text())
+SKIPPED = sorted(p.name for p in ROOT.glob('*.html') if p.name not in PAGES)
 CONTENT = [p for p in PAGES if p != '404.html']
 fails = []
 
@@ -176,7 +181,8 @@ def dates():
            '' if r.returncode == 0 else 'run tools/stamp.py')
 
 
-print(f'checking {len(PAGES)} pages\n')
+print(f'checking {len(PAGES)} pages'
+      + (f'  (skipping {", ".join(SKIPPED)})' if SKIPPED else '') + '\n')
 shared_blocks(); links(); house_rules(); structure(); stylesheet(); assets(); dates()
 print()
 if fails:

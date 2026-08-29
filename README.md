@@ -449,6 +449,31 @@ To pull a figure out of a paper: `pdftoppm -r 400 -f <page> -l <page> -png
 paper.pdf out` renders the page, then crop to the figure and save it as WebP at
 about 1500px on the long edge, quality 90.
 
+## If the site stops loading
+
+`https://lichenzhu.github.io/` returning **"Site not found · GitHub Pages"** —
+GitHub's own 404, about 9 KB, not the `404.html` in this repo — means Pages is
+not serving the repository at all. It is not a content problem, and nothing in
+here will fix it.
+
+The usual cause is that the repository was made **private**. Pages is disabled
+when that happens, and **making the repository public again does not turn it
+back on**. Re-select the source by hand:
+
+1. `https://github.com/LichenZhu/lichenzhu.github.io/settings/pages`
+2. **Build and deployment → Source**: *Deploy from a branch*
+3. **Branch**: `main`, folder `/ (root)` → **Save**
+4. Give it a minute or two; the page then shows the live URL with a green tick.
+
+To tell the two kinds of failure apart:
+
+```sh
+curl -sI https://lichenzhu.github.io/ | head -1     # 200 = Pages is running
+curl -s  https://lichenzhu.github.io/ | grep -c 'Site not found'   # 1 = Pages is off
+```
+
+A 404 from *our* `404.html` is a broken link. "Site not found" is Pages itself.
+
 ## Deploying
 
 The repository is served by GitHub Pages, so pushing to the default branch
