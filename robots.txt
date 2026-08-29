@@ -1,27 +1,65 @@
 # lichenzhu.github.io
 
-# Search engines are welcome.
+# The rule here is: block training, allow reading.
+#
+# Blocking a crawler that builds a training corpus costs nothing — nobody finds
+# a person through a training set. Blocking a crawler that fetches this page
+# because a reader asked an assistant about it costs the whole point of the
+# page, since the people this site is written for increasingly read that way.
+# The two are separate crawlers with separate names, so they get separate rules.
+
+# ── Everything not named below, including search engines and link previews ──
 User-agent: *
 Allow: /
 
 Sitemap: https://lichenzhu.github.io/sitemap.xml
 
-# Generative-AI training and scraping crawlers are not. The <meta name="robots"
-# content="noai, noimageai"> tags in each page say the same thing for agents
-# that read markup rather than this file.
+
+# ── Allowed on purpose: fetching this page to answer someone's question ─────
+# Named explicitly rather than left to the wildcard, so the intent is on the
+# record and does not depend on nobody adding them to the list below.
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Gemini-Deep-Research
+Allow: /
+
+# Applebot itself (Siri and Spotlight) is deliberately not named here. It is
+# already covered by the wildcard, and naming it would collide with
+# Applebot-Extended below — a parser that matches on prefix rather than on the
+# longest name would let the training crawler through on Applebot's rule.
+
+
+# ── Blocked: crawlers that collect text to train on ─────────────────────────
+# The <meta name="robots" content="noai, noimageai"> tag in each page says the
+# same thing to agents that read markup instead of this file. That tag is not a
+# standard and almost nothing honours it; it is a statement of intent, not a
+# control. Neither is this file — robots.txt is a request, and a blocklist is
+# always one name behind whatever launched last week.
+
 User-agent: GPTBot
 Disallow: /
 
-User-agent: OAI-SearchBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
 User-agent: ClaudeBot
-Disallow: /
-
-User-agent: Claude-Web
 Disallow: /
 
 User-agent: anthropic-ai
@@ -45,9 +83,6 @@ Disallow: /
 User-agent: Bytespider
 Disallow: /
 
-User-agent: PerplexityBot
-Disallow: /
-
 User-agent: Amazonbot
 Disallow: /
 
@@ -58,4 +93,10 @@ User-agent: Diffbot
 Disallow: /
 
 User-agent: omgili
+Disallow: /
+
+User-agent: Timpibot
+Disallow: /
+
+User-agent: ImagesiftBot
 Disallow: /

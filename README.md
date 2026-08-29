@@ -389,8 +389,22 @@ Keep the id when you edit an entry — an id that changes is a link that breaks.
 
 ## Crawlers and structured data
 
-- `robots.txt` allows search engines and disallows the named generative-AI
-  crawlers (GPTBot, ClaudeBot, CCBot, Google-Extended, Bytespider, …).
+- `robots.txt` follows one rule: **block training, allow reading.** Blocking a
+  crawler that builds a training corpus costs nothing, because nobody finds a
+  person through a training set. Blocking a crawler that fetches this page
+  because a reader asked an assistant about it costs the whole point of the
+  page. They are separate crawlers with separate names, so `ChatGPT-User`,
+  `OAI-SearchBot`, `Claude-User`, `Claude-SearchBot`, `PerplexityBot`,
+  `Perplexity-User` and `Gemini-Deep-Research` are named as allowed, while
+  `GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`, `Applebot-Extended`,
+  `Bytespider` and the rest stay blocked.
+
+  Two things to keep in mind when editing it. **Do not name `Applebot`** — it is
+  already covered by the wildcard, and a parser that matches on prefix rather
+  than on the longest name would let `Applebot-Extended` through on Applebot's
+  rule. That exact bug was in the file for one commit. And **a blocklist is
+  always one name behind** whatever launched last week; anything unnamed is
+  allowed by `User-agent: *`.
 - Each page carries `<meta name="robots" content="index, follow, noai, noimageai">`
   for agents that read markup rather than `robots.txt`.
 - `index.html` ends with a JSON-LD `@graph`: a `Person`, a `WebSite`, and one
