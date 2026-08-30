@@ -1215,9 +1215,14 @@ img.fig-mark { padding: 17% 34%; }
   opacity: .9;
   transition: opacity .2s ease, border-color .2s ease;
 }
-/* Lift the marks, but not to the accent: accent means interactive on this
-   site, and the card is not. */
-.edu-card:hover .tl-mark { opacity: 1; border-color: var(--rule-2); }
+/* Each mark is a link to the institution, so the accent border is earned here
+   — it was removed from the card's own hover precisely because the card is not
+   interactive and the accent says it would be. Hovering anywhere on the card
+   still lifts the marks out of their resting dim; hovering a mark itself, or
+   reaching it with the keyboard, is what turns it accent. */
+.edu-card:hover .tl-mark { opacity: 1; }
+.tl-mark:hover, .tl-mark:focus-visible { opacity: 1; border-color: var(--accent); }
+.tl-mark:focus-visible { outline-offset: 3px; }
 /* Sized by explicit height, not max-height: the Liverpool file carries only a
    viewBox, and under max-height its width collapses to nothing. */
 .tl-mark img {

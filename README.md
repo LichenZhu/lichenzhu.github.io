@@ -108,6 +108,14 @@ collapse into one grey block: the institution in the display serif
 serif — proper nouns of institutions get the institutional voice, while paper
 titles stay in the UI face.
 
+**The institution marks are links** to each university, so `.tl-mark` is an
+`<a>` rather than a `<span>`. The images keep `alt=""` — the institution is
+named in the heading right beside them — which means the link has no text of
+its own, so each one carries an `aria-label`. Drop that and you have three
+nameless links. The accent border belongs on the mark's own `:hover` and
+`:focus-visible` for the same reason it was taken off the card's hover: accent
+means interactive here, and now the mark actually is.
+
 **Colour on that page carries meaning, it is not decoration.** Gold
 (`--award`) marks a distinction wherever one appears — the honours bullets and
 `.edu-honour` on "First Class Honours" — and the accent marks what is ongoing:
