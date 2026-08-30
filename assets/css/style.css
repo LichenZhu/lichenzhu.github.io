@@ -401,7 +401,10 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 
 .section { padding: 2.5rem 0; }
-.section:first-child { padding-top: 0; }
+.section:first-child,
+/* The greeting took over the first-child slot, so About was getting its full
+   top padding on top of the greeting's own margin — 76px of accidental gap. */
+.greeting + .section { padding-top: 0; }
 
 /* 5. Header / navigation ------------------------------------------------- */
 
@@ -604,6 +607,19 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 /* 7. Section furniture ---------------------------------------------------
    A mono index, the title, then a hairline that runs to the right edge.
    ------------------------------------------------------------------------ */
+
+/* The one line above the first section on the homepage. Display serif at the
+   section-title step, so it reads as an opening rather than as body copy that
+   escaped its paragraph. */
+.greeting {
+  font-family: var(--display);
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-serif);
+  color: var(--ink);
+  margin: 0 0 2.1rem;
+}
 
 .section-head {
   display: flex;
