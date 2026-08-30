@@ -608,17 +608,26 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    A mono index, the title, then a hairline that runs to the right edge.
    ------------------------------------------------------------------------ */
 
-/* The one line above the first section on the homepage. Display serif at the
-   section-title step, so it reads as an opening rather than as body copy that
-   escaped its paragraph. */
+/* One line above the first section on the homepage. Kept small and close: it
+   is a hello, not a headline, and it should cost the page a line rather than a
+   band of empty space. Sans rather than the display serif for the same reason
+   — at this size the serif reads formal, which is the opposite of the job. */
 .greeting {
-  font-family: var(--display);
-  font-size: var(--t-subhead);
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  font-size: var(--t-title);
   font-weight: 500;
   line-height: var(--lh-snug);
-  letter-spacing: var(--tr-serif);
   color: var(--ink);
-  margin: 0 0 2.1rem;
+  margin: 0 0 1.15rem;
+}
+.greeting-wave {
+  font-size: 1.15em;
+  line-height: 1;
+  /* Emoji ignore the page's font stack; name the system faces so the wave is
+     the platform's own rather than whatever the body font falls back to. */
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 
 .section-head {

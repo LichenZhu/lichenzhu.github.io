@@ -95,12 +95,20 @@ theme — body copy is mid-grey, and no blue clears 3:1 against it while still
 clearing 4.5:1 against the page. The weight and the hover/focus underline are
 the second cue. Don't drop either.
 
-**The homepage opens on a greeting**, one line in the display serif above the
-first section (`.greeting`). It is a `<p>` and not a heading — the `<h1>` is
-the name in the sidebar and there is only ever one per page. It also takes over
-the `:first-child` slot from the About section, which is why `.greeting +
-.section` zeroes the top padding: without that, About's own padding lands on
-top of the greeting's margin and opens 76px of accidental gap.
+**The homepage opens on a greeting** — one line above the first section
+(`.greeting`), a waving hand and a sentence. Deliberately small and close: it
+is a hello, not a headline, and it should cost the page a line rather than a
+band of empty space. The whole block is 41px; the first version was serif at
+the section-title step and ran to 106px, which is the sort of thing a greeting
+does not get to spend.
+
+It is a `<p>` and not a heading — the `<h1>` is the name in the sidebar and
+there is only ever one per page. It also takes over the `:first-child` slot
+from the About section, which is why `.greeting + .section` zeroes the top
+padding: without that, About's own padding lands on top of the greeting's
+margin and opens 76px nobody chose. The emoji is `aria-hidden` (the sentence
+carries the meaning) and names the system emoji faces, since emoji ignore the
+page's font stack.
 
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
