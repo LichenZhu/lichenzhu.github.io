@@ -1098,6 +1098,18 @@ img.fig-mark { padding: 17% 34%; }
 }
 .news-list > li:hover .news-photo img { border-color: var(--rule-2); }
 
+/* Two photographs on one entry. They are normalised to the same height by the
+   rule above, so a portrait and a landscape shot still line up along the top
+   and the bottom; this only puts them in a row and lets them wrap when the
+   column is too narrow to hold both. */
+.news-photo--pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: .5rem;
+}
+.news-photo--pair figcaption { flex-basis: 100%; }
+
 .news-more[hidden] { display: none; }
 
 .news-toggle {
