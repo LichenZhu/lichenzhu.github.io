@@ -110,8 +110,13 @@
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
 
-  --award:      #e0b968;
-  --award-dim:  rgba(224, 185, 104, .12);
+  /* Marks a distinction — the Oral badge, the honours bullets, "First Class
+     Honours". Bright on dark, deep on light: a green light enough to read as
+     bright on white cannot clear 4.5:1 against it (#16a34a manages 3.3), so
+     the two themes take the two ends of one green scale rather than pretending
+     a single value works for both. */
+  --award:      #4ade80;
+  --award-dim:  rgba(74, 222, 128, .13);
 
   /* Duke Blue does not change with the theme — the banner is institutional
      livery, not page chrome. Declared once, here, so it cannot go undefined
@@ -210,8 +215,8 @@
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
 
-    --award:      #8a6a1f;
-    --award-dim:  rgba(138, 106, 31, .10);
+    --award:      #15803d;
+    --award-dim:  rgba(21, 128, 61, .10);
   }
 
   .tl-mark { opacity: 1; border-color: var(--rule); }
