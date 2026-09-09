@@ -268,7 +268,14 @@ modal, everything on the page at once.
   so it renders darker and bolder than the co-authors.
 - **Badges** come in three flavours: `badge` (accent, for accepted venues),
   `badge badge--muted` (grey, for preprints and arXiv), and
-  `badge badge--award` (for Oral, Spotlight, Best Paper).
+  `badge badge--award` (gold, for Oral, Spotlight, Best Paper).
+
+  **They are not uppercased.** They used to be, and it overrode how each thing
+  writes its own name — HumanSys came out HUMANSYS and arXiv came out ARXIV.
+  Write the badge the way its owner writes it; EMNLP stays in capitals because
+  it genuinely is an acronym. The section labels above them (`.group-title`,
+  `.subsection-title`) do still uppercase, because those are labels rather than
+  names.
 - **BibTeX** goes in a `<details class="bibtex">` *inside* the `.pub-links` /
   `.entry-links` row — closed it is one more pill, open it takes a row of its
   own. It needs no JavaScript; `main.js` only adds the copy button, and it does

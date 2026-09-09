@@ -693,11 +693,16 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 /* Badges */
 .badges { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .7rem; }
+/* No text-transform. Uppercasing a badge overrides how the thing writes its
+   own name: HumanSys became HUMANSYS, arXiv became ARXIV, and Oral shouted.
+   EMNLP is still capitals because it genuinely is an acronym. The tracking
+   comes down with it — mixed case does not need the opening-up that all-caps
+   does. The section labels above still uppercase, because those are labels
+   rather than names. */
 .badge {
   font-size: var(--t-micro);
   font-weight: 500;
-  letter-spacing: .11em;
-  text-transform: uppercase;
+  letter-spacing: .04em;
   padding: .26rem .52rem;
   border-radius: var(--r-sm);
   color: var(--accent-ink);
