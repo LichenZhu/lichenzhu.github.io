@@ -231,16 +231,28 @@
           Co-located with ACM MobiCom 2026
         </p>
         <p class="pub-summary">
-          Personal assistants compress conversation history to keep context costs
-          down — and quietly drop the durable user preferences that matter most.
-          We build a memory-compression framework that retains long-term preferences
-          while still reducing storage cost.
+          Benchmarks report that cache eviction keeps a fact like an allergy at a
+          20% budget — but they compress a prompt that already contains the
+          user&rsquo;s future question. Hide the question until after compression and
+          the fact survives 0&ndash;1% of the time, against 97% with full memory. The
+          cause is the budget, not the scorer.
         </p>
-        <!-- Links go here once they exist, e.g.
         <div class="pub-links">
-          <a href="https://arxiv.org/abs/XXXX.XXXXX">Paper</a>
-          <a href="https://github.com/LichenZhu/REPO">Code</a>
-        </div> -->
+          <a href="https://arxiv.org/abs/2609.05767">Paper</a>
+          <details class="bibtex">
+            <summary>BibTeX</summary>
+            <pre>@misc{zhu2026assistantrememberallergypersonal,
+  title         = {Will My Assistant Remember My Allergy? What Personal LLM Assistants Forget When Conversation Memory Is Compressed},
+  author        = {Lichen Zhu and Yueqian Lin and Yiheng Wang and Yudong Liu and Hai Li and Yiran Chen},
+  year          = {2026},
+  eprint        = {2609.05767},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.HC},
+  doi           = {10.1145/3842436.3843817},
+  url           = {https://arxiv.org/abs/2609.05767}
+}</pre>
+          </details>
+        </div>
       </div>
     </article>
 
@@ -386,6 +398,12 @@
   <ul class="news-list">
 
     <li>
+      <span class="news-date">Sep 2026</span>
+      <span><em>Will My Assistant Remember My Allergy?</em> is
+        <a href="https://arxiv.org/abs/2609.05767">on arXiv</a>.</span>
+    </li>
+
+    <li>
       <span class="news-date">Aug 2026</span>
       <span><em>When No Answer Is Correct</em> was accepted to
         <strong>EMNLP 2026</strong>.</span>
@@ -410,12 +428,6 @@
       <span>Preprint released:
         <a href="https://arxiv.org/abs/2604.01002"><em>Query-Conditioned Evidential
         Keyframe Sampling</em></a>.</span>
-    </li>
-
-    <li>
-      <span class="news-date">Feb 2026</span>
-      <span>Bought my first car &mdash; nothing in North Carolina is within walking
-        distance, so it feels less like a purchase than a pair of legs.</span>
     </li>
 
   </ul>
@@ -443,7 +455,7 @@
 <!-- Corner stamp. Hard-coded; bump every page with the sed command in the README. -->
 <div class="stamp" role="status" aria-label="Page last updated">
   <span class="dot" aria-hidden="true"></span>
-  Updated <time datetime="2026-08-30">2026-08-30</time>
+  Updated <time datetime="2026-09-09">2026-09-09</time>
 </div>
 
 <footer class="site-footer">
@@ -518,7 +530,9 @@
       "isPartOf": {
         "@type": "CreativeWork",
         "name": "ACM Workshop on Human-Centered Systems (HumanSys)"
-      }
+      },
+      "url": "https://arxiv.org/abs/2609.05767",
+      "identifier": "10.1145/3842436.3843817"
     },
     {
       "@type": "ScholarlyArticle",
