@@ -142,7 +142,9 @@ def stylesheet():
     js = (ROOT / 'assets/js/main.js').read_text()
     used.update(re.findall(r"['\"]\.?([a-z][a-z0-9-]{2,})['\"]", js))
     declared = set(re.findall(r'\.([a-zA-Z][\w-]+)', bare))
-    known_spare = {'badge--award', 'entry--notease', 'news-more', 'news-toggle',
+    # badge--award is in use as of the HumanSys oral; keep it out of the spares
+    # so the next unused class still gets reported.
+    known_spare = {'entry--notease', 'news-more', 'news-toggle',
                    'chev', 'news-toggle-label', 'mono', 'is-in', 'is-open',
                    'is-scrolled', 'reveal', 'js', 'author-me', 'sep'}
     orphans = sorted(c for c in declared - used
