@@ -110,13 +110,18 @@
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
 
-  /* Marks a distinction — the Oral badge, the honours bullets, "First Class
-     Honours". Bright on dark, deep on light: a green light enough to read as
-     bright on white cannot clear 4.5:1 against it (#16a34a manages 3.3), so
-     the two themes take the two ends of one green scale rather than pretending
-     a single value works for both. */
+  /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
+     on dark, deep on light: a green light enough to read as bright on white
+     cannot clear 4.5:1 against it (#16a34a manages 3.3), so the two themes
+     take the two ends of one green scale rather than pretending a single
+     value works for both. */
   --award:      #4ade80;
   --award-dim:  rgba(74, 222, 128, .13);
+
+  /* "First Class Honours" keeps the older gold — a degree classification
+     reads as a classic distinction, not a conference one, so it stays on its
+     own token rather than following --award's move to green. */
+  --gold:       #e0b968;
 
   /* Duke Blue does not change with the theme — the banner is institutional
      livery, not page chrome. Declared once, here, so it cannot go undefined
@@ -217,6 +222,8 @@
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
+
+    --gold:       #8a6a1f;
   }
 
   .tl-mark { opacity: 1; border-color: var(--rule); }
@@ -1210,9 +1217,10 @@ img.fig-mark { padding: 17% 34%; }
   margin-bottom: 1rem;
 }
 
-/* Gold is the site's award colour — the honours list uses it too, so a
-   distinction reads as a distinction wherever it appears. */
-.edu-honour { color: var(--award); }
+/* A degree classification reads as a classic distinction, not a conference
+   one — kept on its own gold token rather than the green --award uses for
+   the Oral badge and the honours-list bullets below. */
+.edu-honour { color: var(--gold); }
 
 .edu-meta {
   display: flex;

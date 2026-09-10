@@ -131,11 +131,14 @@ nameless links. The accent border belongs on the mark's own `:hover` and
 `:focus-visible` for the same reason it was taken off the card's hover: accent
 means interactive here, and now the mark actually is.
 
-**Colour on that page carries meaning, it is not decoration.** Gold
-(`--award`) marks a distinction wherever one appears — the honours bullets and
-`.edu-honour` on "First Class Honours" — and the accent marks what is ongoing:
-`.tl-when--now` on the current role, matching the accent dot the timeline
-already puts beside it. Don't spend either colour on anything else here.
+**Colour on that page carries meaning, it is not decoration.** Green
+(`--award`) marks a conference distinction — the Oral badge and the
+honours-list bullets — while gold (`--gold`) stays on `.edu-honour` for
+"First Class Honours": a degree classification reads as a classic distinction
+rather than a conference one, so it keeps its own token instead of following
+`--award`. The accent marks what is ongoing: `.tl-when--now` on the current
+role, matching the accent dot the timeline already puts beside it. Don't spend
+any of the three on anything else here.
 
 **Duke.** The header *is* the institutional banner: Duke navy, wordmark and CEI
 name on the left, navigation on the right, one bar. It stays navy in both themes
@@ -268,7 +271,7 @@ modal, everything on the page at once.
   so it renders darker and bolder than the co-authors.
 - **Badges** come in three flavours: `badge` (accent, for accepted venues),
   `badge badge--muted` (grey, for preprints and arXiv), and
-  `badge badge--award` (gold, for Oral, Spotlight, Best Paper).
+  `badge badge--award` (green, for Oral, Spotlight, Best Paper).
 
   **They are not uppercased.** They used to be, and it overrode how each thing
   writes its own name — HumanSys came out HUMANSYS and arXiv came out ARXIV.
