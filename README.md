@@ -184,6 +184,9 @@ Four effects carry the rest:
   IntersectionObserver adds `.is-in`. The hidden state is gated behind the `js`
   class *and* backed by a sweep that un-hides anything still invisible on
   screen after load, so content can never be stranded at `opacity: 0`.
+  **The sidebar is not on that list**, on purpose: it is identical on every
+  page, and animating it on each navigation made the one thing that does not
+  change look as though it had just arrived. Only the content column moves.
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 

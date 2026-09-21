@@ -232,10 +232,15 @@
   /* --- Scroll reveal ----------------------------------------------------
      Classes are applied from here rather than in the markup, so the HTML
      stays free of presentation hooks. Cards in a grid stagger by index.
+
+     The sidebar is deliberately not in this list. It is identical on every
+     page, so animating it on each navigation made the one thing that does
+     not change look as though it had just arrived — the reader sees the
+     same portrait fade in four times. Only the content column moves.
      -------------------------------------------------------------------- */
   if (!reduceMotion && 'IntersectionObserver' in window) {
     var revealed = document.querySelectorAll(
-      '.sidebar > *, .page-head, .section-head, .prose, .tags, ' +
+      '.page-head, .section-head, .prose, .tags, ' +
       '.pub-card, .news-list, .news-toggle, .subsection, .entry-list > li'
     );
 
@@ -252,7 +257,7 @@
 
       // Stagger siblings that sit in the same grid or stack.
       var peers = el.parentElement ? el.parentElement.children : null;
-      if (peers && peers.length > 1 && el.matches('.pub-card, .sidebar > *')) {
+      if (peers && peers.length > 1 && el.matches('.pub-card')) {
         var i = Array.prototype.indexOf.call(peers, el);
         el.style.transitionDelay = Math.min(i, 5) * 70 + 'ms';
       }
