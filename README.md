@@ -110,6 +110,15 @@ margin and opens 76px nobody chose. The emoji is `aria-hidden` (the sentence
 carries the meaning) and names the system emoji faces, since emoji ignore the
 page's font stack.
 
+**Band headings carry the structural voice**, not the data voice: Education,
+Research Experience, Peer-Reviewed and the homepage's own section titles are
+all EB Garamond at `--t-band` (26px) in `--ink`, over a hairline. They used to
+be 12px grey uppercase mono, which left the organisation names inside them —
+20px ink serif — outweighing their own heading about five to one. `--t-band`
+exists as its own step because `--t-subhead` (22px) does not clear `--t-org`
+(20px). Labels that are genuinely labels, like `RESEARCH INTERESTS` over the
+tag row, stay small and muted; a heading is not a label.
+
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
 Inner pages use a `.page-head` (large title + lede) instead, and `.group-title`
