@@ -1055,6 +1055,20 @@ img.fig-mark { padding: 17% 34%; }
   margin-bottom: .25rem;
 }
 .entry-venue { font-size: var(--t-fine); color: var(--body); margin-bottom: .6rem; }
+
+/* Equal-contribution marker. The legend sits beside the authors it explains
+   rather than once at the top of the page: only one paper carries asterisks,
+   and a page-level legend is a thing that drifts away from what it describes.
+   Also keeps the modal self-contained, since it clones one card. */
+.pub-authors sup, .entry-authors sup { font-size: .75em; line-height: 0; }
+.author-note {
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: .45rem;
+}
 .entry-summary {
   font-size: var(--t-small);
   line-height: var(--lh-relaxed);
