@@ -460,6 +460,33 @@ Keep the id when you edit an entry — an id that changes is a link that breaks.
       `<lastmod>` dates are handled by `tools/stamp.py`.
 - [ ] **Corner stamps** — run `python3 tools/stamp.py` before committing.
 
+## Publications come from one pool
+
+Every paper used to be written twice — a card in `index.html` and an entry in
+`publications.html` — with title, authors, venue, summary, figure, links and
+BibTeX duplicated between them. `data/publications.json` is the single copy
+now, and `tools/build_pubs.py` writes it into both pages between markers:
+
+```sh
+python3 tools/build_pubs.py          # rewrite the generated regions
+python3 tools/build_pubs.py --check  # report drift, change nothing
+```
+
+To add a paper, add one object to `papers`, put its id in `order` where it
+should appear, and run the script. `selected` (and `selected_order`) control
+whether it also shows on the homepage — the homepage is a selection, not the
+whole list, so adding a paper does not disturb it unless you ask.
+
+**This is not a build step for the site.** What ships is still plain static
+HTML with no runtime JavaScript, and a visitor never needs this to have run —
+GitHub Pages serves the committed files. It is a build step for the *author*,
+and `tools/check.py` fails when the pages and the pool disagree, so forgetting
+to run it is a caught error rather than a silent one.
+
+Only the regions between `<!-- GENERATED: ... -->` and `<!-- /GENERATED: ... -->`
+are touched. Edit inside them and the next run overwrites you; everything else
+on both pages is hand-written as before.
+
 ## Keeping the five pages honest
 
 There is no template engine, so the head, banner, sidebar and footer are

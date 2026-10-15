@@ -175,7 +175,15 @@ def assets():
     report('no unreferenced assets', not unused, ', '.join(unused[:5]))
 
 
-# ── 7. dates ─────────────────────────────────────────────────────────────────
+# ── 7. the publication pool ──────────────────────────────────────────────────
+def pool():
+    r = subprocess.run([sys.executable, str(ROOT / 'tools/build_pubs.py'), '--check'],
+                       cwd=ROOT, capture_output=True, text=True)
+    report('pages match data/publications.json', r.returncode == 0,
+           '' if r.returncode == 0 else 'run tools/build_pubs.py')
+
+
+# ── 8. dates ─────────────────────────────────────────────────────────────────
 def dates():
     r = subprocess.run([sys.executable, str(ROOT / 'tools/stamp.py'), '--check'],
                        cwd=ROOT, capture_output=True, text=True)
@@ -185,7 +193,8 @@ def dates():
 
 print(f'checking {len(PAGES)} pages'
       + (f'  (skipping {", ".join(SKIPPED)})' if SKIPPED else '') + '\n')
-shared_blocks(); links(); house_rules(); structure(); stylesheet(); assets(); dates()
+shared_blocks(); links(); house_rules(); structure(); stylesheet(); assets()
+pool(); dates()
 print()
 if fails:
     print(f'{len(fails)} check(s) failed')
