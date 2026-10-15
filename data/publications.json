@@ -20,22 +20,53 @@
     {
       "id": "keyframe-sampling",
       "group": "peer",
-      "title_html": "<a href=\"https://arxiv.org/abs/2604.01002\">Query-Conditioned Evidential Keyframe Sampling for MLLM-Based Long-Form Video Understanding</a>",
       "badges": [
         {
-          "cls": "badge",
           "text": "WACV 2027"
         }
       ],
-      "authors_html": "<sup>*</sup>Y. Wang, <sup>*</sup><span class=\"author-me\">L. Zhu</span>, Y. Lin, Y. Liu, J. Zhang, H. Li, Y. Chen <span class=\"author-note\">* equal contribution</span>",
-      "venue_html": "<em>IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)</em>, 2027",
-      "summary_entry": "An information-bottleneck formulation of keyframe selection that maximises query-conditional mutual information and decomposes the combinatorial search into efficient frame-level scoring, improving long-form video QA under tight token budgets.",
+      "title": "Query-Conditioned Evidential Keyframe Sampling for MLLM-Based Long-Form Video Understanding",
+      "url": "https://arxiv.org/abs/2604.01002",
+      "authors": [
+        {
+          "name": "Y. Wang",
+          "equal": true
+        },
+        {
+          "name": "L. Zhu",
+          "equal": true,
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Liu"
+        },
+        {
+          "name": "J. Zhang"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)",
+        "detail": "2027"
+      },
+      "venue_card": {
+        "name": "WACV",
+        "detail": "2027"
+      },
+      "summary": "An information-bottleneck formulation of keyframe selection that maximises query-conditional mutual information and decomposes the combinatorial search into efficient frame-level scoring, improving long-form video QA under tight token budgets.",
       "figure": {
         "src": "assets/images/publications/keyframe-sampling.webp",
         "alt": "Figure from the paper: for two video questions, the frames scored most semantically relevant differ from the frames scored most evidential, with the evidence curve peaking inside the segment that actually answers the question",
         "w": 1500,
-        "h": 590,
-        "cls": null
+        "h": 590
       },
       "links": [
         {
@@ -44,33 +75,58 @@
         }
       ],
       "bibtex": "@misc{wang2026queryconditionedevidentialkeyframesampling,\n  title         = {Query-Conditioned Evidential Keyframe Sampling for MLLM-Based Long-Form Video Understanding},\n  author        = {Yiheng Wang and Lichen Zhu and Yueqian Lin and Yudong Liu and Jingyang Zhang and Hai Li and Yiran Chen},\n  year          = {2026},\n  eprint        = {2604.01002},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CV},\n  url           = {https://arxiv.org/abs/2604.01002}\n}",
-      "selected": true,
-      "venue_short": "<em>WACV</em>, 2027",
-      "summary_card": "An information-bottleneck formulation of keyframe selection that maximises query-conditional mutual information and decomposes the combinatorial search into efficient frame-level scoring, improving long-form video QA under tight token budgets."
+      "selected": true
     },
     {
       "id": "memory-compression",
       "group": "peer",
-      "title_html": "<a href=\"https://arxiv.org/abs/2609.05767\">Will My Assistant Remember My Allergy? What Personal LLM Assistants Forget When Conversation Memory Is Compressed</a>",
       "badges": [
         {
-          "cls": "badge",
           "text": "HumanSys 2026"
         },
         {
-          "cls": "badge badge--award",
-          "text": "Oral"
+          "text": "Oral",
+          "kind": "award"
         }
       ],
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>, Y. Lin, Y. Wang, Y. Liu, H. Li, Y. Chen",
-      "venue_html": "<em>ACM Workshop on Human-Centered Systems (HumanSys)</em>, 2026. Co-located with ACM MobiCom 2026",
-      "summary_entry": "On PA-Bench, 100 assistant conversations we construct, a fact mentioned in passing survives compression to the question that needs it 0&ndash;1% of the time, against 97% with full memory. A compressed cache is an inference-reuse mechanism, not a persistence layer.",
+      "title": "Will My Assistant Remember My Allergy? What Personal LLM Assistants Forget When Conversation Memory Is Compressed",
+      "url": "https://arxiv.org/abs/2609.05767",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "Y. Liu"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "ACM Workshop on Human-Centered Systems (HumanSys)",
+        "detail": "2026. Co-located with ACM MobiCom 2026"
+      },
+      "venue_card": {
+        "name": "ACM Workshop on Human-Centered Systems",
+        "detail": "2026"
+      },
+      "summary": "On PA-Bench, 100 assistant conversations we construct, a fact mentioned in passing survives compression to the question that needs it 0–1% of the time, against 97% with full memory. A compressed cache is an inference-reuse mechanism, not a persistence layer.",
+      "summary_card": "Benchmarks report that cache eviction keeps a fact like an allergy at a 20% budget — but they compress a prompt that already contains the user’s future question. Hide the question until after compression and the fact survives 0–1% of the time, against 97% with full memory. The cause is the budget, not the scorer.",
       "figure": {
         "src": "assets/images/publications/memory-compression.webp",
         "alt": "Figure from the paper: a user tells an assistant facts over several days, the assistant compresses its conversation memory, and days later either recalls the penicillin allergy or asks the user to state it again",
         "w": 1600,
-        "h": 573,
-        "cls": null
+        "h": 573
       },
       "links": [
         {
@@ -79,29 +135,54 @@
         }
       ],
       "bibtex": "@misc{zhu2026assistantrememberallergypersonal,\n  title         = {Will My Assistant Remember My Allergy? What Personal LLM Assistants Forget When Conversation Memory Is Compressed},\n  author        = {Lichen Zhu and Yueqian Lin and Yiheng Wang and Yudong Liu and Hai Li and Yiran Chen},\n  year          = {2026},\n  eprint        = {2609.05767},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.HC},\n  doi           = {10.1145/3842436.3843817},\n  url           = {https://arxiv.org/abs/2609.05767}\n}",
-      "selected": true,
-      "venue_short": "<em>ACM Workshop on Human-Centered Systems</em>, 2026",
-      "summary_card": "Benchmarks report that cache eviction keeps a fact like an allergy at a 20% budget — but they compress a prompt that already contains the user&rsquo;s future question. Hide the question until after compression and the fact survives 0&ndash;1% of the time, against 97% with full memory. The cause is the budget, not the scorer."
+      "selected": true
     },
     {
       "id": "absent-answer",
       "group": "peer",
-      "title_html": "<a href=\"https://arxiv.org/abs/2606.08239\">When No Answer Is Correct: Diagnosing Absent Answer Detection for MLLMs in Video Understanding</a>",
       "badges": [
         {
-          "cls": "badge",
           "text": "EMNLP 2026"
         }
       ],
-      "authors_html": "Y. Wang, Y. Lin, <span class=\"author-me\">L. Zhu</span>, Y. Liu, H. Li, Y. Chen",
-      "venue_html": "<em>Conference on Empirical Methods in Natural Language Processing (EMNLP)</em>, 2026",
-      "summary_entry": "A diagnostic study showing that video MLLMs select plausible distractors instead of recognising when the correct answer is absent — a failure that worsens under temporal reasoning and resists prompting-based fixes.",
+      "title": "When No Answer Is Correct: Diagnosing Absent Answer Detection for MLLMs in Video Understanding",
+      "url": "https://arxiv.org/abs/2606.08239",
+      "authors": [
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Liu"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+        "detail": "2026"
+      },
+      "venue_card": {
+        "name": "EMNLP",
+        "detail": "2026"
+      },
+      "summary": "A diagnostic study showing that video MLLMs select plausible distractors instead of recognising when the correct answer is absent — a failure that worsens under temporal reasoning and resists prompting-based fixes.",
+      "summary_card": "When the correct answer simply isn’t among the options, video MLLMs pick a plausible distractor rather than abstaining. We show this failure worsens under temporal reasoning and resists prompting-based fixes.",
       "figure": {
         "src": "assets/images/publications/streaming-absent-answer.webp",
         "alt": "Figure from the paper: a viewer asks which symbol of the festival the video introduces, none of the three options is correct, and one model answers “B. Moose” while a reliable one answers “None of the above”",
         "w": 1500,
-        "h": 793,
-        "cls": null
+        "h": 793
       },
       "links": [
         {
@@ -110,55 +191,90 @@
         }
       ],
       "bibtex": "@misc{wang2026answercorrectdiagnosingabsent,\n  title         = {When No Answer Is Correct: Diagnosing Absent Answer Detection for MLLMs in Video Understanding},\n  author        = {Yiheng Wang and Yueqian Lin and Lichen Zhu and Yudong Liu and Hai Li and Yiran Chen},\n  year          = {2026},\n  eprint        = {2606.08239},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.AI},\n  url           = {https://arxiv.org/abs/2606.08239}\n}",
-      "selected": true,
-      "venue_short": "<em>EMNLP</em>, 2026",
-      "summary_card": "When the correct answer simply isn&rsquo;t among the options, video MLLMs pick a plausible distractor rather than abstaining. We show this failure worsens under temporal reasoning and resists prompting-based fixes."
+      "selected": true
     },
     {
       "id": "semantic-unit-aggregation",
       "group": "preprint",
-      "title_html": "Semantic-Unit Aggregation for Streaming Interaction Memory",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "Preprint"
+          "text": "Preprint",
+          "kind": "muted"
         }
       ],
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>, Y. Lin, Y. Wang, H. Li, Y. Chen",
-      "venue_html": "<em>Preprint</em>, 2026",
-      "summary_entry": "A streaming-memory framework that organises interaction history by semantic unit rather than temporal window, retaining original events and improving long-horizon evidence retrieval.",
+      "title": "Semantic-Unit Aggregation for Streaming Interaction Memory",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "Preprint",
+        "detail": "2026"
+      },
+      "summary": "A streaming-memory framework that organises interaction history by semantic unit rather than temporal window, retaining original events and improving long-horizon evidence retrieval.",
+      "summary_card": "Streaming memory is usually chopped into fixed temporal windows, which cuts events in half. We organise interaction history by semantic unit instead, keeping original events intact and improving evidence retrieval over long horizons.",
       "figure": {
         "src": "assets/images/publications/semantic-unit-aggregation.webp",
         "alt": "Figure from the paper: a verbatim interaction stream is aggregated into scene, belief and entity indexes, then queried twelve hours later",
         "w": 1500,
-        "h": 1255,
-        "cls": null
+        "h": 1255
       },
       "links": [],
-      "bibtex": null,
-      "selected": true,
-      "venue_short": "<em>Preprint</em>, 2026",
-      "summary_card": "Streaming memory is usually chopped into fixed temporal windows, which cuts events in half. We organise interaction history by semantic unit instead, keeping original events intact and improving evidence retrieval over long horizons."
+      "selected": true
     },
     {
       "id": "frame-phase",
       "group": "preprint",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "arXiv"
+          "text": "arXiv",
+          "kind": "muted"
         }
       ],
-      "title_html": "<a href=\"https://arxiv.org/abs/2610.08649\">Stable Scores, Unstable Answers: Frame Phase and Option Order in Video Multiple-Choice Evaluation</a>",
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>, Y. Wang, Y. Lin, H. Li, Y. Chen",
-      "venue_html": "<em>arXiv preprint</em>, arXiv:2610.08649",
-      "summary_entry": "Benchmarks report the frame rate of a uniform sampling grid but not its phase. Two deployed samplers differing only by a half-step phase offset answer 23.6% of questions differently while scoring within a point. PhaseFusion averages the option posteriors of three offset grids and halves that instability.",
+      "title": "Stable Scores, Unstable Answers: Frame Phase and Option Order in Video Multiple-Choice Evaluation",
+      "url": "https://arxiv.org/abs/2610.08649",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "arXiv preprint",
+        "detail": "arXiv:2610.08649"
+      },
+      "summary": "Benchmarks report the frame rate of a uniform sampling grid but not its phase. Two deployed samplers differing only by a half-step phase offset answer 23.6% of questions differently while scoring within a point. PhaseFusion averages the option posteriors of three offset grids and halves that instability.",
       "figure": {
         "src": "assets/images/publications/frame-phase.webp",
         "alt": "Figure from the paper: the same eight-frame budget read at two grid phases returns a wrong answer at one phase and the correct answer at the other",
         "w": 1500,
-        "h": 634,
-        "cls": null
+        "h": 634
       },
       "links": [
         {
@@ -174,20 +290,40 @@
       "group": "preprint",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "arXiv"
+          "text": "arXiv",
+          "kind": "muted"
         }
       ],
-      "title_html": "<a href=\"https://arxiv.org/abs/2610.08663\">Knowing When to Trust a Prior: Reliability-Gated Cue Fusion for Video Gaze Prediction</a>",
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>, Y. Lin, Y. Wang, H. Li, Y. Chen",
-      "venue_html": "<em>arXiv preprint</em>, arXiv:2610.08663",
-      "summary_entry": "Gaze-free priors carry signal that gaze-trained models have not absorbed, if you know when to trust them. FocusGate reads three shape statistics of a defocus map per frame and lets the ensemble abstain, so rejected frames fall back to the base exactly. It improves all sixteen model-domain cells tested, for 1% added latency.",
+      "title": "Knowing When to Trust a Prior: Reliability-Gated Cue Fusion for Video Gaze Prediction",
+      "url": "https://arxiv.org/abs/2610.08663",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "arXiv preprint",
+        "detail": "arXiv:2610.08663"
+      },
+      "summary": "Gaze-free priors carry signal that gaze-trained models have not absorbed, if you know when to trust them. FocusGate reads three shape statistics of a defocus map per frame and lets the ensemble abstain, so rejected frames fall back to the base exactly. It improves all sixteen model-domain cells tested, for 1% added latency.",
       "figure": {
         "src": "assets/images/publications/focusgate.webp",
         "alt": "Figure from the paper: eight gaze-free priors are rank-summed into a base prediction, and a reliability gate reading a defocus map decides per frame whether that map enters the sum",
         "w": 1500,
-        "h": 608,
-        "cls": null
+        "h": 608
       },
       "links": [
         {
@@ -203,20 +339,40 @@
       "group": "preprint",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "arXiv"
+          "text": "arXiv",
+          "kind": "muted"
         }
       ],
-      "title_html": "<a href=\"https://arxiv.org/abs/2610.08683\">Coupled but Late: Turn-Taking Between Full-Duplex Speech Models in Unscripted Dialogue</a>",
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>, Y. Lin, Y. Wang, H. Li, Y. Chen",
-      "venue_html": "<em>arXiv preprint</em>, arXiv:2610.08683",
-      "summary_entry": "When two full-duplex speech models talk to each other, no human absorbs the timing error. Their turn-taking is genuinely coupled — re-pairing speakers destroys it — but the floor changes hands at a median of 400–560 ms against 137 ms for humans, consistent with waiting for the end rather than projecting it.",
+      "title": "Coupled but Late: Turn-Taking Between Full-Duplex Speech Models in Unscripted Dialogue",
+      "url": "https://arxiv.org/abs/2610.08683",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "arXiv preprint",
+        "detail": "arXiv:2610.08683"
+      },
+      "summary": "When two full-duplex speech models talk to each other, no human absorbs the timing error. Their turn-taking is genuinely coupled — re-pairing speakers destroys it — but the floor changes hands at a median of 400–560 ms against 137 ms for humans, consistent with waiting for the end rather than projecting it.",
       "figure": {
         "src": "assets/images/publications/turn-taking.webp",
         "alt": "Figure from the paper: two speech models exchange audio tokens on a shared clock, with 400 ms of mutual silence between one speaker finishing and the other answering",
         "w": 1500,
-        "h": 644,
-        "cls": null
+        "h": 644
       },
       "links": [
         {
@@ -230,22 +386,45 @@
     {
       "id": "stylevar",
       "group": "preprint",
-      "title_html": "<a href=\"https://arxiv.org/abs/2604.21052\">StyleVAR: Controllable Image Style Transfer via Visual Autoregressive Modeling</a>",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "arXiv"
+          "text": "arXiv",
+          "kind": "muted"
         }
       ],
-      "authors_html": "L. Jing, D. Zhang, P. Li, <span class=\"author-me\">L. Zhu</span>, Y. Xu, H. Xing",
-      "venue_html": "<em>arXiv preprint</em>, arXiv:2604.21052",
-      "summary_entry": "A visual-autoregressive style-transfer framework that models VQ-VAE token sequences with a scale-dependent blended cross-attention to balance style and content, outperforming AdaIN across perceptual and structural metrics.",
+      "title": "StyleVAR: Controllable Image Style Transfer via Visual Autoregressive Modeling",
+      "url": "https://arxiv.org/abs/2604.21052",
+      "authors": [
+        {
+          "name": "L. Jing"
+        },
+        {
+          "name": "D. Zhang"
+        },
+        {
+          "name": "P. Li"
+        },
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Xu"
+        },
+        {
+          "name": "H. Xing"
+        }
+      ],
+      "venue": {
+        "name": "arXiv preprint",
+        "detail": "arXiv:2604.21052"
+      },
+      "summary": "A visual-autoregressive style-transfer framework that models VQ-VAE token sequences with a scale-dependent blended cross-attention to balance style and content, outperforming AdaIN across perceptual and structural metrics.",
       "figure": {
         "src": "assets/images/publications/stylevar.webp",
         "alt": "Figure from the paper: the StyleVAR architecture, where content and style token sequences enter an autoregressive transformer and its two attention branches are blended by a scale-dependent coefficient",
         "w": 1500,
-        "h": 1154,
-        "cls": null
+        "h": 1154
       },
       "links": [
         {
@@ -259,16 +438,24 @@
     {
       "id": "credit-risk",
       "group": "thesis",
-      "title_html": "Hybrid Deep Learning for Credit Risk Prediction",
       "badges": [
         {
-          "cls": "badge badge--muted",
-          "text": "Undergraduate Dissertation"
+          "text": "Undergraduate Dissertation",
+          "kind": "muted"
         }
       ],
-      "authors_html": "<span class=\"author-me\">L. Zhu</span>",
-      "venue_html": "<em>Xi&rsquo;an Jiaotong-Liverpool University</em>, 2024–2025",
-      "summary_entry": "An XGBoost–DNN stacking ensemble for loan-default prediction over 870,000+ records, with leak-proof cross-validation and SHAP-based interpretation.",
+      "title": "Hybrid Deep Learning for Credit Risk Prediction",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        }
+      ],
+      "venue": {
+        "name": "Xi’an Jiaotong-Liverpool University",
+        "detail": "2024–2025"
+      },
+      "summary": "An XGBoost–DNN stacking ensemble for loan-default prediction over 870,000+ records, with leak-proof cross-validation and SHAP-based interpretation.",
       "figure": {
         "src": "assets/images/logos/xjtlu.png",
         "alt": "",
@@ -277,7 +464,6 @@
         "cls": "fig-mark"
       },
       "links": [],
-      "bibtex": null,
       "selected": false
     }
   ]

@@ -472,6 +472,14 @@ python3 tools/build_pubs.py          # rewrite the generated regions
 python3 tools/build_pubs.py --check  # report drift, change nothing
 ```
 
+**The pool holds data, not markup.** Every tag is produced by the generator:
+a title is `title` plus an optional `url`, authors are
+`[{name, me, equal}]` — `me` gets `.author-me`, `equal` gets the asterisk, and
+the "* equal contribution" note appears by itself as soon as any author
+carries one — and a venue is `{name, detail}`. The only tags left in the JSON
+are inside `bibtex`, which is a verbatim code block, and `figure.cls`, the
+escape hatch the one university mark uses.
+
 To add a paper, add one object to `papers`, put its id in `order` where it
 should appear, and run the script. `selected` (and `selected_order`) control
 whether it also shows on the homepage — the homepage is a selection, not the

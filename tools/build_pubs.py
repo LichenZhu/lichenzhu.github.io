@@ -16,28 +16,32 @@ with no runtime JavaScript, and a visitor never needs this to have run. It is
 a build step for the *author*, and tools/check.py fails if the pages and the
 pool disagree, so a forgotten run is a caught error rather than a silent one.
 
-Fields per paper, in data/publications.json:
+The pool holds data, not markup — every tag below is produced here, so the
+JSON stays something you can read and edit without counting angle brackets.
+The two exceptions are `bibtex`, which is a verbatim code block and has to be,
+and `figure.cls`, which is an escape hatch for the one figure that is a
+university mark rather than a teaser.
 
     id            anchor on publications.html, e.g. #absent-answer
     group         peer | preprint | thesis — which band it files under
-    badges        [{cls, text}]; cls is badge | badge badge--muted |
-                  badge badge--award
-    title_html    may contain an <a> when there is somewhere to go
-    authors_html  inner HTML, so <sup>*</sup>, .author-me and .author-note
-                  all survive
-    venue_html    the long form, used on the entry and inside the modal
-    venue_short   the short form for the card face; selected papers only
-    summary_entry one or two sentences for the list
-    summary_card  the card/modal version, if it differs; falls back to
-                  summary_entry
+    badges        [{text, kind}]; kind omitted = accepted venue (accent),
+                  "muted" = preprint or arXiv, "award" = Oral, Spotlight…
+    title         plain text
+    url           optional; the title becomes a link when present
+    authors       [{name, me, equal}]; `me` gets .author-me, `equal` gets an
+                  asterisk, and the "* equal contribution" note appears by
+                  itself as soon as any author carries one
+    venue         {name, detail} — rendered as <em>name</em>, detail
+    venue_card    optional short form for the card face; defaults to `venue`
+    summary       one or two sentences for the list
+    summary_card  the card/modal version where it differs; defaults to summary
     figure        {src, alt, w, h, cls}
     links         [{label, href}]
-    bibtex        verbatim from arxiv.org/bibtex/<id>, or null
-    selected      whether it appears on the homepage
+    bibtex        verbatim from arxiv.org/bibtex/<id>, or absent
+    selected      whether it also appears on the homepage
 """
 import json
 import pathlib
-import re
 import sys
 import textwrap
 
@@ -45,135 +49,150 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 DATA = ROOT / 'data' / 'publications.json'
 
 GROUPS = [('peer', 'Peer-Reviewed'), ('preprint', 'Preprints'), ('thesis', 'Theses')]
+BADGE_CLASS = {None: 'badge', 'muted': 'badge badge--muted', 'award': 'badge badge--award'}
+EQUAL_NOTE = '* equal contribution'
 BEGIN = '<!-- GENERATED: %s — from data/publications.json via tools/build_pubs.py -->'
 END = '<!-- /GENERATED: %s -->'
 
-
-def wrap(text, width, indent):
-    """Reflow one paragraph to the file's column width."""
-    return textwrap.fill(text, width=width,
-                         initial_indent=indent, subsequent_indent=indent)
-
-
-def img_tag(fig, indent):
-    cls = f'class="{fig["cls"]}" ' if fig.get('cls') else ''
-    alt = wrap(fig['alt'], 110, '')
-    return (f'{indent}<img {cls}src="{fig["src"]}"\n'
-            f'{indent}     alt="{alt}"\n'
-            f'{indent}     loading="lazy" width="{fig["w"]}" height="{fig["h"]}">')
+# Column at which each reflowed paragraph wraps. They differ because the two
+# layouts sit at different indents and the file reads better at ~100 columns.
+COLS = {'title': 92, 'authors': 96, 'venue': 96, 'summary': 88, 'alt': 110,
+        'card_title': 76, 'card_authors': 94, 'card_venue': 94, 'card_summary': 86}
 
 
-def badges(p, indent):
-    inner = ''.join(f'<span class="{b["cls"]}">{b["text"]}</span>' for b in p['badges'])
+# ── pieces ───────────────────────────────────────────────────────────────────
+
+def fill(text, col, indent=''):
+    """Reflow one paragraph.
+
+    break_on_hyphens is off because a line break inside a hyphenated word is
+    folded back to a space by the browser: "inference-reuse" wrapped at the
+    hyphen renders as "inference- reuse". break_long_words is off for the same
+    reason applied to URLs.
+    """
+    return textwrap.fill(text, width=col, initial_indent=indent,
+                         subsequent_indent=indent,
+                         break_on_hyphens=False, break_long_words=False)
+
+
+def para(lines, indent, tag, text, col):
+    """<tag>…</tag> with the text reflowed under it."""
+    lines.append(f'{indent}<{tag}>')
+    lines.append(fill(text, col, indent + '  '))
+    lines.append(f'{indent}</{tag.split()[0]}>')
+
+
+def title_html(p, link=True):
+    return f'<a href="{p["url"]}">{p["title"]}</a>' if link and p.get('url') else p['title']
+
+
+def authors_html(p):
+    out = []
+    for a in p['authors']:
+        name = f'<span class="author-me">{a["name"]}</span>' if a.get('me') else a['name']
+        out.append(('<sup>*</sup>' if a.get('equal') else '') + name)
+    html = ', '.join(out)
+    if any(a.get('equal') for a in p['authors']):
+        html += f' <span class="author-note">{EQUAL_NOTE}</span>'
+    return html
+
+
+def venue_html(p, card=False):
+    v = (p.get('venue_card') if card else None) or p['venue']
+    return f'<em>{v["name"]}</em>' + (f', {v["detail"]}' if v.get('detail') else '')
+
+
+def badges_html(p, indent):
+    inner = ''.join(f'<span class="{BADGE_CLASS[b.get("kind")]}">{b["text"]}</span>'
+                    for b in p['badges'])
     return f'{indent}<p class="badges">{inner}</p>'
 
 
-def bibtex_block(p, indent, cls):
-    if not p.get('bibtex'):
-        return ''
-    return (f'\n{indent}  <details class="bibtex">\n'
-            f'{indent}    <summary>BibTeX</summary>\n'
-            f'{indent}    <pre>{p["bibtex"]}</pre>\n'
-            f'{indent}  </details>')
+def figure_html(p, indent):
+    f = p['figure']
+    cls = f'class="{f["cls"]}" ' if f.get('cls') else ''
+    alt = fill(f['alt'], COLS['alt'])
+    return (f'{indent}<img {cls}src="{f["src"]}"\n'
+            f'{indent}     alt="{alt}"\n'
+            f'{indent}     loading="lazy" width="{f["w"]}" height="{f["h"]}">')
 
 
-def links_block(p, indent, cls):
+def links_html(p, indent, cls):
     if not p.get('links') and not p.get('bibtex'):
-        return ''
+        return None
     out = [f'{indent}<div class="{cls}">']
-    for l in p['links']:
-        out.append(f'{indent}  <a href="{l["href"]}">{l["label"]}</a>')
-    body = '\n'.join(out) + bibtex_block(p, indent, cls) + f'\n{indent}</div>'
-    return body
+    out += [f'{indent}  <a href="{l["href"]}">{l["label"]}</a>' for l in p.get('links', [])]
+    if p.get('bibtex'):
+        out += [f'{indent}  <details class="bibtex">',
+                f'{indent}    <summary>BibTeX</summary>',
+                f'{indent}    <pre>{p["bibtex"]}</pre>',
+                f'{indent}  </details>']
+    out.append(f'{indent}</div>')
+    return '\n'.join(out)
 
+
+# ── the two layouts ──────────────────────────────────────────────────────────
 
 def render_entries(papers):
-    """The grouped list on publications.html."""
     out = []
     for key, heading in GROUPS:
         group = [p for p in papers if p['group'] == key]
         if not group:
             continue
-        out.append(f'  <section class="group" aria-labelledby="g-{key}">')
-        out.append(f'    <h2 class="group-title" id="g-{key}">{heading}</h2>')
-        out.append('    <ul class="entry-list">')
+        out += [f'  <section class="group" aria-labelledby="g-{key}">',
+                f'    <h2 class="group-title" id="g-{key}">{heading}</h2>',
+                '    <ul class="entry-list">']
         for p in group:
-            out.append('')
-            out.append('      <li>')
-            out.append(f'        <article class="entry" id="{p["id"]}">')
+            out += ['', '      <li>', f'        <article class="entry" id="{p["id"]}">']
             if p.get('figure'):
-                out.append('          <figure class="entry-figure">')
-                out.append(img_tag(p['figure'], '            '))
-                out.append('          </figure>')
+                out += ['          <figure class="entry-figure">',
+                        figure_html(p, '            '),
+                        '          </figure>']
             out.append('          <div class="entry-body">')
-            out.append(badges(p, '            '))
-            out.append('            <h3 class="entry-title">')
-            out.append(wrap(p['title_html'], 92, '              '))
-            out.append('            </h3>')
-            out.append('            <p class="entry-authors">')
-            out.append(wrap(p['authors_html'], 96, '              '))
-            out.append('            </p>')
-            out.append('            <p class="entry-venue">')
-            out.append(wrap(p['venue_html'], 96, '              '))
-            out.append('            </p>')
-            out.append('            <p class="entry-summary">')
-            out.append(wrap(p['summary_entry'], 88, '              '))
-            out.append('            </p>')
-            lb = links_block(p, '            ', 'entry-links')
-            if lb:
-                out.append(lb)
-            out.append('          </div>')
-            out.append('        </article>')
-            out.append('      </li>')
-        out.append('')
-        out.append('    </ul>')
-        out.append('  </section>')
-        out.append('')
+            out.append(badges_html(p, '            '))
+            para(out, '            ', 'h3 class="entry-title"', title_html(p), COLS['title'])
+            para(out, '            ', 'p class="entry-authors"', authors_html(p), COLS['authors'])
+            para(out, '            ', 'p class="entry-venue"', venue_html(p), COLS['venue'])
+            para(out, '            ', 'p class="entry-summary"', p['summary'], COLS['summary'])
+            links = links_html(p, '            ', 'entry-links')
+            if links:
+                out.append(links)
+            out += ['          </div>', '        </article>', '      </li>']
+        out += ['', '    </ul>', '  </section>', '']
     return '\n'.join(out).rstrip('\n')
 
 
 def render_cards(papers, selected_order):
-    """The card grid on index.html."""
     by_id = {p['id']: p for p in papers}
     out = []
     for pid in selected_order:
         p = by_id[pid]
-        out.append('')
-        out.append('    <article class="pub-card">')
+        out += ['', '    <article class="pub-card">']
         if p.get('figure'):
-            out.append('      <div class="pub-thumb">')
-            out.append(img_tag(p['figure'], '        '))
-            out.append('      </div>')
+            out += ['      <div class="pub-thumb">', figure_html(p, '        '),
+                    '      </div>']
         out.append('      <div class="pub-body">')
-        out.append(badges(p, '        '))
-        out.append('        <h3 class="pub-title">')
-        out.append('          <button class="pub-open" type="button">')
-        out.append(wrap(re.sub(r'</?a[^>]*>', '', p['title_html']), 76, '            '))
-        out.append('          </button>')
-        out.append('        </h3>')
-        out.append(f'        <p class="pub-venue">{p["venue_short"]}</p>')
+        out.append(badges_html(p, '        '))
+        out += ['        <h3 class="pub-title">', '          <button class="pub-open" type="button">']
+        out.append(fill(title_html(p, link=False), COLS['card_title'], '            '))
+        out += ['          </button>', '        </h3>']
+        out.append(f'        <p class="pub-venue">{venue_html(p, card=True)}</p>')
         out.append('        <p class="pub-hint">Details '
                    '<span class="arrow" aria-hidden="true">&rarr;</span></p>')
-        out.append('      </div>')
-        out.append('')
-        out.append('      <div class="pub-detail">')
-        out.append('        <p class="pub-authors">')
-        out.append(wrap(p['authors_html'], 94, '          '))
-        out.append('        </p>')
-        out.append('        <p class="pub-venue">')
-        out.append(wrap(p['venue_html'], 94, '          '))
-        out.append('        </p>')
-        out.append('        <p class="pub-summary">')
-        out.append(wrap(p.get('summary_card') or p['summary_entry'], 86, '          '))
-        out.append('        </p>')
-        lb = links_block(p, '        ', 'pub-links')
-        if lb:
-            out.append(lb)
-        out.append('      </div>')
-        out.append('    </article>')
+        out += ['      </div>', '', '      <div class="pub-detail">']
+        para(out, '        ', 'p class="pub-authors"', authors_html(p), COLS['card_authors'])
+        para(out, '        ', 'p class="pub-venue"', venue_html(p), COLS['card_venue'])
+        para(out, '        ', 'p class="pub-summary"',
+             p.get('summary_card') or p['summary'], COLS['card_summary'])
+        links = links_html(p, '        ', 'pub-links')
+        if links:
+            out.append(links)
+        out += ['      </div>', '    </article>']
     out.append('')
     return '\n'.join(out)
 
+
+# ── splice ───────────────────────────────────────────────────────────────────
 
 def splice(path, name, body, check):
     text = path.read_text()
@@ -181,28 +200,25 @@ def splice(path, name, body, check):
     if begin not in text:
         print(f'  {path.name}: no "{name}" markers — add them first')
         return 1
-    i = text.index(begin) + len(begin)
-    j = text.index(end)
+    i, j = text.index(begin) + len(begin), text.index(end)
     if text[i:j].strip('\n') == body.strip('\n'):
-        print(f'  {path.name:20} {name:10} up to date')
+        print(f'  {path.name:20} {name:22} up to date')
         return 0
     if check:
-        print(f'  {path.name:20} {name:10} STALE — run tools/build_pubs.py')
+        print(f'  {path.name:20} {name:22} STALE — run tools/build_pubs.py')
         return 1
     path.write_text(text[:i] + '\n' + body.strip('\n') + '\n' + text[j:])
-    print(f'  {path.name:20} {name:10} rewritten')
+    print(f'  {path.name:20} {name:22} rewritten')
     return 0
 
 
 def main():
     check = '--check' in sys.argv
     data = json.loads(DATA.read_text())
-    papers = data['papers']
-    drift = 0
-    drift += splice(ROOT / 'publications.html', 'publication-entries',
-                    render_entries(papers), check)
+    drift = splice(ROOT / 'publications.html', 'publication-entries',
+                   render_entries(data['papers']), check)
     drift += splice(ROOT / 'index.html', 'selected-publications',
-                    render_cards(papers, data['selected_order']), check)
+                    render_cards(data['papers'], data['selected_order']), check)
     if drift and check:
         sys.exit(1)
 
