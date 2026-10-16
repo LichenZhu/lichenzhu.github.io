@@ -992,12 +992,25 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   margin-bottom: .7rem;
   padding-right: 2.2rem;
 }
-.pub-modal-figure { margin: 0 0 1.2rem; }
-.pub-modal-figure img {
-  width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
-  padding: 4%;
-  border: 1px solid var(--fig-line); border-radius: var(--r-md);
+/* The card thumbnails are locked to 16:10 so the grid stays even. The modal
+   holds one figure and has no grid to keep, so forcing the same box just
+   padded a 2.8:1 figure with white: it used 43% of the height it was given.
+   Here the figure keeps its own proportions, capped so a tall one (1.2:1,
+   and the 0.8:1 university mark) cannot push the text out of view. */
+.pub-modal-figure {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.2rem;
+  padding: 3%;
+  border: 1px solid var(--fig-line);
+  border-radius: var(--r-md);
   background: var(--fig-bg);
+}
+.pub-modal-figure img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 46vh;
 }
 
 .pub-modal-close {
@@ -1079,6 +1092,9 @@ img.fig-mark { padding: 17% 34%; }
   margin: -.6rem 0 2rem;
 }
 .equal-note sup { font-size: .8em; line-height: 0; }
+/* Inside the modal it sits under the authors it explains, because the
+   page-level legend is behind the dialog and cannot be read from there. */
+.equal-note--inline { font-size: var(--t-micro); margin: -.1rem 0 .55rem; }
 .entry-summary {
   font-size: var(--t-small);
   line-height: var(--lh-relaxed);

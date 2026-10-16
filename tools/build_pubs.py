@@ -86,18 +86,16 @@ def title_html(p, link=True):
     return f'<a href="{p["url"]}">{p["title"]}</a>' if link and p.get('url') else p['title']
 
 
-def authors_html(p, stars=True):
-    """The author list.
-
-    `stars` is off for the homepage card: the asterisk only means something
-    next to the legend, and the legend lives on publications.html. A card is
-    a summary — the convention belongs with the full list.
-    """
+def authors_html(p):
     out = []
     for a in p['authors']:
         name = f'<span class="author-me">{a["name"]}</span>' if a.get('me') else a['name']
-        out.append(('<sup>*</sup>' if stars and a.get('equal') else '') + name)
+        out.append(('<sup>*</sup>' if a.get('equal') else '') + name)
     return ', '.join(out)
+
+
+def shares_first(p):
+    return any(a.get('equal') for a in p['authors'])
 
 
 def venue_html(p, card=False):
@@ -138,7 +136,7 @@ def links_html(p, indent, cls):
 
 def render_entries(papers):
     out = []
-    if any(a.get('equal') for p in papers for a in p['authors']):
+    if any(shares_first(p) for p in papers):
         out += [f'  <p class="equal-note">{EQUAL_NOTE}</p>', '']
     for key, heading in GROUPS:
         group = [p for p in papers if p['group'] == key]
@@ -185,8 +183,11 @@ def render_cards(papers, selected_order):
         out.append('        <p class="pub-hint">Details '
                    '<span class="arrow" aria-hidden="true">&rarr;</span></p>')
         out += ['      </div>', '', '      <div class="pub-detail">']
-        para(out, '        ', 'p class="pub-authors"', authors_html(p, stars=False),
-             COLS['card_authors'])
+        para(out, '        ', 'p class="pub-authors"', authors_html(p), COLS['card_authors'])
+        if shares_first(p):
+            # the dialog is on its own — the page-level legend behind it is
+            # not visible, so this one carries its own, on its own line
+            out.append(f'        <p class="equal-note equal-note--inline">{EQUAL_NOTE}</p>')
         para(out, '        ', 'p class="pub-venue"', venue_html(p), COLS['card_venue'])
         para(out, '        ', 'p class="pub-summary"',
              p.get('summary_card') or p['summary'], COLS['card_summary'])

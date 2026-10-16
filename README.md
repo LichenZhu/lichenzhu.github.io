@@ -306,9 +306,10 @@ modal, everything on the page at once.
   `.pub-detail` and a cloned node does not carry its listeners.
 
   **Equal contribution** is `"equal": true` on the authors who share it. The
-  generator stars them and puts one `* denotes equal contribution` line above
-  the first band on `publications.html`; the homepage card drops the stars,
-  since an asterisk means nothing without the legend it belongs to.
+  generator stars them and states the convention once above the first band on
+  `publications.html`. The modal carries its own copy of that line, because
+  the page-level one sits behind the dialog and cannot be read from there.
+  Either way the legend goes on its own line, never trailing the author list.
 
   **Paste the text from `arxiv.org/bibtex/<id>`, do not write it by hand.** Only
   the two arXiv papers carry a block, because those are the only two with an
