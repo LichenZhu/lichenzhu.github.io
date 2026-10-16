@@ -110,14 +110,22 @@ margin and opens 76px nobody chose. The emoji is `aria-hidden` (the sentence
 carries the meaning) and names the system emoji faces, since emoji ignore the
 page's font stack.
 
-**Band headings carry the structural voice**, not the data voice: Education,
-Research Experience, Peer-Reviewed and the homepage's own section titles are
-all EB Garamond at `--t-band` (26px) in `--ink`, over a hairline. They used to
-be 12px grey uppercase mono, which left the organisation names inside them —
-20px ink serif — outweighing their own heading about five to one. `--t-band`
-exists as its own step because `--t-subhead` (22px) does not clear `--t-org`
-(20px). Labels that are genuinely labels, like `RESEARCH INTERESTS` over the
-tag row, stay small and muted; a heading is not a label.
+**Band headings are mono caps at `--t-title` (17px) in `--ink`**, over a
+hairline — Education, Research Experience, Peer-Reviewed, and the homepage's
+own section titles. They were 12px in `--muted`, which left the organisation
+names inside them (20px ink serif) outweighing their own heading about five
+to one.
+
+The fix was the size and the colour, not the typeface. Mono caps is where
+this page gets its technical register; an attempt at the display serif here
+traded the timidity for something blander. At 17px the caps and the tracking
+govern a 20px serif name beneath them without borrowing the serif's
+authority. Resist the two obvious "more technical" moves — an accent bar down
+the left, a `//` prefix — because accent already means *interactive* and
+*ongoing* here, and a third meaning dilutes all of them.
+
+Labels that are genuinely labels, like `RESEARCH INTERESTS` over the tag row,
+stay small and muted; a heading is not a label.
 
 Section headings on the homepage are the title followed by a hairline that runs
 to the right edge, with an optional link ("All news →") pinned to the far end.
@@ -296,6 +304,11 @@ modal, everything on the page at once.
   own. It needs no JavaScript; `main.js` only adds the copy button, and it does
   so through a delegated click handler because the modal clones a card's
   `.pub-detail` and a cloned node does not carry its listeners.
+
+  **Equal contribution** is `"equal": true` on the authors who share it. The
+  generator stars them and puts one `* denotes equal contribution` line above
+  the first band on `publications.html`; the homepage card drops the stars,
+  since an asterisk means nothing without the legend it belongs to.
 
   **Paste the text from `arxiv.org/bibtex/<id>`, do not write it by hand.** Only
   the two arXiv papers carry a block, because those are the only two with an

@@ -170,7 +170,6 @@
      borrowing the UI scale — at --t-title they would read undersized. */
   --t-org:     1.25rem;  /* 20px — institution names                    */
   --t-subhead: 1.375rem; /* 22px — the modal title                      */
-  --t-band:    1.625rem; /* 26px — section and group headings           */
   --t-display: 2.625rem; /* 42px — page titles, the name                */
 
   /* ── Line heights ─────────────────────────────────────────────────── */
@@ -332,6 +331,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 /* Every piece of metadata on this site is set in mono. It is the one
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
+.section-title, .subsection-title, .group-title,
 .error-code, .honor-year, .tags-label,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
@@ -651,10 +651,11 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 
 .section-title {
-  font-family: var(--display);
+  font-size: var(--t-title);
   font-weight: 600;
-  font-size: var(--t-band);
-  letter-spacing: var(--tr-serif);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
   white-space: nowrap;
 }
 
@@ -1066,14 +1067,18 @@ img.fig-mark { padding: 17% 34%; }
    and a page-level legend is a thing that drifts away from what it describes.
    Also keeps the modal self-contained, since it clones one card. */
 .pub-authors sup, .entry-authors sup { font-size: .75em; line-height: 0; }
-.author-note {
+
+/* The equal-contribution legend. Once, above the first band, rather than
+   trailing every author list that carries an asterisk — a convention is
+   stated once and then relied on. */
+.equal-note {
   font-family: var(--mono);
-  font-size: var(--t-micro);
+  font-size: var(--t-label);
   letter-spacing: .04em;
   color: var(--muted);
-  white-space: nowrap;
-  margin-left: .45rem;
+  margin: -.6rem 0 2rem;
 }
+.equal-note sup { font-size: .8em; line-height: 0; }
 .entry-summary {
   font-size: var(--t-small);
   line-height: var(--lh-relaxed);
@@ -1442,20 +1447,24 @@ img.fig-mark { padding: 17% 34%; }
   max-width: 58ch;
 }
 .group + .group { margin-top: 3.25rem; }
-/* Band headings — Education, Research Experience, Peer-Reviewed.
-   These were 12px grey uppercase mono while the organisation names *inside*
-   them were 20px ink serif, so a child outweighed its parent five to one and
-   the page read as though it were apologising for its own sections. They are
-   structure, so they take the structural voice the page titles and the
-   institution names already use, at a step that clears --t-org. */
+/* Band headings — Education, Research Experience, Peer-Reviewed, and the
+   homepage's own section titles.
+
+   They were 12px grey uppercase mono, which left the organisation names
+   *inside* them — 20px ink serif — outweighing their own heading about five
+   to one. The fix is not a different typeface: mono caps is where this page
+   gets its technical register, and swapping it for the display serif traded
+   one problem for a blander one. What was wrong was the size and the colour.
+   At 17px in --ink, the caps and the tracking carry enough weight to govern
+   a 20px serif name beneath them. */
 .subsection-title,
 .group-title {
-  font-family: var(--display);
-  font-size: var(--t-band);
+  font-size: var(--t-title);
   font-weight: 600;
-  letter-spacing: var(--tr-serif);
+  letter-spacing: .14em;
+  text-transform: uppercase;
   color: var(--ink);
-  padding-bottom: .55rem;
+  padding-bottom: .6rem;
   border-bottom: 1px solid var(--rule);
   margin-bottom: 1.5rem;
 }

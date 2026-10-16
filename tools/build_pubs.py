@@ -50,7 +50,7 @@ DATA = ROOT / 'data' / 'publications.json'
 
 GROUPS = [('peer', 'Peer-Reviewed'), ('preprint', 'Preprints'), ('thesis', 'Theses')]
 BADGE_CLASS = {None: 'badge', 'muted': 'badge badge--muted', 'award': 'badge badge--award'}
-EQUAL_NOTE = '* equal contribution'
+EQUAL_NOTE = '<sup>*</sup> denotes equal contribution'
 BEGIN = '<!-- GENERATED: %s — from data/publications.json via tools/build_pubs.py -->'
 END = '<!-- /GENERATED: %s -->'
 
@@ -86,15 +86,18 @@ def title_html(p, link=True):
     return f'<a href="{p["url"]}">{p["title"]}</a>' if link and p.get('url') else p['title']
 
 
-def authors_html(p):
+def authors_html(p, stars=True):
+    """The author list.
+
+    `stars` is off for the homepage card: the asterisk only means something
+    next to the legend, and the legend lives on publications.html. A card is
+    a summary — the convention belongs with the full list.
+    """
     out = []
     for a in p['authors']:
         name = f'<span class="author-me">{a["name"]}</span>' if a.get('me') else a['name']
-        out.append(('<sup>*</sup>' if a.get('equal') else '') + name)
-    html = ', '.join(out)
-    if any(a.get('equal') for a in p['authors']):
-        html += f' <span class="author-note">{EQUAL_NOTE}</span>'
-    return html
+        out.append(('<sup>*</sup>' if stars and a.get('equal') else '') + name)
+    return ', '.join(out)
 
 
 def venue_html(p, card=False):
@@ -135,6 +138,8 @@ def links_html(p, indent, cls):
 
 def render_entries(papers):
     out = []
+    if any(a.get('equal') for p in papers for a in p['authors']):
+        out += [f'  <p class="equal-note">{EQUAL_NOTE}</p>', '']
     for key, heading in GROUPS:
         group = [p for p in papers if p['group'] == key]
         if not group:
@@ -180,7 +185,8 @@ def render_cards(papers, selected_order):
         out.append('        <p class="pub-hint">Details '
                    '<span class="arrow" aria-hidden="true">&rarr;</span></p>')
         out += ['      </div>', '', '      <div class="pub-detail">']
-        para(out, '        ', 'p class="pub-authors"', authors_html(p), COLS['card_authors'])
+        para(out, '        ', 'p class="pub-authors"', authors_html(p, stars=False),
+             COLS['card_authors'])
         para(out, '        ', 'p class="pub-venue"', venue_html(p), COLS['card_venue'])
         para(out, '        ', 'p class="pub-summary"',
              p.get('summary_card') or p['summary'], COLS['card_summary'])
