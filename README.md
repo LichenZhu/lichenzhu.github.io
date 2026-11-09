@@ -171,6 +171,16 @@ lockup sets the unit name in caps in Duke's sans; the reasoning was sound and
 the reconstruction was still wrong. `duke.png` remains for the Education chip,
 where the wordmark does appear on its own.
 
+The lockup is two marks in one file, so it carries two destinations:
+`duke.edu` from the wordmark, `cei.pratt.duke.edu` from the unit name. They are
+two absolutely positioned hotspots over the single image, split at 28% — the
+dividing rect sits at x = 136.53 of a 488.54 viewBox — rather than two cropped
+images, which would leave a fractional-pixel seam between the halves. The
+`<img>` is decorative (`alt=""`) because the two links carry the names. A
+hairline appears under whichever half you are on; without it the mark looks
+like one target. The banner no longer links home — `About` already does, and a
+Duke lockup that lands on a personal homepage was the wrong promise anyway.
+
 `--duke` is Duke Blue, `#012169`. It is far too dark to carry an
 accent on a near-black page, so on the dark theme it stays as the deep plate —
 the nav mark, the right end of the top bar — and the working accent is a bright
@@ -380,14 +390,15 @@ modal, everything on the page at once.
   the undergraduate dissertation.
 - **The favicon** (`assets/favicon.svg`) is a Z built from two accent bars and a
   white diagonal — three shapes, so it survives 16px in a browser tab. The same
-  mark is inlined in each page's `.nav-brand`; if you change one, change both.
+  mark is the tab icon only; the banner carries the lab's lockup instead.
 
 ## Institution logos
 
-`assets/images/logos/` holds the three real marks:
+`assets/images/logos/` holds the four real marks:
 
 | File | Source | Notes |
 | --- | --- | --- |
+| `cei-lockup.svg` | `cei-logo-white.svg` from cei.pratt.duke.edu | the banner lockup; white already, don't recolour or split it |
 | `duke.png` | Duke wordmark, navy `#012169` | transparent PNG, cropped to the ink and downscaled to 720px |
 | `xjtlu.png` | XJTLU shield | supplied as a white-background JPEG, cropped to the mark, downscaled to 360px |
 | `liverpool.svg` | <https://www.liverpool.ac.uk/logo-size-test/> `full-colour.svg` | **`width`/`height` were added to the root `<svg>`** |
@@ -397,7 +408,7 @@ and with no intrinsic dimensions its width collapses to nothing under
 height-based sizing — the chip renders empty. If you ever re-download it, add
 `width="566.9" height="144.7"` to the `<svg>` element again.
 
-The three marks have wildly different proportions — a 2.3:1 wordmark, a 0.8:1
+The three chip marks have wildly different proportions — a 2.3:1 wordmark, a 0.8:1
 shield, a 3.9:1 lockup. They are handled like this:
 
 - Each sits in a **white chip** (`.tl-mark`) of uniform height. All three are

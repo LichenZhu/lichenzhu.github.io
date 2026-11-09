@@ -29,11 +29,20 @@
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="Primary">
-      <a class="nav-brand" href="/">
-        <img class="brand-mark" src="/assets/images/logos/cei-lockup.svg"
-             alt="Duke University Center for Computational Evolutionary Intelligence"
+      <!-- The lockup is two marks in one piece of artwork, so it carries two
+           destinations: the wordmark goes to Duke, the unit name to the lab.
+           Two hotspots over one image rather than two images — the dividing
+           rect sits at x=136.53 of a 488.54 viewBox, and splitting the file
+           there would put a fractional-pixel seam between the halves. The
+           image is decorative because the two links carry the names. -->
+      <div class="nav-brand">
+        <img class="brand-mark" src="/assets/images/logos/cei-lockup.svg" alt=""
              width="489" height="43">
-      </a>
+        <a class="brand-hit brand-hit--duke" href="https://duke.edu"
+           aria-label="Duke University"></a>
+        <a class="brand-hit brand-hit--cei" href="https://cei.pratt.duke.edu/"
+           aria-label="Center for Computational Evolutionary Intelligence"></a>
+      </div>
       <button class="nav-toggle" type="button" aria-expanded="false"
               aria-controls="nav-list" aria-label="Toggle navigation menu">
         <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"

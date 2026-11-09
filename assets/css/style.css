@@ -443,9 +443,9 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 
 .nav-brand {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: .85rem;
   padding: .5rem 0;
   min-width: 0;
 }
@@ -465,6 +465,37 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   transition: opacity .15s ease;
 }
 .nav-brand:hover .brand-mark { opacity: 1; }
+
+/* The two halves of the lockup, two destinations. The rect that divides the
+   artwork sits at x = 136.53 of a 488.54 viewBox, so the boundary is 28%
+   across; the hotspots run the full height of the brand, padding included, so
+   there is no dead strip above or below the mark. The hairline is the only
+   affordance that says the mark is two targets, not one — without it you
+   would have to discover the split by moving the cursor across it. */
+.brand-hit {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.brand-hit--duke { left: 0; right: 72%; }
+.brand-hit--cei  { left: 28%; right: 0; }
+
+.brand-hit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* At the foot of the brand box, which is .5rem of padding below the mark:
+     the artwork's ink runs to its own bottom edge, so a hairline any closer
+     reads as an underline of the caps rather than as a separate rule. */
+  bottom: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, .55);
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.brand-hit:hover::after,
+.brand-hit:focus-visible::after { opacity: 1; }
 
 .nav-list { display: flex; align-items: center; gap: 1.75rem; }
 
@@ -1599,7 +1630,6 @@ img.fig-mark { padding: 17% 34%; }
   .nav-list li:last-child a { border-bottom: 0; }
   .nav-list a::after { display: none; }
 
-  .nav-brand { gap: .6rem; }
   /* One line of a 11.3:1 lockup — it has to come down a lot to leave the
      toggle room at 390px. */
   .brand-mark { height: 17px; }
