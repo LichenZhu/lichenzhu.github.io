@@ -449,36 +449,22 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   padding: .5rem 0;
   min-width: 0;
 }
-/* The wordmark is navy on transparent — the same navy as this bar — so it is
-   flipped to white in CSS. brightness(0) flattens every opaque pixel to
-   black, invert(1) lifts it to white; alpha, and so the letterforms, survive.
-   No second asset needed. */
+/* The lab's own lockup, cei-logo-white.svg, taken from cei.pratt.duke.edu.
+   The banner used to rebuild it here out of three pieces — the Duke wordmark
+   as a PNG flipped white with brightness(0) invert(1), a hand-drawn rule, and
+   the unit name set in EB Garamond. The reasoning for the Garamond was sound
+   (Duke's wordmark is cut from Garamond LT 3) but the real lockup sets the
+   unit name in caps in Duke's sans, so the reconstruction was simply wrong.
+   One official vector replaces all three, already white, sharp at any size,
+   and no filter trick. */
 .brand-mark {
-  height: 21px;
+  height: 26px;
   width: auto;
   flex: none;
-  filter: brightness(0) invert(1);
   opacity: .97;
+  transition: opacity .15s ease;
 }
-.brand-rule {
-  width: 1px;
-  height: 28px;
-  background: rgba(255, 255, 255, .30);
-  flex: none;
-}
-/* The unit signature: Duke's own Garamond, sitting beside a wordmark cut
-   from the same family. Title case rather than the mono caps it replaced —
-   Garamond's character lives in its lowercase. */
-.brand-unit {
-  font-family: var(--display);
-  font-size: .875rem;
-  font-weight: 500;
-  letter-spacing: .006em;
-  color: rgba(255, 255, 255, .88);
-  line-height: 1.24;
-  transition: color .15s ease;
-}
-.nav-brand:hover .brand-unit { color: #fff; }
+.nav-brand:hover .brand-mark { opacity: 1; }
 
 .nav-list { display: flex; align-items: center; gap: 1.75rem; }
 
@@ -1614,9 +1600,9 @@ img.fig-mark { padding: 17% 34%; }
   .nav-list a::after { display: none; }
 
   .nav-brand { gap: .6rem; }
-  .brand-mark { height: 18px; }
-  .brand-rule { height: 24px; }
-  .brand-unit { font-size: .75rem; }
+  /* One line of a 11.3:1 lockup — it has to come down a lot to leave the
+     toggle room at 390px. */
+  .brand-mark { height: 17px; }
 
   .sidebar { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar-portrait { grid-row: auto; max-width: 140px; margin-bottom: 1.3rem; }

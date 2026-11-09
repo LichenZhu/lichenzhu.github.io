@@ -157,14 +157,19 @@ rather than a conference one, so it keeps its own token instead of following
 role, matching the accent dot the timeline already puts beside it. Don't spend
 any of the three on anything else here.
 
-**Duke.** The header *is* the institutional banner: Duke navy, wordmark and CEI
-name on the left, navigation on the right, one bar. It stays navy in both themes
-because it is institutional livery rather than page chrome, so every colour
-inside `.site-header` is written against navy directly instead of against a
-token. The wordmark file is navy on transparent — the same navy as the bar — so
-it is flipped to white with `brightness(0) invert(1)`: that flattens every opaque
-pixel to black then lifts it to white, leaving the alpha channel and therefore
-the letterforms untouched. No white variant of the asset is needed.
+**Duke.** The header *is* the institutional banner: the lab's lockup on the
+left, navigation on the right, one bar. It stays navy in both themes because it
+is institutional livery rather than page chrome, so every colour inside
+`.site-header` is written against navy directly instead of against a token.
+
+`assets/images/logos/cei-lockup.svg` is the official artwork, taken from
+cei.pratt.duke.edu — wordmark, rule and unit name in one vector, already white.
+**Don't rebuild it.** The banner used to, out of a PNG wordmark flipped with
+`brightness(0) invert(1)`, a hand-drawn rule and the unit name in EB Garamond,
+on the reasoning that Duke's wordmark is cut from Garamond LT 3. The real
+lockup sets the unit name in caps in Duke's sans; the reasoning was sound and
+the reconstruction was still wrong. `duke.png` remains for the Education chip,
+where the wordmark does appear on its own.
 
 `--duke` is Duke Blue, `#012169`. It is far too dark to carry an
 accent on a near-black page, so on the dark theme it stays as the deep plate —
