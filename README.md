@@ -178,7 +178,11 @@ wrong here: the Best Paper Award existed only as a badge, with no news item.
 The About prose is **not** a third place for it. Every peer bio checked
 (Yueqian Lin, Tianyu Gao, Shunyu Yao, Barron, Yang Song) keeps to the same
 shape: where you are and who advises you, what you work on, where you came
-from — "Previously, I…". None of them attach a paper's acceptance or award to
+from — "Previously, I…". Here "what you work on" is carried by the Research
+Interests tags directly under the prose, so the prose itself is two
+paragraphs: who and where, then where from. It opens with the name, English
+name included — "I am Lichen (Julian) Zhu" — and the JSON-LD carries
+`alternateName: "Julian Zhu"` so a search for that name lands here too. None of them attach a paper's acceptance or award to
 the description of the research; those live in News and Publications, one
 scroll below. The only awards that reach a bio are career-level ones
 (Barron's PAMI Young Researcher Award), and they get a plain sentence of
