@@ -673,8 +673,13 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--ink);
-  white-space: nowrap;
 }
+/* No nowrap. "Selected Publications" sets 264px at this tracking, and with
+   the rule already shrunk to nothing it pushed "All publications →" 57px past
+   the container at 390px — the homepage scrolled sideways. Wrapping is not a
+   breakpoint rule because it does not need to be: the rule is flex:1 from a
+   0 basis, so it gives up its width first and the title breaks only on the
+   widths where it genuinely cannot fit. */
 
 .section-rule {
   flex: 1;
@@ -1379,21 +1384,24 @@ img.fig-mark { padding: 17% 34%; }
 
    So if this block ever looks flat again, the fix is not here. It is that an
    award is missing from `.news-list` or from its paper's badges. */
-.honors > li {
+.honors > li, .service > li {
   position: relative;
   padding-left: 1.15rem;
   font-size: var(--t-small);
   line-height: var(--lh-normal);
   margin-bottom: .55rem;
 }
-.honors > li::before {
+.honors > li::before, .service > li::before {
   content: "";
   position: absolute; left: 0; top: .72em;
   width: 4px; height: 4px;
   border-radius: 50%;
   background: var(--award);
 }
-.honors .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
+/* Reviewing is a role, not a distinction, so it does not get to spend the
+   green. Same list, muted dot. */
+.service > li::before { background: var(--muted); }
+.honors .honor-year, .service .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
 /* Keeps the ink colour and says it is a link by underlining on hover: an
    accent would single this award out for being clickable, not for being won. */
 .honors a {

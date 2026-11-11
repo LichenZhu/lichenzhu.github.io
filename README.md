@@ -175,6 +175,18 @@ not in this block.** It is that an award is missing from `.news-list` or from
 its paper's `badges` in `data/publications.json`. That is exactly what was
 wrong here: the Best Paper Award existed only as a badge, with no news item.
 
+The third place weight belongs is the **About prose**, which is the most-read
+text on the site and named no outcome at all. Barron's bio does this in one
+clause — "I've received the PAMI Young Researcher Award" — and the version
+here follows it: the honours attach to the two projects the paragraph has
+just described rather than standing on their own. Add to that sentence when
+something lands; do not start a trophy case somewhere else.
+
+**Academic Service** is its own block and is meant to stay one or two lines.
+Its bullet shares the honours layout but takes a `--muted` dot, not the green
+one: reviewing is a role, not a distinction, and the green is spent only on
+distinctions.
+
 **Duke.** The header *is* the institutional banner: the lab's lockup on the
 left, navigation on the right, one bar. It stays navy in both themes because it
 is institutional livery rather than page chrome, so every colour inside
@@ -406,6 +418,13 @@ modal, everything on the page at once.
   `class="fig-mark"` on the `<img>`, which adds the extra padding a logo needs
   so it reads as a mark rather than a block. `publications.html` does this for
   the undergraduate dissertation.
+- **`.section-title` does not set `white-space: nowrap`.** It used to, and
+  "Selected Publications" sets 264px at this tracking — with `.section-rule`
+  already shrunk to nothing, the "All publications →" link was pushed 57px
+  past the container at 390px and the homepage scrolled sideways. There is no
+  breakpoint for this, and there should not be: the rule is `flex: 1` from a
+  zero basis, so it surrenders its width first and the title wraps only at the
+  widths where it truly cannot fit — below about 420px, and nowhere else.
 - **The favicon** (`assets/favicon.svg`) is a Z built from two accent bars and a
   white diagonal — three shapes, so it survives 16px in a browser tab. The same
   mark is the tab icon only; the banner carries the lab's lockup instead.
