@@ -149,13 +149,32 @@ nameless links. The accent border belongs on the mark's own `:hover` and
 means interactive here, and now the mark actually is.
 
 **Colour on that page carries meaning, it is not decoration.** Green
-(`--award`) marks a conference distinction — the Oral badge and the
-honours-list bullets — while gold (`--gold`) stays on `.edu-honour` for
+(`--award`) marks a conference distinction — the Oral badge, and the hover
+underline on the one award that links to its paper — while gold (`--gold`)
+stays on `.edu-honour` for
 "First Class Honours": a degree classification reads as a classic distinction
 rather than a conference one, so it keeps its own token instead of following
 `--award`. The accent marks what is ongoing: `.tl-when--now` on the current
 role, matching the accent dot the timeline already puts beside it. Don't spend
 any of the three on anything else here.
+
+**Honours & Awards is a ledger (`.awards`), not a list.** It was five bullets
+with a trailing year, and it was the only block on a page of card grids and
+timelines with no structure of its own — which is the whole reason it read as
+flat. Three rules hold it up, and all three are worth keeping:
+
+- **The name is the award, the line under it is the issuer.** The old entries
+  led with the institution — Duke, Duke, XJTLU, XJTLU — so the left edge read
+  as one word repeated. Splitting them lets the names start with *Best*,
+  *Dean's*, *Master's*, *National*, and lets "Ministry of Education of China"
+  carry the scale that the word "National" was carrying alone.
+- **The figure gets its own right-aligned mono column.** It holds years and one
+  dollar amount; what matters is that they align, not that they agree in kind.
+  If a year ever turns up for the Master's Scholarship, move `$18,000` into the
+  issuer line rather than inventing a second column.
+- **A hairline per row, plus one under the whole block.** The closing rule is on
+  the `<ul>` and not on the last row because the grid is `auto-fit` — CSS has no
+  way to know which items land in the bottom row at a given width.
 
 **Duke.** The header *is* the institutional banner: the lab's lockup on the
 left, navigation on the right, one bar. It stays navy in both themes because it

@@ -332,7 +332,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
-.error-code, .honor-year, .tags-label,
+.error-code, .award-figure, .tags-label,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -1369,21 +1369,74 @@ img.fig-mark { padding: 17% 34%; }
   max-width: 66ch;
 }
 
-.honors > li {
-  position: relative;
-  padding-left: 1.15rem;
+/* A roll, not a bullet list. The awards were five 14px lines with a dot and a
+   trailing year, in a column 888px wide — no alignment, no hierarchy, and the
+   only block on a page of card grids and timelines with no structure at all.
+
+   Three things fix it. The figure moves to its own right-aligned mono column,
+   so the years stop sitting at five different x positions. The issuer moves to
+   a second line, which both frees the name to start with the award and lets
+   "Ministry of Education of China" carry the scale that "National" was having
+   to carry alone. And a hairline per row turns the whole thing into a ledger.
+
+   auto-fit rather than a breakpoint: two columns wherever the content column
+   is wide enough for 19rem tracks, one where it isn't, with no media query to
+   keep in sync with the sidebar's. */
+.awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  column-gap: 2.75rem;
+  /* Clear of the heading's own hairline: at .3rem the first row's rule sat
+     17px under it and the two read as one stripey pair. The bottom border
+     closes the ledger, and on the container rather than the last row because
+     auto-fit leaves CSS no way to know which items end up in it. */
+  margin-top: 1.05rem;
+  border-bottom: 1px solid var(--rule);
+}
+.award {
+  display: grid;
+  /* The name takes what is left; the figure takes exactly what it needs, so
+     "$18,000" and "2023–2024" set the column and the short years align into
+     it. minmax(0,1fr) and not 1fr — a long name must shrink, not overflow. */
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 1rem;
+  padding: .72rem 0 .78rem;
+  border-top: 1px solid var(--rule);
+}
+.award-name {
   font-size: var(--t-small);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  color: var(--ink);
+  margin: 0;
+}
+/* The one award that has somewhere to go. It keeps the ink colour — an accent
+   here would single it out for the wrong reason — and says it is a link by
+   underlining on hover, the way the sidebar's role does. */
+.award-name a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s ease;
+}
+.award-name a:hover,
+.award-name a:focus-visible { border-bottom-color: var(--award); }
+
+.award-figure {
+  font-size: var(--t-label);
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+  margin: 0;
+}
+.award-from {
+  grid-column: 1 / -1;
+  font-size: var(--t-label);
   line-height: var(--lh-normal);
-  margin-bottom: .55rem;
+  color: var(--muted);
+  margin: .18rem 0 0;
 }
-.honors > li::before {
-  content: "";
-  position: absolute; left: 0; top: .72em;
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--award);
-}
-.honors .honor-year { color: var(--muted); font-size: var(--t-label); margin-left: .7rem; }
 
 /* A plain wrapping row. It was a grid while this block was a 620px column and
    the six pills wrapped 5+1; now that they run the full width all six fit on
