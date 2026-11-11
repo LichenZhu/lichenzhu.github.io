@@ -125,7 +125,7 @@
         "detail": "2026"
       },
       "summary": "On PA-Bench, 100 assistant conversations we construct, a fact mentioned in passing survives compression to the question that needs it 0–1% of the time, against 97% with full memory. A compressed cache is an inference-reuse mechanism, not a persistence layer.",
-      "summary_card": "Benchmarks report that cache eviction keeps a fact like an allergy at a 20% budget — but they compress a prompt that already contains the user’s future question. Hide the question until after compression and the fact survives 0–1% of the time, against 97% with full memory. The cause is the budget, not the scorer.",
+      "summary_card": "Benchmarks report that cache eviction keeps a fact like an allergy at a 20% budget, but they compress a prompt that already contains the user’s future question. Hide the question until after compression and the fact survives 0–1% of the time, against 97% with full memory. The cause is the budget, not the scorer.",
       "figure": {
         "src": "assets/images/publications/memory-compression.webp",
         "alt": "Figure from the paper: a user tells an assistant facts over several days, the assistant compresses its conversation memory, and days later either recalls the penicillin allergy or asks the user to state it again",
@@ -180,7 +180,7 @@
         "name": "EMNLP",
         "detail": "2026"
       },
-      "summary": "A diagnostic study showing that video MLLMs select plausible distractors instead of recognising when the correct answer is absent — a failure that worsens under temporal reasoning and resists prompting-based fixes.",
+      "summary": "A diagnostic study showing that video MLLMs select plausible distractors instead of recognising when the correct answer is absent, a failure that worsens under temporal reasoning and resists prompting-based fixes.",
       "summary_card": "When the correct answer simply isn’t among the options, video MLLMs pick a plausible distractor rather than abstaining. We show this failure worsens under temporal reasoning and resists prompting-based fixes.",
       "figure": {
         "src": "assets/images/publications/streaming-absent-answer.webp",
@@ -371,7 +371,7 @@
         "name": "arXiv preprint",
         "detail": "arXiv:2610.08683"
       },
-      "summary": "When two full-duplex speech models talk to each other, no human absorbs the timing error. Their turn-taking is genuinely coupled — re-pairing speakers destroys it — but the floor changes hands at a median of 400–560 ms against 137 ms for humans, consistent with waiting for the end rather than projecting it.",
+      "summary": "When two full-duplex speech models talk to each other, no human absorbs the timing error. Their turn-taking is genuinely coupled (re-pairing speakers destroys it), but the floor changes hands at a median of 400–560 ms against 137 ms for humans, consistent with waiting for the end rather than projecting it.",
       "figure": {
         "src": "assets/images/publications/turn-taking.webp",
         "alt": "Figure from the paper: two speech models exchange audio tokens on a shared clock, with 400 ms of mutual silence between one speaker finishing and the other answering",

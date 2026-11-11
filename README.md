@@ -484,6 +484,14 @@ beside a venue — they are separate elements with space between them
 (`.tl-place` / `.tl-when`, or two `.badge`s), not one string glued with
 punctuation. Keep it that way when you add entries.
 
+**No em dashes.** `—` does not appear in anything a reader or a crawler sees:
+body text, `<title>`, `og:title`, `alt`, or the JSON-LD. Where a dash joined
+two sentences, it is a full stop; where it introduced a consequence, a comma;
+where it bracketed an aside, parentheses. Titles use a pipe:
+"Publications | Lichen Zhu". En dashes in ranges ("Sep 2025 – Jul 2027",
+"400–560 ms") are a different character and stay. Comments, the stylesheet
+and this file are exempt, and `tools/check.py` enforces the rest.
+
 ## The corner stamp
 
 Every page carries an "Updated YYYY-MM-DD" badge — pinned bottom-right on
@@ -602,8 +610,8 @@ python3 tools/check.py
 
 It checks that the four repeated blocks are identical once `aria-current` and
 404's absolute paths are normalised away; that every local link resolves and no
-asset is unreferenced; that no middle dot, placeholder or straight apostrophe
-has crept into visible prose; that every page parses, has exactly one `<h1>`
+asset is unreferenced; that no middle dot, em dash, placeholder or straight
+apostrophe has crept into visible prose; that every page parses, has exactly one `<h1>`
 and skips no heading level; that the stylesheet's braces balance and no class
 is declared without being used; and that the stamps, the CV date and the
 sitemap all agree. It exits non-zero, so it can gate a commit.

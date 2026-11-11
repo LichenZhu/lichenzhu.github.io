@@ -91,8 +91,13 @@ def links():
 
 # ── 3. the house rules ───────────────────────────────────────────────────────
 def house_rules():
-    dots, holes, straight = [], [], []
+    dots, holes, straight, dashes = [], [], [], []
     for f in PAGES:
+        # No em dashes anywhere a reader or a crawler sees them: text, titles,
+        # og:/alt attributes and the JSON-LD. Comments and CSS are exempt.
+        seen = re.sub(r'<style[^>]*>.*?</style>', ' ', strip_comments(read(f)), flags=re.S)
+        if re.search(r'—|&mdash;|&#8212;|&#x2014;', seen, re.I):
+            dashes.append(f)
         # scripts hold JSON-LD, where ASCII apostrophes are deliberate
         visible = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', strip_comments(read(f)), flags=re.S)
         body = re.sub(r'<[^>]+>', ' ', visible)
@@ -103,6 +108,7 @@ def house_rules():
         if re.search(r"[A-Za-z]'[A-Za-z]", body):
             straight.append(f)
     report('no middle dots as separators', not dots, ', '.join(dots))
+    report('no em dashes', not dashes, ', '.join(dashes))
     report('no placeholders left', not holes, ', '.join(holes))
     report('apostrophes are curly in prose', not straight, ', '.join(straight))
 
