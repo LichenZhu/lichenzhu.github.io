@@ -577,14 +577,16 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   margin-bottom: .8rem;
 }
 
+/* All ink. The department and university used to sit in --muted beside a
+   bold ink role, which made the line read as one word and a footnote; the
+   bold alone is enough to lead with the role. The CEI link keeps its blue. */
 .sidebar-role {
   font-size: var(--t-small);
   line-height: var(--lh-normal);
-  color: var(--muted);
+  color: var(--ink);
   margin-bottom: 1.4rem;
 }
-/* The role and the institution carry the weight; the connective text does not. */
-.sidebar-role strong { color: var(--ink); font-weight: 600; letter-spacing: -0.005em; }
+.sidebar-role strong { font-weight: 600; letter-spacing: -0.005em; }
 /* Same treatment as prose links: colour and weight, no standing rule. */
 .sidebar-role a {
   color: var(--accent-ink);
