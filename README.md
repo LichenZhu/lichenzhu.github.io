@@ -158,23 +158,22 @@ rather than a conference one, so it keeps its own token instead of following
 role, matching the accent dot the timeline already puts beside it. Don't spend
 any of the three on anything else here.
 
-**Honours & Awards is a ledger (`.awards`), not a list.** It was five bullets
-with a trailing year, and it was the only block on a page of card grids and
-timelines with no structure of its own — which is the whole reason it read as
-flat. Three rules hold it up, and all three are worth keeping:
+**Honours & Awards stays a plain list, and that is deliberate.** It was once
+briefly a two-column ledger — a right-aligned mono figure column, a hairline
+per row, the issuer on its own line — because six bullets looked flat next to
+the card grids and timelines above them. That was the wrong read. Of five peer
+sites worth copying, four carry no awards section at all: Jon Barron puts them
+as bold parentheticals on the papers, Songyou Peng and Chris Donahue put them
+in the news feed, Lilian Weng has none. The one that does keep a section,
+Tri Dao's, is plain one-line bullets — "Schmidt Sciences AI2050 Fellowship,
+2025." Nobody builds a table for this.
 
-- **The name is the award, the line under it is the issuer.** The old entries
-  led with the institution — Duke, Duke, XJTLU, XJTLU — so the left edge read
-  as one word repeated. Splitting them lets the names start with *Best*,
-  *Dean's*, *Master's*, *National*, and lets "Ministry of Education of China"
-  carry the scale that the word "National" was carrying alone.
-- **The figure gets its own right-aligned mono column.** It holds years and one
-  dollar amount; what matters is that they align, not that they agree in kind.
-  If a year ever turns up for the Master's Scholarship, move `$18,000` into the
-  issuer line rather than inventing a second column.
-- **A hairline per row, plus one under the whole block.** The closing rule is on
-  the `<ul>` and not on the last row because the grid is `auto-fit` — CSS has no
-  way to know which items land in the bottom row at a given width.
+The reason the list reads fine on their sites is that it is not carrying the
+weight. The award is on the paper and in the news feed, and the list is the
+footnote that repeats it. So **if this block ever looks flat again, the fix is
+not in this block.** It is that an award is missing from `.news-list` or from
+its paper's `badges` in `data/publications.json`. That is exactly what was
+wrong here: the Best Paper Award existed only as a badge, with no news item.
 
 **Duke.** The header *is* the institutional banner: the lab's lockup on the
 left, navigation on the right, one bar. It stays navy in both themes because it
