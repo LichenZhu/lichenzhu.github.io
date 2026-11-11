@@ -175,12 +175,16 @@ not in this block.** It is that an award is missing from `.news-list` or from
 its paper's `badges` in `data/publications.json`. That is exactly what was
 wrong here: the Best Paper Award existed only as a badge, with no news item.
 
-The third place weight belongs is the **About prose**, which is the most-read
-text on the site and named no outcome at all. Barron's bio does this in one
-clause — "I've received the PAMI Young Researcher Award" — and the version
-here follows it: the honours attach to the two projects the paragraph has
-just described rather than standing on their own. Add to that sentence when
-something lands; do not start a trophy case somewhere else.
+The About prose is **not** a third place for it. Every peer bio checked
+(Yueqian Lin, Tianyu Gao, Shunyu Yao, Barron, Yang Song) keeps to the same
+shape: where you are and who advises you, what you work on, where you came
+from — "Previously, I…". None of them attach a paper's acceptance or award to
+the description of the research; those live in News and Publications, one
+scroll below. The only awards that reach a bio are career-level ones
+(Barron's PAMI Young Researcher Award), and they get a plain sentence of
+their own. A sentence like "the first of those received the Best Paper Award;
+the second is to appear at WACV" was tried here and read as exactly what it
+was: a results list wedged into a description.
 
 **Academic Service** is its own block and is meant to stay one or two lines.
 Its bullet shares the honours layout but takes a `--muted` dot, not the green
@@ -384,6 +388,12 @@ modal, everything on the page at once.
   `assets/images/life/gallery/` and add one `<li>`.
 - **Strip the EXIF.** Every photo here went through a fresh pixel buffer, so no
   camera data and no GPS ships. Phone photos carry coordinates.
+- **Convert the colour profile first, then strip.** The fresh buffer drops the
+  ICC profile along with the EXIF, and a browser treats an untagged JPEG as
+  sRGB. Lightroom and recent iPhones export in Display P3, so stripping
+  without converting shifts every colour. Run it through
+  `ImageCms.profileToProfile(img, <embedded profile>, sRGB)` before the copy.
+  `humansys-talk.jpg` came from a P3 Sony export, and that is how it was done.
 - **A news item on `news.html` can carry a photo.** The homepage feed stays text
   only. Add a `<figure class="news-photo">` as the
   *third* child of the `<li>` — it is pinned to grid column 2 so it lands under

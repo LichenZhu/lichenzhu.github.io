@@ -1137,6 +1137,10 @@ img.fig-mark { padding: 17% 34%; }
 }
 .news-list em { color: var(--ink); font-style: normal; font-weight: 500; }
 .news-list strong { color: var(--ink); font-weight: 600; }
+/* Bold inside a link keeps the link's colour. Without this the ink above wins
+   over the inherited accent, and a linked award name reads as plain bold text,
+   which is the "get in touch has no link" bug in a new place. */
+.news-list a strong { color: inherit; }
 
 .news-date {
   font-size: var(--t-label);
