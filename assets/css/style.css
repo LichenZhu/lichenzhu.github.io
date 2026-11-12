@@ -577,9 +577,11 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   margin-bottom: .8rem;
 }
 
-/* All ink. The department and university used to sit in --muted beside a
-   bold ink role, which made the line read as one word and a footnote; the
-   bold alone is enough to lead with the role. The CEI link keeps its blue. */
+/* All ink, and the weight sits on the institutions, not the roles: Duke
+   University in bold, CEI as a blue link at 500. Being a student or an
+   intern is not what a reader scans this line for; where is. Bolding the
+   role instead made "M.S. Student" the loudest thing under the name, and
+   bolding nothing left the line with no anchor at all. */
 .sidebar-role {
   font-size: var(--t-small);
   line-height: var(--lh-normal);
