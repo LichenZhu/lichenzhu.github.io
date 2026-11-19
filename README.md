@@ -14,7 +14,8 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/manifold.js            the interactive particle galaxy
+  js/globe.js               the particle globe beside About (see "The globe")
+  images/globe/land.png     land mask for the globe, from Natural Earth (public domain)
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,17 +263,72 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## Particle galaxy
+## The globe
 
-The stars share the About section’s background. They sit beside the biography on
-wide screens and at the end of the heading on small ones. The WebGL2 renderer
-uses silver-blue light on dark pages and blue ink on light pages.
+Beside the About text sits the Earth drawn in particles: every grain of land is
+a point, and so are the routes, the markers and the dust around it. It shows
+the places where I have studied and worked, and it is a figure with a job, not
+decoration: it says where I am now (with the local time there), where I came
+from, and what happened in each place, and each place links to the part of the
+site that tells the rest. `assets/js/globe.js` draws it in WebGL, no libraries.
 
-Hover or focus the Duke University link in the biography to bring the Chapel
-photograph into focus. Drag the stars to rotate them, or hold to reveal the same
-image. Keyboard users can rotate with the arrow keys and hold the space bar.
-The animation pauses offscreen and in hidden tabs. Reduced motion applies view
-changes immediately. The biography fills the available space without WebGL2.
+What a visitor can do:
+
+- watch: it turns to each place in turn and the caption follows
+- drag to spin it; it keeps a little momentum
+- hover the surface: the grains under the cursor lift and light up
+- click the surface: a ripple runs round the planet from that point
+- hover a marker or a place name to go there
+- hover any link on the page that points at one of the places (Duke, XJTLU,
+  Liverpool, the HumanSys post) and the globe turns to it; it also leans a
+  little toward the cursor wherever it is on the page
+
+On the first homepage view of a visit the grains fly in and assemble the planet.
+
+**To add, remove or edit a place, edit its `<button>` in `index.html`**
+(search for "THE GLOBE"). Nothing about the places is in the script:
+
+| Attribute | Meaning |
+| --- | --- |
+| `data-stop` | a short id, used by `data-routes` |
+| `data-lat`, `data-lon` | coordinates in degrees; west and south are negative |
+| `data-city`, `data-org`, `data-role`, `data-years` | the four lines of the caption |
+| `data-href`, `data-link` | where the caption's link goes, and its label |
+| `data-match` | a piece of a URL; hovering a link whose address contains it turns the globe here |
+| `data-now` | marks the place I am in now: the globe opens on it and shows "Now" |
+| `data-tz` | an IANA time zone, for the local time beside "Now" |
+
+Routes are the figure's `data-routes`, as `from-to` pairs of ids. Keep the
+buttons in chronological order: that is the order of the tour. At most eight
+places and eight routes (the shaders hold fixed-size arrays).
+
+Things that are deliberate:
+
+- **Beside the text, never behind it, and inside the content column**, so
+  nothing moves under the prose and the sidebar does not shift between pages.
+  Two columns by container query on `<main>`; narrower, a small globe with its
+  caption beside it; on a phone, the globe centred above its caption.
+- **The canvas is larger than the globe's square and takes no pointer events.**
+  The glow, the dust and the lifted routes overhang the text beside it, so the
+  stage (the square) handles the pointer and the canvas is click-through;
+  otherwise it would block selecting text or clicking links near it.
+  `touch-action: pan-y` on the stage keeps vertical swipes scrolling the page.
+- **An even lattice of grains** (a Fibonacci sphere), sized to about 2.5 CSS px
+  apart at the current radius and rebuilt if the radius changes by a fifth.
+  Rows of latitude were tried first and moired into stripes.
+- **Colours are the `--gb-*` tokens** in `style.css`, hex only, since the
+  script hands them to the shaders. Dark: light on a dark sphere. Light theme:
+  ink on a pale sphere. Blending is ordinary premultiplied alpha in both.
+- **Fallbacks.** No WebGL: the script adds `.is-plain` and the text takes the
+  full width. No JavaScript: the same. Reduced motion: a still globe, no tour
+  and no opening, that still answers to drag, hover and the buttons. The tour
+  pauses while the pointer or keyboard focus is inside the figure.
+- About 0.4 ms a frame at 2x on a laptop, with the GPU finished each frame. It
+  draws only while on screen and with the tab visible.
+
+The land mask is `assets/images/globe/land.png`, 720x360, 1-bit, 5 KB, drawn
+from Natural Earth's 110m land polygons (public domain). `tools/check.py`
+reads the scripts for `'assets/...'` paths, so it counts as referenced.
 
 ## Pages, not scroll anchors
 
