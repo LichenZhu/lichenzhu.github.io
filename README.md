@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/manifold.js            the homepage's video memory particle animation
+  js/manifold.js            the homepage's particle ribbon
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,24 +262,22 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## Video memory
+## Particle ribbon
 
-The homepage figure uses the sea horizon photograph from the Experience
-gallery as a luminance map for a particle scene. Ripples move through the
-foreground. Older frames recede and condense into short rows of particles.
-A signal periodically retrieves one trace and opens the corresponding frame.
-The **Recall a frame** button also works by touch and keyboard.
+The homepage figure takes its colour and rhythm from the personal side of the
+site. Cool filaments follow a single folded path, with a warm highlight passing
+through them like light caught in a long exposure. Pointer movement gently
+shifts the viewing angle.
 
-`assets/js/manifold.js` draws the figure with Canvas 2D. Its `layouts` set the
-frame and trace positions for a desktop column, a wide band and a phone. The
-`--memory-*` tokens in `assets/css/style.css` define the dark and light palettes.
+`assets/js/manifold.js` draws the ribbon with Canvas 2D. The spline's control
+points set the silhouette, and the `--ribbon-*` tokens in `assets/css/style.css`
+define the dark and light palettes.
 
 The figure sits beside About when the content column is at least 760px wide
 and above the greeting in narrower columns. The absolutely positioned canvas
 fits the figure without affecting its height. The animation pauses outside
-the viewport and in hidden tabs. Reduced-motion mode shows a still frame and
-changes the recalled frame immediately on request. The text uses the full
-column when JavaScript or Canvas 2D is unavailable.
+the viewport and in hidden tabs. Reduced-motion mode shows a still frame. The
+text uses the full column when JavaScript or Canvas 2D is unavailable.
 
 ## Pages, not scroll anchors
 

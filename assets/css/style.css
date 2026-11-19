@@ -109,14 +109,12 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
-  /* Colours for the homepage's video memory study. */
-  --memory-surface: rgba(6, 14, 25, .96);
-  --memory-wash:    rgba(18, 43, 68, .96);
-  --memory-edge:    #557da8;
-  --memory-dot:     #6ba9ea;
-  --memory-shine:   #cbe9ff;
-  --memory-glow:    rgba(44, 107, 180, .18);
-  --memory-trace:   rgba(108, 163, 220, .33);
+  --ribbon-filament: rgba(118, 173, 224, .52);
+  --ribbon-grain:    #78afe3;
+  --ribbon-shine:    #e0f1ff;
+  --ribbon-amber:    #e6a065;
+  --ribbon-spark:    #ffe1bc;
+  --ribbon-glow:     rgba(49, 99, 159, .17);
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -227,13 +225,12 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
-    --memory-surface: rgba(234, 242, 251, .98);
-    --memory-wash:    rgba(250, 253, 255, .98);
-    --memory-edge:    #7698be;
-    --memory-dot:     #316aa7;
-    --memory-shine:   #123d78;
-    --memory-glow:    rgba(75, 132, 194, .14);
-    --memory-trace:   rgba(31, 86, 150, .33);
+    --ribbon-filament: rgba(40, 86, 144, .49);
+    --ribbon-grain:    #396da7;
+    --ribbon-shine:    #173d70;
+    --ribbon-amber:    #ad5b24;
+    --ribbon-spark:    #874515;
+    --ribbon-glow:     rgba(84, 129, 179, .13);
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -347,7 +344,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
-.error-code, .honor-year, .tags-label, .manifold-caption,
+.error-code, .honor-year, .tags-label,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -655,7 +652,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 
 
-/* Video memory lives inside the homepage's content column. The container
+/* The particle ribbon lives inside the homepage's content column. The container
    query gives it a column beside About or a band above it. */
 main { container-type: inline-size; container-name: main; }
 
@@ -678,33 +675,8 @@ main { container-type: inline-size; container-name: main; }
   width: 100%;
   height: 100%;
 }
-.manifold-caption {
-  position: absolute;
-  inset: auto 5% 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: var(--t-micro);
-  letter-spacing: .06em;
-  color: var(--muted);
-}
-.manifold-caption button {
-  min-height: 44px;
-  margin-right: -0.65rem;
-  padding: 0 0.65rem;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: none;
-  color: var(--accent-ink);
-  font: inherit;
-  letter-spacing: inherit;
-  cursor: pointer;
-}
-.manifold-caption button:hover { background: var(--accent-dim); }
-
 @container main (min-width: 760px) {
-  .intro.has-memory {
+  .intro.has-ribbon {
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(250px, 38%, 380px);
     column-gap: 2rem;
@@ -717,7 +689,6 @@ main { container-type: inline-size; container-name: main; }
     /* The artwork can use the container's right gutter. */
     margin: -2.2rem calc(-1 * var(--gutter)) 0 0;
   }
-  .manifold-caption { inset-inline: 15%; bottom: 1rem; }
 }
 @media (max-width: 720px) { .manifold { height: 210px; } }
 /* 7. Section furniture ---------------------------------------------------
@@ -1825,7 +1796,7 @@ img.fig-mark { padding: 17% 34%; }
   .site-header, .nav-toggle, .news-toggle, .skip-link,
   .pub-hint, .pub-modal, .photo-modal, .backdrop, .stamp,
   .gallery, .manifold { display: none !important; }
-  .intro.has-memory { display: block; }
+  .intro.has-ribbon { display: block; }
   .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
   a { color: #000 !important; text-decoration: none !important; }
