@@ -14,7 +14,6 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/keyframes.js           the interactive keyframe figure in About (see "A figure, not decoration")
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -245,7 +244,7 @@ Four effects carry the rest:
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
   below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
-  It stays still on purpose; see "A figure, not decoration".
+  It stays still on purpose: nothing animates behind text.
 - **Cursor-tracked card glow** — each `.pub-card` has a fill bloom (`::before`)
   and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
   `main.js` writes on pointer move (one write per frame, hover-capable pointers
@@ -261,43 +260,6 @@ Four effects carry the rest:
   change look as though it had just arrived. Only the content column moves.
 
 All three are disabled under `prefers-reduced-motion: reduce`.
-
-## A figure, not decoration
-
-The end of About carries one interactive figure: Fig. 1 of *Query-Conditioned
-Evidential Keyframe Sampling* (WACV 2027), made playable by
-`assets/js/keyframes.js`. Pick one of the paper's two questions and one of
-three samplers (uniform, relevance, evidence) and watch where an 8-frame
-budget goes: a playhead scans the video and the score curve forms behind it,
-then the chosen frames lift into the model's context, lit where they land in
-the segment that answers the question. The panel beside it shows the frame
-each scorer ranks first, which are the paper's own frames, cropped from the
-figure (`kf-*.webp`). Hovering the plot reads out a frame's time and scores.
-
-**Why this and not an effect.** Two animated effects came before it: a dot
-lattice behind the text that lit up under the cursor, then a wave-equation
-water surface above it. Both were rejected, rightly. The first got in the way
-of reading; the second was generic decoration wearing a lab coat, with an
-equation label to signal "science" that was not this research. The sites that
-carry interactive visuals well (Fred Hohman, Viégas and Wattenberg, Distill,
-Bartosz Ciechanowski) all follow one rule: the visual *is* the work. So if
-this is ever replaced, replace it with another result, not with an effect.
-
-What keeps it honest:
-
-- **The caption says what is real.** The curves are illustrative, shaped
-  after the paper's figure: same peaks, same places, same colours (relevance
-  blue, evidence red, the answering segment green). The frames are the
-  paper's. The results it prints follow from those curves, and they match the
-  paper's point: on the poem question evidence puts 8 of 8 frames in the
-  answer segment, relevance 0, uniform 1; on the football question 4 of 8 (the
-  whole 4-frame segment), 0 and 0.
-- **The budget is 8 for legibility; the paper uses 32.** The caption says so.
-- Without JavaScript the paper's static figure stands in. With reduced motion
-  every change lands in its final state. It animates only on a change and on
-  first scrolling into view, and costs nothing otherwise.
-- `tools/check.py` reads the scripts for `'assets/...'` paths, since three of
-  the four frames are only ever swapped in by the script.
 
 ## Pages, not scroll anchors
 

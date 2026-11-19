@@ -200,51 +200,6 @@
     <li class="tag">Long-Context Reasoning</li>
     <li class="tag">Memory-Augmented LLMs</li>
   </ul>
-
-  <!-- A figure from the research, made interactive (assets/js/keyframes.js).
-       Not decoration: it shows the result of the WACV paper. Without
-       JavaScript the paper's own static figure stands in. -->
-  <figure class="kf" aria-labelledby="kf-cap">
-    <img class="kf-static" src="assets/images/publications/keyframe-sampling.webp"
-         alt="Figure from the paper: for two video questions, the frames scored most semantically relevant differ from the frames scored most evidential, with the evidence curve peaking inside the segment that actually answers the question"
-         loading="lazy" width="1500" height="590">
-
-    <div class="kf-live">
-      <div class="kf-controls">
-        <div class="kf-group kf-questions" role="group" aria-label="Question">
-          <button type="button" data-q="0" aria-pressed="true">Whom is the poem in the video written by?</button>
-          <button type="button" data-q="1" aria-pressed="false">Which football event is depicted?</button>
-        </div>
-        <div class="kf-group kf-modes" role="group" aria-label="Sampler">
-          <button type="button" data-mode="uniform" aria-pressed="false">Uniform</button>
-          <button type="button" data-mode="relevance" aria-pressed="false">Relevance</button>
-          <button type="button" data-mode="evidence" aria-pressed="true">Evidence</button>
-        </div>
-      </div>
-
-      <div class="kf-stage">
-        <canvas class="kf-canvas" aria-hidden="true"></canvas>
-        <div class="kf-top">
-          <p class="kf-thumb-label">Top frame by evidence</p>
-          <img class="kf-thumb" src="assets/images/publications/kf-poem-evi.webp" alt=""
-               width="335" height="185">
-          <p class="kf-thumb-cap"></p>
-        </div>
-      </div>
-
-      <p class="kf-readout" aria-live="polite"></p>
-    </div>
-
-    <figcaption class="kf-cap" id="kf-cap">
-      Figure&nbsp;1 of <a href="publications.html#keyframe-sampling">Query-Conditioned
-      Evidential Keyframe Sampling</a> (WACV 2027), made interactive. An MLLM can only
-      look at a handful of frames from a long video, so a sampler chooses them: here 8
-      of 240 (the paper uses 32). Relevance takes the frames that look like the
-      question; our evidence scorer takes the frames that answer it. Curves are
-      illustrative, drawn after the paper&rsquo;s figure; the frames are the
-      paper&rsquo;s own.
-    </figcaption>
-  </figure>
 </section>
 
 <section class="section" id="publications" aria-labelledby="pubs-title">
@@ -541,7 +496,6 @@ queried twelve hours later"
 </footer>
 
 <script src="assets/js/main.js" defer></script>
-<script src="assets/js/keyframes.js" defer></script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      STRUCTURED DATA — the Person, plus one ScholarlyArticle per selected
