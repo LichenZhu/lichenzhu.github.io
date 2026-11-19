@@ -160,7 +160,7 @@
 
 <main id="main">
 
-<!-- The opening screen pairs About with a view of Duke Chapel through an animated aperture. -->
+<!-- The star field can resolve into a particle print of the Chapel. -->
 <div class="intro">
 <div class="intro-text">
 
@@ -208,9 +208,24 @@
 
 </div>
 
-<figure class="manifold" aria-hidden="true">
-  <canvas data-source="assets/images/life/gallery/chapel-blossom.webp"></canvas>
+<figure class="manifold" aria-label="Interactive star field">
+  <div class="star-stage">
+    <a class="star-poster" href="assets/images/life/gallery/chapel-blossom-lg.webp">
+      <img src="assets/images/life/gallery/chapel-blossom.webp" alt="Duke Chapel seen through spring blossoms" width="440" height="330">
+    </a>
+    <canvas tabindex="0" aria-label="Interactive star field. Drag or use the arrow keys to orbit. Hold the pointer or space bar to focus on Duke Chapel."></canvas>
+    <button class="star-expand" type="button" aria-haspopup="dialog" aria-controls="star-dialog">Expand <span aria-hidden="true">⤢</span></button>
+    <span class="star-hint" aria-hidden="true">Drag to orbit.</span>
+  </div>
+  <figcaption class="star-tools">
+    <div class="star-modes" role="group" aria-label="Particle scene">
+      <button type="button" aria-pressed="true" data-scene="orbit">Orbit</button>
+      <button type="button" aria-pressed="false" data-scene="chapel" disabled>Duke Chapel</button>
+    </div>
+    <button class="star-save" type="button">Save PNG <span aria-hidden="true">↓</span></button>
+  </figcaption>
 </figure>
+<dialog class="star-dialog" id="star-dialog" aria-label="Expanded star field"></dialog>
 </div>
 
 <section class="section" id="publications" aria-labelledby="pubs-title">

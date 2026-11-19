@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/manifold.js            the homepage's Chapel observatory
+  js/manifold.js            the interactive particle galaxy
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,22 +262,19 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## Chapel observatory
+## Particle galaxy
 
-A circular aperture frames the Duke Chapel photo from the Experience gallery.
-Two wave paths set the brightness of the surrounding particles. A scan across
-the photograph highlights its contrast edges and marks detail around the tower
-and stonework. Pointer movement gently shifts the aperture against the stars.
+The homepage draws a three-dimensional disk of stars in WebGL2. Drag to orbit
+it or use the arrow keys while the canvas has focus. Holding the canvas or the
+space bar brings the same grains into focus as a particle print of the Duke Chapel
+photograph. Release to send a wave through the disk. The scene buttons also
+select a persistent view. Expand opens the same scene across the viewport, and
+Save PNG renders the current view at 1800 pixels on its longest side.
 
-`assets/js/manifold.js` draws the scene with Canvas 2D and reads the image
-features from the gallery thumbnail. The `--observatory-*` tokens in
-`assets/css/style.css` define the dark and light palettes.
-
-The figure sits beside About when the content column is at least 760px wide
-and above the greeting in narrower columns. The absolutely positioned canvas
-fits the figure without affecting its height. The animation pauses outside
-the viewport and in hidden tabs. Reduced-motion mode shows a still frame. The
-text uses the full column when JavaScript or Canvas 2D is unavailable.
+The image sampler weights changes in luminance so the tower and stonework receive
+more particles. The animation pauses offscreen and in hidden tabs. Reduced motion
+applies view changes immediately. The original photograph links to the larger
+gallery image when WebGL2 or JavaScript is unavailable.
 
 ## Pages, not scroll anchors
 

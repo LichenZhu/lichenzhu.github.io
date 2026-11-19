@@ -1,381 +1,376 @@
-/* The homepage observatory pairs light interference with features extracted
-   from the Chapel photograph in the Experience gallery. */
+/* A star disk and a particle exposure of Duke Chapel share the same grains. */
 (function () {
   'use strict';
 
-  var figure = document.querySelector('.manifold');
+  const figure = document.querySelector('.manifold');
   if (!figure) return;
-  var canvas = figure.querySelector('canvas');
-  var ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  const canvas = figure.querySelector('canvas');
+  const photo = figure.querySelector('img');
+  const orbitButton = figure.querySelector('[data-scene="orbit"]');
+  const chapelButton = figure.querySelector('[data-scene="chapel"]');
+  const saveButton = figure.querySelector('.star-save');
+  const expandButton = figure.querySelector('.star-expand');
+  const dialog = document.querySelector('#star-dialog');
+  const hint = figure.querySelector('.star-hint');
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const gl = canvas.getContext('webgl2', { alpha: false, antialias: false, depth: false, stencil: false });
+  if (!gl) return;
 
-  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var theme = window.matchMedia('(prefers-color-scheme: light)');
-  var palette = {};
-  var W, H, radius, haze;
-  var frameId = null, lastFrame = null, inView = true;
-  var time = 0, offsetX = 0, offsetY = 0, targetX = 0, targetY = 0;
-  var TAU = Math.PI * 2, SIZE = 256;
-  var sourcePixels = null, photograph = null, features = null;
-  var stars = [], fringe = [], bands = [[], [], []], imagePoints = [];
-  var SAMPLE_MIN = -0.88, SAMPLE_SPAN = 1.76;
-
-  function clamp(n) { return Math.max(0, Math.min(1, n)); }
-  function smooth(n) { n = clamp(n); return n * n * (3 - 2 * n); }
-  function hash(n) {
-    var v = Math.sin(n * 127.1 + 311.7) * 43758.5453;
-    return v - Math.floor(v);
+  const COUNT = 56000;
+  const TAU = 2 * Math.PI;
+  let seed = 7351;
+  function random() {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+  function normal() { return Math.sqrt(-2 * Math.log(1 - random())) * Math.cos(TAU * random()); }
+  const orbits = new Float32Array(COUNT * 4);
+  for (let i = 0; i < COUNT; i++) {
+    const inner = random() < 0.12;
+    const r = inner ? 0.18 + Math.abs(normal()) * 0.095 : 0.19 + Math.pow(random(), 1.15) * 0.99;
+    const diffuse = random() < 0.34;
+    const theta = diffuse ? random() * TAU : TAU * Math.floor(random() * 3) / 3 +
+      2.8 * Math.log(r + 0.12) + normal() * (0.17 + r * 0.14);
+    orbits.set([r, theta, normal() * (diffuse ? 0.075 : 0.025) * (0.4 + r), random()], i * 4);
   }
 
-  for (var i = 0; i < 87; i++) {
-    var seed = i * 4;
-    stars.push([hash(seed + 1), hash(seed + 2), hash(seed + 3), hash(seed + 4)]);
-  }
-  for (var j = 0; j < 360; j++) {
-    var theta = TAU * hash(j * 3 + 700);
-    var r = 0.93 + 0.26 * hash(j * 3 + 701);
-    var x = Math.cos(theta) * r, y = Math.sin(theta) * r;
-    var left = Math.hypot(x + 0.54, y + 0.12), right = Math.hypot(x - 0.54, y - 0.12);
-    fringe.push({ x: x, y: y, phase: 25 * (left - right), gain: hash(j * 3 + 702) });
-  }
-
-  function readColors() {
-    var css = getComputedStyle(figure);
-    ['veil', 'orbit', 'light', 'star', 'shade', 'photo', 'edge'].forEach(function (name) {
-      palette[name] = css.getPropertyValue('--observatory-' + name).trim();
-    });
-    haze = ctx.createRadialGradient(0, 0, 0.32, 0, 0, 1.36);
-    haze.addColorStop(0, palette.veil);
-    haze.addColorStop(1, 'transparent');
-    if (sourcePixels) preparePhoto();
-  }
-
-  function rgb(hex) {
-    return [1, 3, 5].map(function (start) { return parseInt(hex.slice(start, start + 2), 16); });
-  }
-
-  function preparePhoto() {
-    var picture = photograph.getContext('2d'), edgeLayer = features.getContext('2d');
-    var image = picture.createImageData(SIZE, SIZE), edges = edgeLayer.createImageData(SIZE, SIZE);
-    var shade = rgb(palette.shade), highlight = rgb(palette.photo), signal = rgb(palette.edge);
-    imagePoints.length = 0;
-    for (var n = 0; n < sourcePixels.length; n++) {
-      var at = n * 4;
-      var row = Math.floor(n / SIZE), col = n % SIZE;
-      var value = Math.pow(clamp((sourcePixels[n] - 0.08) / 0.82), 0.86);
-      var inside = row > 0 && row < SIZE - 1 && col > 0 && col < SIZE - 1;
-      var dx = inside ? sourcePixels[n + 1] - sourcePixels[n - 1] : 0;
-      var dy = inside ? sourcePixels[n + SIZE] - sourcePixels[n - SIZE] : 0;
-      var contrast = Math.min(1, 2.4 * Math.hypot(dx, dy));
-      for (var channel = 0; channel < 3; channel++) {
-        image.data[at + channel] = shade[channel] + (highlight[channel] - shade[channel]) * value;
-        edges.data[at + channel] = signal[channel];
-      }
-      image.data[at + 3] = 255;
-      edges.data[at + 3] = 215 * contrast;
-      if (row % 5 === 0 && col % 5 === 0 && contrast > 0.20) {
-        imagePoints.push({
-          x: SAMPLE_MIN + SAMPLE_SPAN * col / SIZE,
-          y: SAMPLE_MIN + SAMPLE_SPAN * row / SIZE,
-          size: 0.31 + contrast * 0.86
-        });
-      }
+  // Importance sampling places grains along actual changes in luminance.
+  function sampleChapel() {
+    const size = 192;
+    const surface = document.createElement('canvas');
+    surface.width = surface.height = size;
+    const ctx = surface.getContext('2d');
+    if (!ctx) return null;
+    const w = photo.naturalWidth, h = photo.naturalHeight;
+    ctx.drawImage(photo, w * 0.25, h * 0.31, w * 0.49, h * 0.59, 0, 0, size, size);
+    const pixels = ctx.getImageData(0, 0, size, size).data;
+    const luminance = new Float32Array(size * size);
+    const cumulative = new Float64Array(luminance.length);
+    for (let n = 0; n < luminance.length; n++) {
+      const i = 4 * n;
+      luminance[n] = (pixels[i] * 0.213 + pixels[i + 1] * 0.715 + pixels[i + 2] * 0.072) / 255;
     }
-    picture.putImageData(image, 0, 0);
-    edgeLayer.putImageData(edges, 0, 0);
+    let total = 0;
+    for (let n = 0; n < luminance.length; n++) {
+      const x = n % size, y = Math.floor(n / size);
+      const dx = luminance[n] - luminance[x ? n - 1 : n];
+      const dy = luminance[n] - luminance[y ? n - size : n];
+      const margin = Math.min(x, y, size - 1 - x, size - 1 - y);
+      const fade = Math.min(1, (margin + 0.1) / 9);
+      total += fade * (0.065 + 0.32 * luminance[n] + 2.5 * Math.hypot(dx, dy));
+      cumulative[n] = total;
+    }
+    const data = new Float32Array(COUNT * 6);
+    for (let i = 0; i < COUNT; i++) {
+      const target = random() * total;
+      let lo = 0, hi = cumulative.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (cumulative[mid] < target) lo = mid + 1;
+        else hi = mid;
+      }
+      const u = (lo % size + random()) / size;
+      const v = (Math.floor(lo / size) + random()) / size;
+      const lum = luminance[lo];
+      data.set([(u - 0.5) * 1.83, (0.51 - v) * 1.67, (lum - 0.47) * 0.27,
+        pixels[lo * 4] / 255, pixels[lo * 4 + 1] / 255, pixels[lo * 4 + 2] / 255], i * 6);
+    }
+    return data;
   }
 
+  const header = `#version 300 es
+precision highp float;
+uniform vec2 viewport;
+uniform vec4 view; // yaw, elevation, focus, pixel scale
+uniform vec2 clock; // simulation time, time since release
+const float roll = 0.24;
+mat2 rotate(float a) { return mat2(cos(a), sin(a), -sin(a), cos(a)); }
+float unit() { return min(viewport.x * 0.408, viewport.y * 0.55); }
+`;
+  const backgroundVertex = `#version 300 es
+void main() {
+  vec2 pos = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+  gl_Position = vec4(pos * 2.0 - 1.0, 0.0, 1.0);
+}`;
+  const backgroundFragment = header + `
+out vec4 outColor;
+float hash(vec2 p) { return fract(sin(mod(dot(p, vec2(43.17, 71.53)), 313.0)) * 4375.5453); }
+void main() {
+  vec2 p = (gl_FragCoord.xy - viewport * vec2(0.5, 0.53)) / unit();
+  vec2 q = rotate(-roll) * p;
+  vec2 plane = vec2(q.x, -q.y / sin(view.y));
+  float r = length(plane), d = length(p);
+  float phase = atan(plane.y, plane.x) - view.x - clock.x * 0.045;
+  float arm = pow(0.5 + 0.5 * cos(3.0 * (phase - 2.8 * log(r + 0.12))), 3.0);
+  float dust = exp(-r*r*2.2) * smoothstep(0.16,0.32,r) * (0.18 + 0.82 * arm);
+  vec3 color = vec3(0.018,0.025,0.053) + vec3(0.02,0.035,0.08)*exp(-d*d);
+  float filament = 0.55 + 0.45*cos(66.0*r + 2.4*sin(4.0*phase-9.0*r));
+  color += (1.0-view.z) * (vec3(0.19,0.23,0.55)*dust*(0.62+0.38*filament)
+    + vec3(0.13,0.08,0.20)*exp(-r*r*7.0));
+  vec2 sky = p * 24.0 + vec2(view.x * 0.35, view.y * 0.18);
+  float seed = hash(floor(sky));
+  vec2 spot = 0.2 + 0.6 * vec2(seed, hash(floor(sky)+17.0));
+  float star = exp(-dot(fract(sky)-spot,fract(sky)-spot)*210.0);
+  color += vec3(0.48,0.62,0.88)*star*smoothstep(0.93,1.0,seed);
+  float lens = exp(-abs(d-0.174)*130.0) + 0.16*exp(-abs(d-0.18)*22.0);
+  color *= mix(1.0,0.12,(1.0-smoothstep(0.155,0.174,d))*(1.0-view.z));
+  color += (1.0-view.z)*lens*vec3(0.52,0.56,0.82)*(0.58+0.42*smoothstep(-0.04,0.14,q.y));
+  float upper = smoothstep(-0.04,0.14,q.y);
+  float arc = exp(-abs(length(q*vec2(1.0,0.87))-0.197)*95.0);
+  color += (1.0-view.z)*upper*arc*vec3(0.85,0.44,0.22);
+  outColor = vec4(color,1.0);
+}`;
+  const grainVertex = header + `
+layout(location=0) in vec4 orbit;
+layout(location=1) in vec3 destination;
+layout(location=2) in vec3 pigment;
+out vec4 tint;
+void main() {
+  float r = orbit.x, noise = orbit.w, focus = view.z;
+  float angle = orbit.y + view.x + clock.x * 0.045 + 0.042*sin(clock.x*0.27+r*7.0);
+  float wave = exp(-pow((r - (clock.y * 0.96 + 0.10)) * 10.0, 2.0));
+  float scatter = sin(3.14159 * focus);
+  float radial = r + wave * (0.043 + 0.038*noise);
+  vec3 world = vec3(radial*cos(angle),orbit.z,radial*sin(angle));
+  world.y += wave*(noise-0.3)*0.25 + scatter*0.12*sin(orbit.y*7.0);
+  float depth = world.z*cos(view.y) + world.y*sin(view.y);
+  vec2 disk = rotate(roll) * vec2(world.x, world.y*cos(view.y)-world.z*sin(view.y));
+  disk *= 2.9/(2.9-0.48*depth);
+  float d = length(disk);
+  float visible = (d < 0.162 && depth < sqrt(max(0.0,0.0262-d*d))) ? 0.0 : 1.0;
+  vec2 image = destination.xy + destination.z*vec2(0.45*sin(view.x),0.37*sin(view.y-0.45));
+  vec2 p = mix(disk, image, focus);
+  p += scatter*0.10*vec2(cos(orbit.y*4.0),sin(orbit.y*4.0))*noise;
+  gl_Position = vec4((p*unit()/viewport)*2.0 + vec2(0.0,0.06),0.0,1.0);
+  float core = 1.0-smoothstep(0.18,0.48,r);
+  float crest = pow(noise,3.0);
+  vec3 blue = mix(vec3(0.13,0.29,0.74),vec3(0.60,0.75,1.0),crest);
+  vec3 warm = mix(vec3(0.80,0.38,0.20),vec3(1.0,0.86,0.68),crest);
+  vec3 ink = mix(blue,warm,core*(0.80+0.20*cos(angle)));
+  ink = mix(ink,vec3(0.73,0.91,1.0),wave*0.87);
+  float lum = dot(pigment,vec3(0.213,0.715,0.072));
+  vec3 printColor = mix(pigment,vec3(lum*0.72,lum*0.94,lum*1.22),0.71);
+  float exposure = mix(1.0,0.37+0.18*cos(angle+0.6),core);
+  float alpha = (0.14+0.48*noise)*exposure*visible*(1.0-0.67*smoothstep(0.85,1.19,r));
+  tint = vec4(mix(ink,printColor,focus),mix(alpha,0.38+0.26*noise,focus));
+  gl_PointSize = max(1.0,view.w*mix(0.59 + 1.07*noise + 0.22*core + 0.52*wave,1.3+1.34*noise,focus));
+}`;
+  const grainFragment = `#version 300 es
+precision mediump float;
+in vec4 tint;
+out vec4 outColor;
+void main() {
+  float d = length(gl_PointCoord * 2.0 - 1.0);
+  outColor = vec4(tint.rgb,tint.a*(1.0-smoothstep(0.20,1.0,d)));
+}`;
+
+  let chapel = null;
+  function program(vertexSource, fragmentSource) {
+    const result = gl.createProgram();
+    for (const [type, source] of [[gl.VERTEX_SHADER, vertexSource], [gl.FRAGMENT_SHADER, fragmentSource]]) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+      gl.attachShader(result, shader);
+      gl.deleteShader(shader);
+    }
+    gl.linkProgram(result);
+    if (!gl.getProgramParameter(result, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(result));
+    return { id: result, viewport: gl.getUniformLocation(result, 'viewport'),
+      view: gl.getUniformLocation(result, 'view'), clock: gl.getUniformLocation(result, 'clock') };
+  }
+  let background, particles, geometry, photoBuffer;
+  function init() {
+    background = program(backgroundVertex, backgroundFragment);
+    particles = program(grainVertex, grainFragment);
+    geometry = gl.createVertexArray();
+    gl.bindVertexArray(geometry);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, orbits, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 4, gl.FLOAT, false, 0, 0);
+    photoBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, photoBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, chapel || COUNT * 24, gl.STATIC_DRAW);
+    for (let i = 1; i <= 2; i++) {
+      gl.enableVertexAttribArray(i);
+      gl.vertexAttribPointer(i, 3, gl.FLOAT, false, 24, (i - 1) * 12);
+    }
+    gl.bindVertexArray(null);
+  }
+  try { init(); } catch (error) { console.warn('Star field unavailable', error); return; }
+
+  let yaw = 0.28, elevation = 0.48, focus = 0, latched = false, holding = false;
+  let time = 0, wave = 5, last = null, pending = null, visible = true, lost = false;
+  let press = null, holdTimer = null;
+  let spin = 0;
+
+  function bind(pass, pixelScale) {
+    gl.useProgram(pass.id);
+    gl.uniform2f(pass.viewport, canvas.width, canvas.height);
+    gl.uniform4f(pass.view, yaw, elevation, focus, pixelScale);
+    gl.uniform2f(pass.clock, time, wave);
+  }
+  function render() {
+    if (lost || !canvas.width) return;
+    gl.viewport(0,0,canvas.width,canvas.height);
+    const size = Math.min(canvas.width*0.408,canvas.height*0.55)/139;
+    gl.disable(gl.BLEND);
+    gl.bindVertexArray(null);
+    bind(background,size);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+    gl.bindVertexArray(geometry);
+    bind(particles,size);
+    gl.drawArrays(gl.POINTS,0,COUNT);
+    gl.bindVertexArray(null);
+  }
   function fit() {
-    var rect = canvas.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var width = Math.max(1, Math.round(rect.width * dpr));
-    var height = Math.max(1, Math.round(rect.height * dpr));
-    if (W === rect.width && H === rect.height && canvas.width === width && canvas.height === height) return;
-    W = rect.width;
-    H = rect.height;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.setTransform(width / (W || 1), 0, 0, height / (H || 1), 0, 0);
-    radius = Math.min(W * 0.397, H * 0.40);
-    draw();
+    const rect = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1,2);
+    const w = Math.max(1,Math.round(rect.width*dpr)), h = Math.max(1,Math.round(rect.height*dpr));
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    render();
   }
-
-  function starfield(cx, cy) {
-    ctx.fillStyle = palette.star;
-    var spread = Math.min(W * 0.48, radius * 2.4);
-    for (var i = 0; i < stars.length; i++) {
-      var s = stars[i];
-      var x = (s[0] * 2 - 1) * spread, y = (s[1] * 2 - 1) * radius * 1.37;
-      if (x * x + y * y < radius * radius * 0.85) continue;
-      var brightness = s[2] * s[2];
-      ctx.globalAlpha = 0.08 + brightness * 0.41 + Math.sin(time * 0.58 + s[3] * TAU) * 0.06;
-      ctx.beginPath();
-      ctx.arc(cx + x, cy + y, 0.38 + brightness * 0.85, 0, TAU);
-      ctx.fill();
-      if (s[2] > 0.96) {
-        var tail = 2 + brightness * 1.5;
-        ctx.globalAlpha *= 0.72;
-        ctx.fillRect(cx + x - tail, cy + y - 0.33, tail * 2, 0.66);
-        ctx.fillRect(cx + x - 0.33, cy + y - tail, 0.66, tail * 2);
-      }
+  function loop(now) {
+    const dt = last === null ? 0 : Math.min(0.05,(now-last)/1000);
+    last = now;
+    time += dt;
+    wave += dt;
+    if (!press) {
+      yaw += spin*dt;
+      spin *= Math.exp(-dt*5.5);
     }
-    ctx.globalAlpha = 1;
+    const target = Number(latched || holding);
+    focus += (target-focus)*(1-Math.exp(-dt*4.8));
+    render();
+    pending = requestAnimationFrame(loop);
+  }
+  function sync() {
+    const run = visible && !document.hidden && !lost && !motion.matches;
+    if (run && pending === null) pending = requestAnimationFrame(loop);
+    if (!run && pending !== null) { cancelAnimationFrame(pending); pending = last = null; }
+    if (motion.matches) { spin = 0; focus = Number(latched || holding); wave = 5; render(); }
+  }
+  function setScene(isChapel) {
+    if (isChapel && !chapel) return;
+    if (!isChapel && latched) wave = 0;
+    latched = isChapel;
+    orbitButton.setAttribute('aria-pressed',String(!isChapel));
+    chapelButton.setAttribute('aria-pressed',String(isChapel));
+    hint.textContent = isChapel ? 'Drag to tilt the point cloud.' : (chapel ? 'Drag to orbit. Hold to focus.' : 'Drag to orbit.');
+    sync();
+  }
+  function release() {
+    clearTimeout(holdTimer);
+    if (holding && !latched) wave = 0;
+    holding = false;
+    press = null;
+    sync();
+  }
+  function orbit(dx,dy) {
+    yaw += dx;
+    elevation = Math.max(0.13,Math.min(1.28,elevation+dy));
+    if (motion.matches) render();
   }
 
-  function arc(r, start, end, width, opacity, color) {
-    ctx.globalAlpha = opacity;
-    ctx.lineWidth = width / radius;
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.arc(0, 0, r, start, end);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }
-
-  function interference() {
-    for (var k = 0; k < bands.length; k++) bands[k].length = 0;
-    for (var i = 0; i < fringe.length; i++) {
-      var p = fringe[i];
-      // Phase difference between two circular waves sets the fringe intensity.
-      var level = Math.pow(0.5 + 0.5 * Math.cos(p.phase - time * 0.65), 3);
-      var intensity = level * (0.38 + p.gain * 0.62);
-      if (intensity > 0.09) bands[Math.min(2, Math.floor(intensity * 3))].push(p);
-    }
-    ctx.fillStyle = palette.light;
-    for (var band = 0; band < bands.length; band++) {
-      var points = bands[band], size = (0.41 + band * 0.28) / radius;
-      ctx.globalAlpha = 0.14 + band * 0.17;
-      ctx.beginPath();
-      for (var j = 0; j < points.length; j++) {
-        var dot = points[j];
-        ctx.moveTo(dot.x + size, dot.y);
-        ctx.arc(dot.x, dot.y, size, 0, TAU);
-      }
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function orbitingLight(r, angle) {
-    ctx.fillStyle = palette.light;
-    for (var step = 9; step >= 0; step--) {
-      var a = angle - step * 0.013;
-      var size = (step === 0 ? 1.55 : 0.93 - step * 0.06) / radius;
-      ctx.globalAlpha = (1 - step / 10) * 0.86;
-      ctx.beginPath();
-      ctx.arc(Math.cos(a) * r, Math.sin(a) * r, size, 0, TAU);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function outerRings() {
-    var drift = Math.sin(time * 0.13) * 0.14;
-    ctx.strokeStyle = palette.orbit;
-    ctx.lineWidth = 0.85 / radius;
-    ctx.globalAlpha = 0.40;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 1.21, 0.38, -0.29, 0, TAU);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    arc(1.06, 0, TAU, 0.65, 0.42, palette.orbit);
-    arc(1.15, 3.27 + drift, 5.28 + drift, 0.8, 0.54, palette.orbit);
-    arc(1.15, 0.43 + drift, 1.95 + drift, 0.8, 0.54, palette.orbit);
-    arc(1.15, 5.49 + drift, 5.87 + drift, 1.7, 0.8, palette.light);
-    arc(1.15, 2.15 + drift, 2.40 + drift, 1.7, 0.72, palette.light);
-    arc(0.98, -0.68, 0.71, 0.9, 0.63, palette.orbit);
-    arc(0.98, 2.14, 3.82, 0.9, 0.63, palette.orbit);
-    ctx.globalAlpha = 0.62;
-    ctx.strokeStyle = palette.orbit;
-    ctx.lineWidth = 0.7 / radius;
-    ctx.beginPath();
-    for (var tick = 0; tick < 25; tick++) {
-      var a = 0.61 + tick * 0.065;
-      var outer = tick % 5 === 0 ? 1.112 : 1.092;
-      ctx.moveTo(Math.cos(a) * 1.070, Math.sin(a) * 1.070);
-      ctx.lineTo(Math.cos(a) * outer, Math.sin(a) * outer);
-    }
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    orbitingLight(1.06, 4.93 + time * 0.46);
-    orbitingLight(0.975, 2.38 + time * 0.34);
-  }
-
-  function box(x, y, w, h, opacity) {
-    var corner = 0.057;
-    ctx.strokeStyle = palette.edge;
-    ctx.lineWidth = 1 / radius;
-    ctx.globalAlpha = opacity;
-    ctx.beginPath();
-    ctx.moveTo(x, y + corner); ctx.lineTo(x, y); ctx.lineTo(x + corner, y);
-    ctx.moveTo(x + w - corner, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + corner);
-    ctx.moveTo(x + w, y + h - corner); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w - corner, y + h);
-    ctx.moveTo(x + corner, y + h); ctx.lineTo(x, y + h); ctx.lineTo(x, y + h - corner);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }
-
-  function scanImage() {
-    var phase = (time / 8 + 0.46) % 1;
-    var head = smooth(phase / 0.84);
-    var scan = SAMPLE_MIN + SAMPLE_SPAN * head;
-    for (var strip = 0; strip < 7; strip++) {
-      var from = Math.max(0, head - (strip + 1) * 0.035);
-      var width = head - strip * 0.035 - from;
-      if (width <= 0) break;
-      ctx.globalAlpha = 0.66 - strip * 0.087;
-      ctx.drawImage(features, SIZE * from, 0, SIZE * width, SIZE,
-        SAMPLE_MIN + SAMPLE_SPAN * from, SAMPLE_MIN, SAMPLE_SPAN * width, SAMPLE_SPAN);
-    }
-    ctx.fillStyle = palette.edge;
-    ctx.globalAlpha = 0.67;
-    ctx.beginPath();
-    for (var i = 0; i < imagePoints.length; i++) {
-      var point = imagePoints[i], distance = Math.abs(point.x - scan);
-      if (distance > 0.13) continue;
-      var r = point.size * (1 - distance / 0.14) / radius;
-      ctx.moveTo(point.x + r, point.y);
-      ctx.arc(point.x, point.y, r, 0, TAU);
-    }
-    ctx.fill();
-    ctx.strokeStyle = palette.edge;
-    ctx.lineWidth = 0.8 / radius;
-    ctx.globalAlpha = 0.42;
-    ctx.beginPath();
-    ctx.moveTo(scan, -0.88); ctx.lineTo(scan, 0.88);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // The faint grid marks sampled patches. The two active regions frame the
-    // tower and adjacent stonework in this crop of the actual photograph.
-    ctx.strokeStyle = palette.edge;
-    ctx.lineWidth = 0.65 / radius;
-    ctx.globalAlpha = 0.13;
-    ctx.beginPath();
-    for (var cell = 1; cell < 9; cell++) {
-      var p = SAMPLE_MIN + SAMPLE_SPAN * cell / 9;
-      ctx.moveTo(p, -0.88); ctx.lineTo(p, 0.88);
-      ctx.moveTo(-0.88, p); ctx.lineTo(0.88, p);
-    }
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    box(-0.09, -0.31, 0.43, 0.67, 0.46 + 0.46 * Math.exp(-7 * Math.abs(scan - 0.13)));
-    box(-0.57, 0.12, 0.34, 0.28, 0.18 + 0.42 * Math.exp(-7 * Math.abs(scan + 0.4)));
-  }
-
-  function aperture() {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(0, 0, 0.87, 0, TAU);
-    ctx.clip();
-    ctx.fillStyle = palette.shade;
-    ctx.fillRect(-0.88, -0.88, 1.76, 1.76);
-    if (sourcePixels) {
-      ctx.drawImage(photograph, SAMPLE_MIN, SAMPLE_MIN, SAMPLE_SPAN, SAMPLE_SPAN);
-      scanImage();
-    } else {
-      for (var i = 1; i < 6; i++) {
-        arc(i * 0.15, -0.7 + i * 0.38, 1.9 + i * 0.38, 0.8, 0.28, palette.light);
-      }
-    }
-    ctx.restore();
-    arc(0.88, 0, TAU, 1.2, 0.8, palette.orbit);
-    arc(0.897, 4.20, 5.65, 1.25, 0.84, palette.light);
-    arc(0.897, 0.96, 1.45, 1.15, 0.56, palette.light);
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    if (!radius) return;
-    var cx = W * 0.51, cy = H * (H > W ? 0.47 : 0.5);
-    starfield(cx - offsetX * 2, cy - offsetY * 2);
-    ctx.save();
-    ctx.translate(cx + offsetX * 6, cy + offsetY * 5);
-    ctx.scale(radius, radius);
-    ctx.fillStyle = haze;
-    ctx.fillRect(-1.37, -1.37, 2.74, 2.74);
-    interference();
-    outerRings();
-    aperture();
-    ctx.restore();
-  }
-
-  function syncLoop() {
-    var play = !motion.matches && inView && !document.hidden;
-    if (play && frameId === null) frameId = requestAnimationFrame(frame);
-    if (!play && frameId !== null) {
-      cancelAnimationFrame(frameId);
-      frameId = lastFrame = null;
-    }
-  }
-
-  function frame(now) {
-    var delta = lastFrame === null ? 0 : Math.min(now - lastFrame, 50);
-    lastFrame = now;
-    time += delta / 1000;
-    var easing = 1 - Math.exp(-delta / 180);
-    offsetX += (targetX - offsetX) * easing;
-    offsetY += (targetY - offsetY) * easing;
-    draw();
-    frameId = requestAnimationFrame(frame);
-  }
-
-  function resetPointer() { targetX = targetY = 0; }
-
-  figure.parentElement.classList.add('has-observatory');
   figure.classList.add('is-on');
-  readColors();
   fit();
-
-  var image = new Image();
-  image.onload = function () {
-    photograph = document.createElement('canvas');
-    features = document.createElement('canvas');
-    photograph.width = photograph.height = features.width = features.height = SIZE;
-    var sample = photograph.getContext('2d');
-    if (!sample || !features.getContext('2d')) return;
-    var crop = image.naturalHeight * 0.90;
-    sample.drawImage(image, (image.naturalWidth - crop) * 0.59, image.naturalHeight - crop,
-      crop, crop, 0, 0, SIZE, SIZE);
-    try {
-      var pixels = sample.getImageData(0, 0, SIZE, SIZE).data;
-      sourcePixels = new Float32Array(SIZE * SIZE);
-      for (var i = 0; i < sourcePixels.length; i++) {
-        var p = i * 4;
-        sourcePixels[i] = (pixels[p] * 0.2126 + pixels[p + 1] * 0.7152 + pixels[p + 2] * 0.0722) / 255;
-      }
-      preparePhoto();
-      if (frameId === null) draw();
-    } catch (error) {
-      // Canvas pixel reads can be restricted when the page is opened as a file.
-      sourcePixels = null;
+  photo.decode().then(() => {
+    chapel = sampleChapel();
+    if (!chapel) return;
+    if (!lost) {
+      gl.bindBuffer(gl.ARRAY_BUFFER,photoBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER,chapel,gl.STATIC_DRAW);
     }
-  };
-  image.src = canvas.dataset.source;
-
-  canvas.addEventListener('pointermove', function (event) {
-    if (event.pointerType !== 'mouse' || motion.matches) return;
-    var rect = canvas.getBoundingClientRect();
-    targetX = 2 * clamp((event.clientX - rect.left) / rect.width) - 1;
-    targetY = 2 * clamp((event.clientY - rect.top) / rect.height) - 1;
-  }, { passive: true });
-  canvas.addEventListener('pointerleave', resetPointer);
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) {
-      inView = entries[0].isIntersecting;
-      if (!inView) resetPointer();
-      syncLoop();
-    }).observe(figure);
-  }
-  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(figure);
-  else window.addEventListener('resize', fit);
-  document.addEventListener('visibilitychange', syncLoop);
-  theme.addEventListener('change', function () { readColors(); draw(); });
-  motion.addEventListener('change', function () {
-    resetPointer();
-    offsetX = offsetY = 0;
-    draw();
-    syncLoop();
+    chapelButton.disabled = false;
+    hint.textContent = 'Drag to orbit. Hold to focus.';
+  }).catch(() => { hint.textContent = 'Drag to orbit.'; });
+  orbitButton.addEventListener('click',() => setScene(false));
+  chapelButton.addEventListener('click',() => setScene(true));
+  expandButton.addEventListener('click', () => {
+    if (dialog.open) { dialog.close(); return; }
+    dialog.append(figure);
+    dialog.showModal();
+    expandButton.firstChild.textContent = 'Close ';
+    canvas.focus({ preventScroll: true });
+    fit();
   });
-  syncLoop();
+  dialog.addEventListener('close', () => {
+    dialog.before(figure);
+    expandButton.firstChild.textContent = 'Expand ';
+    if (!lost) expandButton.focus({ preventScroll: true });
+    fit();
+  });
+  canvas.addEventListener('pointerdown',event => {
+    if (!event.isPrimary || event.button !== 0) return;
+    spin = 0;
+    press = { id:event.pointerId, x:event.clientX, y:event.clientY, stamp:event.timeStamp, dragged:false };
+    canvas.setPointerCapture(event.pointerId);
+    holdTimer = setTimeout(() => { holding = Boolean(chapel); sync(); },250);
+  });
+  canvas.addEventListener('pointermove',event => {
+    if (!press || press.id !== event.pointerId) return;
+    const dx = event.clientX-press.x, dy = event.clientY-press.y;
+    if (!press.dragged && Math.hypot(dx,dy) < 4) return;
+    press.dragged = true;
+    clearTimeout(holdTimer);
+    orbit(dx*0.009,-dy*0.006);
+    spin = motion.matches ? 0 : Math.max(-2.2,Math.min(2.2,dx*9/Math.max(12,event.timeStamp-press.stamp)));
+    press.stamp = event.timeStamp;
+    press.x = event.clientX; press.y = event.clientY;
+  });
+  for (const type of ['pointerup','pointercancel','lostpointercapture']) {
+    canvas.addEventListener(type,event => { if (press && press.id === event.pointerId) release(); });
+  }
+  canvas.addEventListener('keydown',event => {
+    const steps = {ArrowLeft:[-0.11,0],ArrowRight:[0.11,0],ArrowUp:[0,0.07],ArrowDown:[0,-0.07]};
+    if (steps[event.key]) { event.preventDefault(); orbit(...steps[event.key]); }
+    if (event.code === 'Space') { event.preventDefault(); holding = Boolean(chapel); sync(); }
+  });
+  canvas.addEventListener('keyup',event => { if (event.code === 'Space') release(); });
+  canvas.addEventListener('blur',release);
+  canvas.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
+  saveButton.addEventListener('click',() => {
+    if (lost || saveButton.disabled) return;
+    saveButton.disabled = true;
+    const scene = focus > 0.5 ? 'duke-chapel' : 'orbit';
+    const factor = 1800 / Math.max(canvas.width,canvas.height);
+    const width = Math.round(canvas.width*factor), height = Math.round(canvas.height*factor);
+    try {
+      canvas.width = width; canvas.height = height;
+      render();
+      canvas.toBlob(blob => {
+        saveButton.disabled = false;
+        if (!blob) { hint.textContent = 'Export failed. Try again.'; return; }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'lichen-zhu-' + scene + '.png';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url),30000);
+      },'image/png');
+    } catch (error) {
+      saveButton.disabled = false;
+      hint.textContent = 'Export failed. Try again.';
+    } finally { fit(); }
+  });
+
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(canvas);
+  else window.addEventListener('resize',fit);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (!visible) release(); sync(); }).observe(figure);
+  }
+  document.addEventListener('visibilitychange',() => { if (document.hidden) release(); sync(); });
+  motion.addEventListener('change',sync);
+  canvas.addEventListener('webglcontextlost',event => {
+    event.preventDefault(); lost = true; release(); figure.classList.remove('is-on');
+    if (dialog.open) dialog.close();
+  });
+  canvas.addEventListener('webglcontextrestored',() => {
+    try { init(); } catch (error) { return; }
+    lost = false; figure.classList.add('is-on'); fit(); sync();
+  });
+  sync();
 })();
