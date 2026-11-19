@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/manifold.js            the homepage's particle ribbon
+  js/manifold.js            the homepage's Chapel observatory
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,16 +262,16 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## Particle ribbon
+## Chapel observatory
 
-The homepage figure takes its colour and rhythm from the personal side of the
-site. Cool filaments follow a single folded path, with a warm highlight passing
-through them like light caught in a long exposure. Pointer movement gently
-shifts the viewing angle.
+A circular aperture frames the Duke Chapel photo from the Experience gallery.
+Two wave paths set the brightness of the surrounding particles. A scan across
+the photograph highlights its contrast edges and marks detail around the tower
+and stonework. Pointer movement gently shifts the aperture against the stars.
 
-`assets/js/manifold.js` draws the ribbon with Canvas 2D. The spline's control
-points set the silhouette, and the `--ribbon-*` tokens in `assets/css/style.css`
-define the dark and light palettes.
+`assets/js/manifold.js` draws the scene with Canvas 2D and reads the image
+features from the gallery thumbnail. The `--observatory-*` tokens in
+`assets/css/style.css` define the dark and light palettes.
 
 The figure sits beside About when the content column is at least 760px wide
 and above the greeting in narrower columns. The absolutely positioned canvas
