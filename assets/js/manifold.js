@@ -5,17 +5,14 @@
   const figure = document.querySelector('.manifold');
   if (!figure) return;
   const canvas = figure.querySelector('canvas');
-  const photo = figure.querySelector('img');
-  const orbitButton = figure.querySelector('[data-scene="orbit"]');
-  const chapelButton = figure.querySelector('[data-scene="chapel"]');
-  const saveButton = figure.querySelector('.star-save');
-  const expandButton = figure.querySelector('.star-expand');
-  const dialog = document.querySelector('#star-dialog');
-  const hint = figure.querySelector('.star-hint');
+  const dukeLink = document.querySelector('#about [data-chapel]');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const gl = canvas.getContext('webgl2', { alpha: false, antialias: false, depth: false, stencil: false });
+  const light = window.matchMedia('(prefers-color-scheme: light)');
+  const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false });
   if (!gl) return;
 
+  const photo = new Image();
+  photo.src = canvas.dataset.source;
   const COUNT = 56000;
   const TAU = 2 * Math.PI;
   let seed = 7351;
@@ -55,8 +52,8 @@
       const x = n % size, y = Math.floor(n / size);
       const dx = luminance[n] - luminance[x ? n - 1 : n];
       const dy = luminance[n] - luminance[y ? n - size : n];
-      const margin = Math.min(x, y, size - 1 - x, size - 1 - y);
-      const fade = Math.min(1, (margin + 0.1) / 9);
+      const radius = Math.hypot((x + 0.5) / size - 0.5, (y + 0.5) / size - 0.5);
+      const fade = Math.min(1, Math.max(0, (0.5 - radius) / 0.17)) ** 2;
       total += fade * (0.065 + 0.32 * luminance[n] + 2.5 * Math.hypot(dx, dy));
       cumulative[n] = total;
     }
@@ -81,6 +78,7 @@
   const header = `#version 300 es
 precision highp float;
 uniform vec2 viewport;
+uniform float paper; // pale page uses blue ink
 uniform vec4 view; // yaw, elevation, focus, pixel scale
 uniform vec2 clock; // simulation time, time since release
 const float roll = 0.24;
@@ -103,7 +101,7 @@ void main() {
   float phase = atan(plane.y, plane.x) - view.x - clock.x * 0.045;
   float arm = pow(0.5 + 0.5 * cos(3.0 * (phase - 2.8 * log(r + 0.12))), 3.0);
   float dust = exp(-r*r*2.2) * smoothstep(0.16,0.32,r) * (0.18 + 0.82 * arm);
-  vec3 color = vec3(0.018,0.025,0.053) + vec3(0.02,0.035,0.08)*exp(-d*d);
+  vec3 color = vec3(0.0);
   float filament = 0.55 + 0.45*cos(66.0*r + 2.4*sin(4.0*phase-9.0*r));
   color += (1.0-view.z) * (vec3(0.19,0.23,0.55)*dust*(0.62+0.38*filament)
     + vec3(0.13,0.08,0.20)*exp(-r*r*7.0));
@@ -118,7 +116,10 @@ void main() {
   float upper = smoothstep(-0.04,0.14,q.y);
   float arc = exp(-abs(length(q*vec2(1.0,0.87))-0.197)*95.0);
   color += (1.0-view.z)*upper*arc*vec3(0.85,0.44,0.22);
-  outColor = vec4(color,1.0);
+  float fade = 1.0-smoothstep(0.97,1.44,d);
+  color *= fade;
+  float alpha = clamp(max(color.r,max(color.g,color.b)),0.0,1.0);
+  outColor = vec4(mix(color, vec3(0.025,0.14,0.37)*alpha, paper),alpha);
 }`;
   const grainVertex = header + `
 layout(location=0) in vec4 orbit;
@@ -152,7 +153,11 @@ void main() {
   vec3 printColor = mix(pigment,vec3(lum*0.72,lum*0.94,lum*1.22),0.71);
   float exposure = mix(1.0,0.37+0.18*cos(angle+0.6),core);
   float alpha = (0.14+0.48*noise)*exposure*visible*(1.0-0.67*smoothstep(0.85,1.19,r));
-  tint = vec4(mix(ink,printColor,focus),mix(alpha,0.38+0.26*noise,focus));
+  vec3 daylight = mix(vec3(0.12,0.36,0.67),vec3(0.015,0.10,0.32),core);
+  ink = mix(ink,daylight,paper);
+  printColor = mix(printColor,vec3(0.018,0.14,0.36),paper);
+  float printAlpha = mix(0.38+0.26*noise,0.62*pow(1.0-lum,1.65),paper);
+  tint = vec4(mix(ink,printColor,focus),mix(alpha,printAlpha,focus));
   gl_PointSize = max(1.0,view.w*mix(0.59 + 1.07*noise + 0.22*core + 0.52*wave,1.3+1.34*noise,focus));
 }`;
   const grainFragment = `#version 300 es
@@ -178,7 +183,7 @@ void main() {
     gl.linkProgram(result);
     if (!gl.getProgramParameter(result, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(result));
     return { id: result, viewport: gl.getUniformLocation(result, 'viewport'),
-      view: gl.getUniformLocation(result, 'view'), clock: gl.getUniformLocation(result, 'clock') };
+      paper: gl.getUniformLocation(result, 'paper'), view: gl.getUniformLocation(result, 'view'), clock: gl.getUniformLocation(result, 'clock') };
   }
   let background, particles, geometry, photoBuffer;
   function init() {
@@ -201,13 +206,15 @@ void main() {
   }
   try { init(); } catch (error) { console.warn('Star field unavailable', error); return; }
 
-  let yaw = 0.28, elevation = 0.48, focus = 0, latched = false, holding = false;
+  let yaw = 0.28, elevation = 0.48, focus = 0, holding = false;
+  let dukeHovered = false, dukeFocused = false;
   let time = 0, wave = 5, last = null, pending = null, visible = true, lost = false;
   let press = null, holdTimer = null;
   let spin = 0;
 
   function bind(pass, pixelScale) {
     gl.useProgram(pass.id);
+    gl.uniform1f(pass.paper, Number(light.matches));
     gl.uniform2f(pass.viewport, canvas.width, canvas.height);
     gl.uniform4f(pass.view, yaw, elevation, focus, pixelScale);
     gl.uniform2f(pass.clock, time, wave);
@@ -221,7 +228,7 @@ void main() {
     bind(background,size);
     gl.drawArrays(gl.TRIANGLES,0,3);
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+    gl.blendFuncSeparate(gl.SRC_ALPHA, light.matches ? gl.ONE_MINUS_SRC_ALPHA : gl.ONE, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.bindVertexArray(geometry);
     bind(particles,size);
     gl.drawArrays(gl.POINTS,0,COUNT);
@@ -233,6 +240,10 @@ void main() {
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
     render();
   }
+  function focusTarget() {
+    return Number(chapel !== null && (holding || dukeHovered || dukeFocused));
+  }
+
   function loop(now) {
     const dt = last === null ? 0 : Math.min(0.05,(now-last)/1000);
     last = now;
@@ -242,7 +253,7 @@ void main() {
       yaw += spin*dt;
       spin *= Math.exp(-dt*5.5);
     }
-    const target = Number(latched || holding);
+    const target = focusTarget();
     focus += (target-focus)*(1-Math.exp(-dt*4.8));
     render();
     pending = requestAnimationFrame(loop);
@@ -251,20 +262,11 @@ void main() {
     const run = visible && !document.hidden && !lost && !motion.matches;
     if (run && pending === null) pending = requestAnimationFrame(loop);
     if (!run && pending !== null) { cancelAnimationFrame(pending); pending = last = null; }
-    if (motion.matches) { spin = 0; focus = Number(latched || holding); wave = 5; render(); }
-  }
-  function setScene(isChapel) {
-    if (isChapel && !chapel) return;
-    if (!isChapel && latched) wave = 0;
-    latched = isChapel;
-    orbitButton.setAttribute('aria-pressed',String(!isChapel));
-    chapelButton.setAttribute('aria-pressed',String(isChapel));
-    hint.textContent = isChapel ? 'Drag to tilt the point cloud.' : (chapel ? 'Drag to orbit. Hold to focus.' : 'Drag to orbit.');
-    sync();
+    if (motion.matches) { spin = 0; focus = focusTarget(); wave = 5; render(); }
   }
   function release() {
     clearTimeout(holdTimer);
-    if (holding && !latched) wave = 0;
+    if (holding && !dukeHovered && !dukeFocused) wave = 0;
     holding = false;
     press = null;
     sync();
@@ -284,25 +286,19 @@ void main() {
       gl.bindBuffer(gl.ARRAY_BUFFER,photoBuffer);
       gl.bufferData(gl.ARRAY_BUFFER,chapel,gl.STATIC_DRAW);
     }
-    chapelButton.disabled = false;
-    hint.textContent = 'Drag to orbit. Hold to focus.';
-  }).catch(() => { hint.textContent = 'Drag to orbit.'; });
-  orbitButton.addEventListener('click',() => setScene(false));
-  chapelButton.addEventListener('click',() => setScene(true));
-  expandButton.addEventListener('click', () => {
-    if (dialog.open) { dialog.close(); return; }
-    dialog.append(figure);
-    dialog.showModal();
-    expandButton.firstChild.textContent = 'Close ';
-    canvas.focus({ preventScroll: true });
-    fit();
+    sync();
+  }).catch(() => { /* The orbit is independent of the photograph. */ });
+
+  // The affiliation in the biography also reveals the Chapel; the link keeps
+  // its ordinary click, keyboard navigation and touch behaviour.
+  dukeLink.addEventListener('pointerenter', event => {
+    if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+    dukeHovered = true;
+    sync();
   });
-  dialog.addEventListener('close', () => {
-    dialog.before(figure);
-    expandButton.firstChild.textContent = 'Expand ';
-    if (!lost) expandButton.focus({ preventScroll: true });
-    fit();
-  });
+  dukeLink.addEventListener('pointerleave', () => { dukeHovered = false; sync(); });
+  dukeLink.addEventListener('focus', () => { dukeFocused = true; sync(); });
+  dukeLink.addEventListener('blur', () => { dukeFocused = false; sync(); });
   canvas.addEventListener('pointerdown',event => {
     if (!event.isPrimary || event.button !== 0) return;
     spin = 0;
@@ -332,31 +328,6 @@ void main() {
   canvas.addEventListener('keyup',event => { if (event.code === 'Space') release(); });
   canvas.addEventListener('blur',release);
   canvas.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
-  saveButton.addEventListener('click',() => {
-    if (lost || saveButton.disabled) return;
-    saveButton.disabled = true;
-    const scene = focus > 0.5 ? 'duke-chapel' : 'orbit';
-    const factor = 1800 / Math.max(canvas.width,canvas.height);
-    const width = Math.round(canvas.width*factor), height = Math.round(canvas.height*factor);
-    try {
-      canvas.width = width; canvas.height = height;
-      render();
-      canvas.toBlob(blob => {
-        saveButton.disabled = false;
-        if (!blob) { hint.textContent = 'Export failed. Try again.'; return; }
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'lichen-zhu-' + scene + '.png';
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url),30000);
-      },'image/png');
-    } catch (error) {
-      saveButton.disabled = false;
-      hint.textContent = 'Export failed. Try again.';
-    } finally { fit(); }
-  });
-
   if ('ResizeObserver' in window) new ResizeObserver(fit).observe(canvas);
   else window.addEventListener('resize',fit);
   if ('IntersectionObserver' in window) {
@@ -364,9 +335,9 @@ void main() {
   }
   document.addEventListener('visibilitychange',() => { if (document.hidden) release(); sync(); });
   motion.addEventListener('change',sync);
+  light.addEventListener('change',render);
   canvas.addEventListener('webglcontextlost',event => {
     event.preventDefault(); lost = true; release(); figure.classList.remove('is-on');
-    if (dialog.open) dialog.close();
   });
   canvas.addEventListener('webglcontextrestored',() => {
     try { init(); } catch (error) { return; }

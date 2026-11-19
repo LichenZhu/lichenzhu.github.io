@@ -160,10 +160,6 @@
 
 <main id="main">
 
-<!-- The star field can resolve into a particle print of the Chapel. -->
-<div class="intro">
-<div class="intro-text">
-
 <!-- The content column used to open on the "About" rule, which is a filing
      label rather than a greeting. This is a <p>, not a heading: the <h1> is
      the name in the sidebar and there is only ever one. The emoji is
@@ -181,7 +177,7 @@
   <div class="prose">
     <p>
       I am Lichen (Julian) Zhu, a Master&rsquo;s student in Electrical &amp; Computer
-      Engineering at <a href="https://ece.duke.edu/">Duke University</a>. I work in the
+      Engineering at <a href="https://ece.duke.edu/" data-chapel>Duke University</a>. I work in the
       <a href="https://cei.pratt.duke.edu/">Center for Computational Evolutionary
       Intelligence</a>, directed by
       <a href="https://ece.duke.edu/people/yiran-chen/">Prof. Yiran Chen</a> and
@@ -196,6 +192,11 @@
     </p>
   </div>
 
+  <div class="manifold">
+    <canvas tabindex="0" role="img" data-source="assets/images/life/gallery/chapel-blossom.webp"
+            aria-label="An orbiting star field. Drag or use the arrow keys to rotate. Hold the pointer or space bar to reveal Duke Chapel."></canvas>
+  </div>
+
   <!-- RESEARCH INTEREST TAGS — add or remove <li> items freely. -->
   <p class="tags-label">Research Interests</p>
   <ul class="tags">
@@ -205,28 +206,6 @@
     <li class="tag">Memory-Augmented LLMs</li>
   </ul>
 </section>
-
-</div>
-
-<figure class="manifold" aria-label="Interactive star field">
-  <div class="star-stage">
-    <a class="star-poster" href="assets/images/life/gallery/chapel-blossom-lg.webp">
-      <img src="assets/images/life/gallery/chapel-blossom.webp" alt="Duke Chapel seen through spring blossoms" width="440" height="330">
-    </a>
-    <canvas tabindex="0" aria-label="Interactive star field. Drag or use the arrow keys to orbit. Hold the pointer or space bar to focus on Duke Chapel."></canvas>
-    <button class="star-expand" type="button" aria-haspopup="dialog" aria-controls="star-dialog">Expand <span aria-hidden="true">⤢</span></button>
-    <span class="star-hint" aria-hidden="true">Drag to orbit.</span>
-  </div>
-  <figcaption class="star-tools">
-    <div class="star-modes" role="group" aria-label="Particle scene">
-      <button type="button" aria-pressed="true" data-scene="orbit">Orbit</button>
-      <button type="button" aria-pressed="false" data-scene="chapel" disabled>Duke Chapel</button>
-    </div>
-    <button class="star-save" type="button">Save PNG <span aria-hidden="true">↓</span></button>
-  </figcaption>
-</figure>
-<dialog class="star-dialog" id="star-dialog" aria-label="Expanded star field"></dialog>
-</div>
 
 <section class="section" id="publications" aria-labelledby="pubs-title">
   <div class="section-head">

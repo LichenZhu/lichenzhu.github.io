@@ -264,17 +264,15 @@ All three are disabled under `prefers-reduced-motion: reduce`.
 
 ## Particle galaxy
 
-The homepage draws a three-dimensional disk of stars in WebGL2. Drag to orbit
-it or use the arrow keys while the canvas has focus. Holding the canvas or the
-space bar brings the same grains into focus as a particle print of the Duke Chapel
-photograph. Release to send a wave through the disk. The scene buttons also
-select a persistent view. Expand opens the same scene across the viewport, and
-Save PNG renders the current view at 1800 pixels on its longest side.
+The stars share the About section’s background. They sit beside the biography on
+wide screens and at the end of the heading on small ones. The WebGL2 renderer
+uses silver-blue light on dark pages and blue ink on light pages.
 
-The image sampler weights changes in luminance so the tower and stonework receive
-more particles. The animation pauses offscreen and in hidden tabs. Reduced motion
-applies view changes immediately. The original photograph links to the larger
-gallery image when WebGL2 or JavaScript is unavailable.
+Hover or focus the Duke University link in the biography to bring the Chapel
+photograph into focus. Drag the stars to rotate them, or hold to reveal the same
+image. Keyboard users can rotate with the arrow keys and hold the space bar.
+The animation pauses offscreen and in hidden tabs. Reduced motion applies view
+changes immediately. The biography fills the available space without WebGL2.
 
 ## Pages, not scroll anchors
 
