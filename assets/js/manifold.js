@@ -1,546 +1,374 @@
-/* The latent manifold beside About.
-
-   A point cloud in the shape an embedding space takes under a projection:
-   seven structures (strands, spirals, rings, blobs, sheets) and a thin halo
-   of outliers, each point linked to its three nearest neighbours.
-
-   It is born the way a diffusion model samples. Every point carries a fixed
-   noise vector e, and its position is  sqrt(a)*x0 + sqrt(1-a)*e  with a
-   running from 0 to 1 along a cosine schedule, so a ball of Gaussian noise
-   separates into coloured structure. A click draws a new sample: the cloud
-   dissolves back toward noise and re-forms as a different manifold. Every
-   few seconds a signal is passed hop by hop along the neighbour graph and
-   lights up a filament. Hovering probes a point's neighbourhood; dragging
-   turns the space, with inertia.
-
-   It sits in the right-hand column of the opening screen, never behind text,
-   and the sidebar is untouched. It runs only while it is on screen and the
-   tab is visible. With reduced motion it is a still figure that still
-   answers to hover, drag and click; without JavaScript it is not shown. */
+/* Video memory. Recent particle frames stack up, then leave compact traces
+   behind. A passing signal calls an older frame back from its trace. */
 (function () {
   'use strict';
 
   var fig = document.querySelector('.manifold');
-  var canvas = fig && fig.querySelector('canvas');
-  var ctx = canvas && canvas.getContext && canvas.getContext('2d');
+  if (!fig) return;
+  var canvas = fig.querySelector('canvas');
+  var recallButton = fig.querySelector('button');
+  var ctx = canvas.getContext('2d');
   if (!ctx) return;
-  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var K = 7, KNN = 3, SIGMA = 0.72, LEVELS = 4;
+  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var theme = window.matchMedia('(prefers-color-scheme: light)');
+  var colors = {};
+  var W, H, scale, left, top, layout;
+  var pointer = 0, tilt = 0;
+  var STILL_TIME = 4, HISTORY = 20;
+  var time = STILL_TIME, lastFrame = null, frameId = null, inView = true;
+  var requested = null, recallCount = 0;
+  var CYCLE = 5.6, FIRST_RECALL = 2.95, RECALL_TIME = 4.4, RECALL_INTERVAL = 10.8;
+  var COLS = 54, ROWS = 30, photo = null;
+  var TAU = Math.PI * 2;
 
-  function rng(seed) {
-    return function () {
-      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
+  var layouts = {
+    tall: { width: 350, height: 426, frame: [65, 250, 244], step: [-13, -36],
+      memory: [45, 186, 17, 8], preview: [182, 42, 127], depth: 3 },
+    wide: { width: 640, height: 188, frame: [338, 32, 256], step: [-35, -12],
+      memory: [46, 151, 13, 7], preview: [181, 29, 115], depth: 3 },
+    compact: { width: 350, height: 169, frame: [151, 57, 175], step: [-19, -16],
+      memory: [20, 151, 12, 6], preview: [29, 18, 99], depth: 2 }
+  };
+
+  function clamp(x) { return Math.min(1, Math.max(0, x)); }
+  function smooth(x) { x = clamp(x); return x * x * (3 - 2 * x); }
+  function lerp(a, b, x) { return a + (b - a) * x; }
+  function noise(x) {
+    var n = Math.sin(x * 127.1 + 311.7) * 43758.5453;
+    return n - Math.floor(n);
   }
-  function gaussian(r) {
-    return function () { var u = r() || 1e-9, v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2831853 * v); };
+
+  function readColors() {
+    var css = getComputedStyle(fig);
+    ['surface', 'wash', 'edge', 'dot', 'shine', 'glow', 'trace'].forEach(function (name) {
+      colors[name] = css.getPropertyValue('--memory-' + name).trim();
+    });
   }
 
-  /* --- canvas --------------------------------------------------------- */
-  var W = 0, H = 0;
   function fit() {
     var rect = canvas.getBoundingClientRect();
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = Math.max(1, Math.round(rect.width));
-    H = Math.max(1, Math.round(rect.height));
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  fit();
-
-  /* --- the points ----------------------------------------------------- */
-  // Sized once, from the first layout: a resize re-projects, it does not resample.
-  var N = Math.max(1100, Math.min(2800, Math.round(W * H / 56)));
-  var HALO = Math.round(N * 0.06);
-  var owner = new Int8Array(N);           // cluster per index, -1 for the halo
-  (function () {
-    // Fixed cluster sizes, so every point keeps its colour across a resample.
-    var r = rng(97), w = [], s = 0, k, i = 0, body = N - HALO;
-    for (k = 0; k < K; k++) { w.push(0.7 + r() * 0.6); s += w[k]; }
-    for (k = 0; k < K; k++) {
-      var n = k === K - 1 ? body - i : Math.round(body * w[k] / s);
-      for (var m = 0; m < n; m++) owner[i++] = k;
-    }
-    while (i < N) owner[i++] = -1;
-  })();
-
-  var eps = new Float32Array(3 * N), phase = new Float32Array(N), freq = new Float32Array(N);
-  (function () {
-    var r = rng(5), g = gaussian(r);
-    for (var i = 0; i < N; i++) {
-      eps[3 * i] = g(); eps[3 * i + 1] = g(); eps[3 * i + 2] = g();
-      phase[i] = r() * 6.283; freq[i] = 0.6 + r() * 0.8;
-    }
-  })();
-
-  function frame3(g) {
-    var a = [g(), g(), g()], n = Math.hypot(a[0], a[1], a[2]);
-    a = [a[0] / n, a[1] / n, a[2] / n];
-    var b = [g(), g(), g()], d = b[0] * a[0] + b[1] * a[1] + b[2] * a[2];
-    b = [b[0] - d * a[0], b[1] - d * a[1], b[2] - d * a[2]];
-    n = Math.hypot(b[0], b[1], b[2]);
-    b = [b[0] / n, b[1] / n, b[2] / n];
-    return [a, b, [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]];
+    var width = Math.max(1, Math.round(rect.width * dpr));
+    var height = Math.max(1, Math.round(rect.height * dpr));
+    if (W === rect.width && H === rect.height && canvas.width === width && canvas.height === height) return;
+    W = rect.width;
+    H = rect.height;
+    canvas.width = width;
+    canvas.height = height;
+    ctx.setTransform(canvas.width / (W || 1), 0, 0, canvas.height / (H || 1), 0, 0);
+    layout = H > W * 0.95 ? layouts.tall : W >= 520 ? layouts.wide : layouts.compact;
+    var space = Math.max(0, H - 38);
+    scale = Math.min(W / layout.width, space / layout.height);
+    left = (W - layout.width * scale) / 2;
+    top = (space - layout.height * scale) / 2;
+    render();
   }
 
-  function shape(type, u, f, c, g) {
-    var a = f[0], b = f[1], n = f[2];
-    function at(pa, pb, pn) {
-      return [c[0] + a[0] * pa + b[0] * pb + n[0] * pn,
-              c[1] + a[1] * pa + b[1] * pb + n[1] * pn,
-              c[2] + a[2] * pa + b[2] * pb + n[2] * pn];
-    }
-    var t, th, rr;
-    switch (type) {
-      case 'strand':
-        t = u * 2 - 1;
-        return at(t * 0.56 + g() * 0.03, (t * t - 0.35) * 0.32 + g() * 0.035, Math.sin(t * 2.2) * 0.12 + g() * 0.035);
-      case 'spiral':
-        th = u * 3.4 * Math.PI; rr = 0.06 + u * 0.36;
-        return at(Math.cos(th) * rr + g() * 0.022, Math.sin(th) * rr + g() * 0.022, (u - 0.5) * 0.14 + g() * 0.025);
-      case 'ring':
-        th = u * 6.2832 + g() * 0.04;
-        return at(Math.cos(th) * 0.3 + g() * 0.035, Math.sin(th) * 0.3 + g() * 0.035, g() * 0.035);
-      case 'sheet':
-        return at(g() * 0.24, g() * 0.24, g() * 0.022);
-      default:                                // blob
-        return at(g() * 0.21, g() * 0.13, g() * 0.1);
-    }
+  function frameAt(age, slide) {
+    var f = layout.frame, s = layout.step, offset = age + slide - 1;
+    var w = f[2] * (1 - offset * 0.08);
+    return { x: f[0] + offset * (s[0] + f[2] * 0.04), y: f[1] + offset * s[1], w: w, h: w * ROWS / COLS };
   }
 
-  var TYPES = ['strand', 'spiral', 'ring', 'blob', 'sheet', 'strand', 'blob'];
-
-  function sample(seed) {
-    var r = rng(seed), g = gaussian(r), i, k;
-    var types = TYPES.slice();
-    for (i = types.length - 1; i > 0; i--) { k = (r() * (i + 1)) | 0; var tmp = types[i]; types[i] = types[k]; types[k] = tmp; }
-    var turn = r() * 6.283, centres = [], frames = [];
-    for (k = 0; k < K; k++) {
-      var phi = Math.acos(1 - 2 * (k + 0.5) / K), th = 2.39996 * k + turn + (r() - 0.5) * 0.5;
-      var rad = 0.95 + (r() - 0.5) * 0.25;
-      centres.push([Math.sin(phi) * Math.cos(th) * rad, Math.cos(phi) * rad * 0.82, Math.sin(phi) * Math.sin(th) * rad]);
-      frames.push(frame3(g));
-    }
-    var seen = new Int32Array(K), size = new Int32Array(K);
-    for (i = 0; i < N; i++) if (owner[i] >= 0) size[owner[i]]++;
-    var out = new Float32Array(3 * N);
-    for (i = 0; i < N; i++) {
-      var o = owner[i], p;
-      if (o < 0) {
-        var hu = r() * 2 - 1, ht = r() * 6.283, hr = Math.cbrt(r()) * 1.45, sq = Math.sqrt(1 - hu * hu);
-        p = [hr * sq * Math.cos(ht), hr * hu * 0.78, hr * sq * Math.sin(ht)];
-      } else {
-        p = shape(types[o], seen[o]++ / size[o], frames[o], centres[o], g);
-      }
-      out[3 * i] = p[0]; out[3 * i + 1] = p[1]; out[3 * i + 2] = p[2];
-    }
-    // centre on the structure and scale it to unit radius
-    var mx = 0, my = 0, mz = 0, m = 0, radii = [];
-    for (i = 0; i < N; i++) if (owner[i] >= 0) { mx += out[3 * i]; my += out[3 * i + 1]; mz += out[3 * i + 2]; m++; }
-    mx /= m; my /= m; mz /= m;
-    for (i = 0; i < N; i++) {
-      out[3 * i] -= mx; out[3 * i + 1] -= my; out[3 * i + 2] -= mz;
-      if (owner[i] >= 0) radii.push(Math.hypot(out[3 * i], out[3 * i + 1], out[3 * i + 2]));
-    }
-    radii.sort(function (a, b) { return a - b; });
-    var s = 1 / (radii[Math.floor(radii.length * 0.95)] || 1);
-    for (i = 0; i < 3 * N; i++) out[i] *= s;
-    return out;
+  function memoryAt(age, slide, index) {
+    var m = layout.memory, row = Math.max(0, age + slide - 1);
+    return {
+      x: m[0] + row * 2.4,
+      y: m[1] - row * m[2],
+      w: (layout === layouts.tall ? 83 : 63) * (0.69 + noise(index) * 0.31)
+    };
   }
 
-  /* Three nearest neighbours of every structured point, made undirected. */
-  function graph(pos) {
-    var idx = [], i, j, a, b;
-    for (i = 0; i < N; i++) if (owner[i] >= 0) idx.push(i);
-    var nb = new Int32Array(N * KNN).fill(-1), nd = new Float32Array(N * KNN).fill(1e9);
-    function insert(p, q, d) {
-      var o = p * KNN;
-      if (d >= nd[o + KNN - 1]) return;
-      var m = KNN - 1;
-      while (m > 0 && nd[o + m - 1] > d) { nd[o + m] = nd[o + m - 1]; nb[o + m] = nb[o + m - 1]; m--; }
-      nd[o + m] = d; nb[o + m] = q;
-    }
-    for (a = 0; a < idx.length; a++) {
-      i = idx[a];
-      var xi = pos[3 * i], yi = pos[3 * i + 1], zi = pos[3 * i + 2];
-      for (b = a + 1; b < idx.length; b++) {
-        j = idx[b];
-        var dx = pos[3 * j] - xi, dy = pos[3 * j + 1] - yi, dz = pos[3 * j + 2] - zi;
-        var d = dx * dx + dy * dy + dz * dz;
-        insert(i, j, d); insert(j, i, d);
-      }
-    }
-    var adj = [];
-    for (i = 0; i < N; i++) adj.push([]);
-    for (i = 0; i < N; i++) {
-      for (var m2 = 0; m2 < KNN; m2++) {
-        j = nb[i * KNN + m2];
-        if (j < 0) continue;
-        if (adj[i].indexOf(j) < 0) adj[i].push(j);
-        if (adj[j].indexOf(i) < 0) adj[j].push(i);
-      }
-    }
-    return adj;
+  function roundPanel(w, h) {
+    var r = 4;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.arcTo(w, 0, w, h, r);
+    ctx.arcTo(w, h, 0, h, r);
+    ctx.arcTo(0, h, 0, 0, r);
+    ctx.arcTo(0, 0, w, 0, r);
+    ctx.closePath();
   }
 
-  function bfs(src, depth, cap) {
-    var order = [src], level = [0], parent = [-1], seen = {}, head = 0;
-    seen[src] = 1;
-    while (head < order.length && order.length < cap) {
-      var v = order[head], lv = level[head]; head++;
-      if (lv >= depth) continue;
-      var nbs = adj[v];
-      for (var m = 0; m < nbs.length && order.length < cap; m++) {
-        var w2 = nbs[m];
-        if (seen[w2]) continue;
-        seen[w2] = 1; order.push(w2); level.push(lv + 1); parent.push(v);
-      }
-    }
-    return { order: order, level: level, parent: parent };
+  function panel(rect, opacity, front) {
+    if (opacity <= 0) return;
+    var w = rect.w, h = rect.h;
+    ctx.save();
+    ctx.transform(1, -0.075, 0.12 + tilt * 0.045, 1, rect.x, rect.y);
+    ctx.globalAlpha = opacity;
+    roundPanel(w, h);
+    var fill = ctx.createLinearGradient(0, 0, w * 0.38, h);
+    fill.addColorStop(0, colors.wash);
+    fill.addColorStop(1, colors.surface);
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.lineWidth = front ? 1 : 0.8;
+    ctx.globalAlpha *= front ? 0.75 : 0.48;
+    ctx.strokeStyle = colors.edge;
+    ctx.stroke();
+
+    var rule = ctx.createLinearGradient(0, 0, w, 0);
+    rule.addColorStop(0, colors.shine);
+    rule.addColorStop(0.36, colors.edge);
+    rule.addColorStop(1, colors.trace);
+    ctx.beginPath();
+    ctx.moveTo(7, 0.5);
+    ctx.lineTo(w - 5, 0.5);
+    ctx.strokeStyle = rule;
+    ctx.stroke();
+    ctx.restore();
   }
 
-  /* --- state ---------------------------------------------------------- */
-  var seed = 1;
-  var x0 = sample(seed), x0next = null, mix = 0;
-  var adj = graph(x0), adjNext = null;
-  var tau = 0;                             // 0: clean sample, 1: pure noise
-  var anim = null;                         // the opening, or a resample in progress
-  var cur = new Float32Array(3 * N);
-  var X = new Float32Array(N), Y = new Float32Array(N), near = new Float32Array(N);
-  var lit = new Float32Array(N), probeLit = new Float32Array(N);
-  var yaw = 0.6, pitch = 0.3, yawV = 0, pitchV = 0, REST_PITCH = 0.3;
-  var hover = null, press = null, dragging = false;
-  var pulses = [], nextPulse = 0;
-  var P = {};                              // colours
+  var bands = [[], [], [], [], [], []];
+  var radius = [0.27, 0.36, 0.53, 0.67, 0.88, 1.1];
+  var intensity = [0.16, 0.32, 0.5, 0.68, 0.84, 1];
 
-  function readColors() {
-    var cs = getComputedStyle(document.documentElement);
-    var v = function (n) { return cs.getPropertyValue(n).trim(); };
-    P.pal = v('--mf-palette').split(/\s+/).filter(Boolean);
-    while (P.pal.length < K) P.pal.push(P.pal[0] || '#4d9cff');
-    P.halo = v('--mf-halo'); P.signal = v('--mf-signal'); P.glow = v('--mf-glow');
-    P.additive = v('--mf-blend') === 'lighter';
-  }
+  function particles(rect, sample, opacity, sparse, target, collapse) {
+    if (opacity <= 0) return;
+    var i, j, k;
+    var stride = sparse ? 2 : 1;
+    var skew = 0.12 + tilt * 0.045;
+    var lightX = 0.51 + Math.sin(sample * 0.52) * 0.18;
+    var size = Math.max(0.65, rect.w / 245);
+    for (k = 0; k < bands.length; k++) bands[k].length = 0;
 
-  function alphaBar(t) { var c = Math.cos(t * Math.PI / 2); return c * c; }
-  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-  function easeIn(t) { return t * t * t; }
-  function smooth(a, b, t) { t = Math.max(0, Math.min(1, (t - a) / (b - a))); return t * t * (3 - 2 * t); }
-
-  /* --- one frame ------------------------------------------------------ */
-  function positions(now) {
-    var ab = alphaBar(tau), sa = Math.sqrt(ab), sn = Math.sqrt(1 - ab) * SIGMA;
-    var breathe = still ? 0 : 0.011;
-    for (var i = 0; i < N; i++) {
-      var o = 3 * i;
-      var bx = x0[o], by = x0[o + 1], bz = x0[o + 2];
-      if (mix > 0 && x0next) {
-        bx += (x0next[o] - bx) * mix; by += (x0next[o + 1] - by) * mix; bz += (x0next[o + 2] - bz) * mix;
-      }
-      var e = sn + breathe * Math.sin(now * 0.0011 * freq[i] + phase[i]);
-      cur[o] = sa * bx + e * eps[o];
-      cur[o + 1] = sa * by + e * eps[o + 1];
-      cur[o + 2] = sa * bz + e * eps[o + 2];
-    }
-  }
-
-  function project() {
-    var cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
-    // Fit the unit-radius structure inside the box with room to turn: the
-    // halo and the noise may spill past the edges, the structure should not.
-    var CAM = 3.4, SX = Math.min(W * 0.36, H * 0.6), SY = Math.min(H * 0.36, W * 0.55);
-    var cx = W * 0.5, cyy = H * 0.5;
-    for (var i = 0; i < N; i++) {
-      var o = 3 * i, x = cur[o], y = cur[o + 1], z = cur[o + 2];
-      var x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
-      var y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
-      var s = CAM / (CAM + z2);
-      X[i] = cx + x1 * s * SX;
-      Y[i] = cyy + y2 * s * SY;
-      near[i] = Math.max(0, Math.min(1, (1.3 - z2) / 2.6));
-    }
-  }
-
-  function probe() {
-    for (var i = 0; i < N; i++) probeLit[i] *= 0.82;
-    if (!hover || dragging || tau > 0.2) return null;
-    var best = -1, bd = 26 * 26;
-    for (i = 0; i < N; i++) {
-      if (owner[i] < 0) continue;
-      var dx = X[i] - hover.x, dy = Y[i] - hover.y, d = dx * dx + dy * dy;
-      if (d < bd) { bd = d; best = i; }
-    }
-    if (best < 0) return null;
-    var t = bfs(best, 3, 72);
-    for (var m = 0; m < t.order.length; m++) {
-      var v = t.order[m], target = [1, 0.82, 0.62, 0.44][t.level[m]];
-      if (probeLit[v] < target) probeLit[v] += (target - probeLit[v]) * 0.45;
-    }
-    return t;
-  }
-
-  var buckets = [];
-  for (var bq = 0; bq < (K + 1) * LEVELS; bq++) buckets.push([]);
-  var edgeBuckets = [[], [], [], [], []];
-
-  function draw(now) {
-    var i, k, lv, m;
-    ctx.clearRect(0, 0, W, H);
-    ctx.globalCompositeOperation = 'source-over';
-
-    // a soft field of light behind the cloud
-    var R = Math.max(W, H) * 0.62;
-    var gr = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, R);
-    gr.addColorStop(0, P.glow); gr.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.globalAlpha = 1; ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
-
-    ctx.globalCompositeOperation = P.additive ? 'lighter' : 'source-over';
-    var scale = Math.max(0.75, Math.min(1.25, Math.min(W, H) / 420));
-
-    for (i = 0; i < buckets.length; i++) buckets[i].length = 0;
-    for (i = 0; i < N; i++) {
-      var group = owner[i] < 0 ? K : owner[i];
-      buckets[group * LEVELS + Math.min(LEVELS - 1, (near[i] * LEVELS) | 0)].push(i);
-    }
-
-    // bloom under the nearest points, on dark only
-    if (P.additive) {
-      for (k = 0; k < K; k++) {
-        ctx.fillStyle = P.pal[k]; ctx.globalAlpha = 0.055; ctx.beginPath();
-        for (lv = 2; lv < LEVELS; lv++) {
-          var bl = buckets[k * LEVELS + lv];
-          for (m = 0; m < bl.length; m++) {
-            i = bl[m];
-            var br = (2.6 + near[i] * 3.4) * scale;
-            ctx.moveTo(X[i] + br, Y[i]); ctx.arc(X[i], Y[i], br, 0, 6.2832);
-          }
+    for (j = 0; j < ROWS; j += stride) {
+      var v = j / (ROWS - 1);
+      var water = Math.max(0, (v - 0.60) / 0.40);
+      var phase = 16 * Math.log1p(water * 4) - sample * 2;
+      var ripples = smooth(water * 5);
+      var spread = 0.07 + water * 0.25;
+      for (i = 0; i < COLS; i += stride) {
+        var u = i / (COLS - 1);
+        var crest = 0.5 + 0.5 * Math.sin(phase + u * 13 + Math.sin(u * 8.5 - sample) * 1.25);
+        var wave = crest * crest;
+        var distance = (u - lightX - Math.sin(phase * 0.37) * 0.04) / spread;
+        var glint = Math.exp(-distance * distance);
+        var luminance = photo ? photo[j * COLS + i] : 0.56 + 0.17 * Math.exp(-Math.pow((v - 0.59) * 14, 2));
+        var detail = clamp((luminance - 0.31) * 1.55 + ripples * (wave * (0.44 + glint * 0.48) - 0.12));
+        var x = rect.w * (0.047 + u * 0.906);
+        var y = rect.h * (0.075 + v * 0.85) + ripples * (crest - 0.5) * 4 * size;
+        var px = rect.x + x + y * skew;
+        var py = rect.y - x * 0.075 + y;
+        if (target) {
+          var group = i % 11 < 8 ? i : i - (i % 11 - 7);
+          px = lerp(px, target.x + 8 + target.w * group / COLS, collapse);
+          py = lerp(py, target.y + (v - 0.5) * 2, collapse);
         }
-        ctx.fill();
+        bands[Math.min(5, Math.floor(detail * 6))].push(px, py);
       }
     }
 
-    // the cloud: one path per colour and depth band
-    var dim = P.additive ? 1 : 0.85;
-    for (k = 0; k <= K; k++) {
-      ctx.fillStyle = k === K ? P.halo : P.pal[k];
-      for (lv = 0; lv < LEVELS; lv++) {
-        var list = buckets[k * LEVELS + lv];
-        if (!list.length) continue;
-        ctx.globalAlpha = (k === K ? 0.2 + lv * 0.08 : 0.28 + lv * 0.22) * dim;
-        ctx.beginPath();
-        for (m = 0; m < list.length; m++) {
-          i = list[m];
-          var rad = (0.5 + near[i] * 1.7) * scale;
-          ctx.moveTo(X[i] + rad, Y[i]); ctx.arc(X[i], Y[i], rad, 0, 6.2832);
-        }
-        ctx.fill();
-      }
-    }
-
-    // signals: the probe's neighbourhood and passing messages
-    var t = probe();
-    for (i = 0; i < N; i++) lit[i] = probeLit[i];
-    for (i = 0; i < edgeBuckets.length; i++) edgeBuckets[i].length = 0;
-    function edge(a, b, alpha) {
-      if (alpha < 0.04) return;
-      edgeBuckets[Math.min(4, (alpha * 5) | 0)].push(a, b);
-    }
-    if (t) {
-      var inSet = {};
-      for (m = 0; m < t.order.length; m++) inSet[t.order[m]] = t.level[m] + 1;
-      for (m = 0; m < t.order.length; m++) {
-        var v = t.order[m], nbs = adj[v];
-        for (var q = 0; q < nbs.length; q++) {
-          var w2 = nbs[q];
-          if (w2 > v && inSet[w2]) edge(v, w2, 0.95 - 0.2 * Math.max(t.level[m], inSet[w2] - 1));
-        }
-      }
-    }
-    for (var p = pulses.length - 1; p >= 0; p--) {
-      var pu = pulses[p], alive = false;
-      for (m = 0; m < pu.order.length; m++) {
-        var age = now - (pu.t0 + pu.level[m] * 85);
-        if (age < 0) { alive = true; continue; }
-        var a2 = Math.exp(-age / 420);
-        if (a2 < 0.03) continue;
-        alive = true;
-        var node = pu.order[m];
-        if (lit[node] < a2) lit[node] = a2;
-        if (pu.parent[m] >= 0) edge(pu.parent[m], node, a2 * 0.95);
-      }
-      if (!alive) pulses.splice(p, 1);
-    }
-    ctx.strokeStyle = P.signal; ctx.lineWidth = 0.8 * scale;
-    for (lv = 0; lv < 5; lv++) {
-      var eb = edgeBuckets[lv];
-      if (!eb.length) continue;
-      ctx.globalAlpha = (lv + 0.5) / 5 * (P.additive ? 0.75 : 0.6);
+    for (k = 0; k < bands.length; k++) {
+      var points = bands[k], r = radius[k] * size;
+      ctx.fillStyle = k < 4 ? colors.dot : colors.shine;
+      ctx.globalAlpha = opacity * intensity[k];
       ctx.beginPath();
-      for (m = 0; m < eb.length; m += 2) { ctx.moveTo(X[eb[m]], Y[eb[m]]); ctx.lineTo(X[eb[m + 1]], Y[eb[m + 1]]); }
-      ctx.stroke();
-    }
-    ctx.fillStyle = P.signal;
-    for (i = 0; i < N; i++) {
-      if (lit[i] < 0.05) continue;
-      ctx.globalAlpha = lit[i] * 0.95;
-      ctx.beginPath(); ctx.arc(X[i], Y[i], (1 + lit[i] * 1.5) * scale, 0, 6.2832); ctx.fill();
-    }
-    if (t) {
-      var c0 = t.order[0];
-      ctx.globalAlpha = 0.6; ctx.strokeStyle = P.signal; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.arc(X[c0], Y[c0], 7 * scale, 0, 6.2832); ctx.stroke();
+      for (i = 0; i < points.length; i += 2) {
+        ctx.moveTo(points[i] + r, points[i + 1]);
+        ctx.arc(points[i], points[i + 1], r, 0, TAU);
+      }
+      ctx.fill();
     }
     ctx.globalAlpha = 1;
-    ctx.globalCompositeOperation = 'source-over';
   }
 
-  function render(now) { positions(now); project(); draw(now); }
+  function trace(mark, opacity, active) {
+    ctx.globalAlpha = opacity * (0.36 + active * 0.64);
+    ctx.fillStyle = colors.shine;
+    ctx.beginPath();
+    ctx.arc(mark.x, mark.y, 1 + active, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = active > 0 ? colors.shine : colors.dot;
+    for (var x = 0; x <= mark.w; x += 4) {
+      if (x % 20 < 13) ctx.fillRect(mark.x + 8 + x, mark.y - 0.65, 1.8, 1.3);
+    }
+    ctx.globalAlpha = 1;
+  }
 
-  /* --- motion ---------------------------------------------------------- */
-  var OPEN_MS = 2800, OUT_MS = 650, IN_MS = 2100;
+  function connection(front, mark, amount, progress) {
+    var tall = layout === layouts.tall;
+    var x0 = front.x + front.w * (tall ? 1.015 : 0.04);
+    var y0 = front.y + front.h * (tall ? 0.19 : 0.6);
+    var x3 = mark.x + mark.w + 11, y3 = mark.y;
+    var x1 = x0 + (tall ? 36 : -54), y1 = y0 - (tall ? 92 : 24);
+    var x2 = x3 + (x0 - x3) * 0.66, y2 = y3 - (tall ? 24 : 3);
 
-  function stepAnim(now) {
-    if (!anim) return;
-    var e = now - anim.t0;
-    if (anim.type === 'open') {
-      var u = Math.min(1, e / OPEN_MS);
-      tau = 1 - easeOut(u);
-      if (u >= 1) { tau = 0; anim = null; }
-    } else {
-      if (e < OUT_MS) {
-        var u1 = e / OUT_MS;
-        tau = easeIn(u1) * 0.9;
-        mix = smooth(0.55, 1, u1);
-      } else {
-        if (x0next) { x0 = x0next; x0next = null; mix = 0; adj = adjNext; adjNext = null; }
-        var u2 = Math.min(1, (e - OUT_MS) / IN_MS);
-        tau = 0.9 * (1 - easeOut(u2));
-        if (u2 >= 1) { tau = 0; anim = null; }
-      }
+    ctx.strokeStyle = colors.trace;
+    ctx.lineWidth = 0.85;
+    ctx.globalAlpha = 0.5 + amount * 0.4;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (amount <= 0) return;
+
+    for (var i = 18; i >= 0; i--) {
+      var t = progress - i * 0.021;
+      if (t < 0 || t > 1) continue;
+      var r = 1 - t;
+      var x = r * r * r * x0 + 3 * r * r * t * x1 + 3 * r * t * t * x2 + t * t * t * x3;
+      var y = r * r * r * y0 + 3 * r * r * t * y1 + 3 * r * t * t * y2 + t * t * t * y3;
+      ctx.globalAlpha = amount * (1 - i / 19);
+      ctx.fillStyle = i === 0 ? colors.shine : colors.dot;
+      ctx.beginPath();
+      ctx.arc(x, y, i === 0 ? 2.2 : 1.15, 0, TAU);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function render() {
+    var still = motion.matches;
+    var now = still ? STILL_TIME : time;
+    var position = now / CYCLE;
+    var index = HISTORY + Math.floor(position);
+    var phase = position % 1 * CYCLE;
+    var slide = smooth(phase / 1.05);
+    var depth = layout.depth;
+    var collapsed = smooth((phase - 0.12) / 1.4);
+    var last = layout.memory[3] - 1;
+
+    if (requested && !still && now - requested.time >= RECALL_TIME) requested = null;
+    var autoStart = FIRST_RECALL + Math.floor((now - FIRST_RECALL) / RECALL_INTERVAL) * RECALL_INTERVAL;
+    var age = now - (requested ? requested.time : autoStart);
+    var remembered = requested ? requested.index : HISTORY + Math.floor(autoStart / CYCLE) - depth - 2;
+    var recall = Math.max(1, Math.min(last, index - depth - remembered));
+    var beam = still ? 0 : smooth(age / 0.18) * (1 - smooth((age - 1.2) / 0.45));
+    var echo = still ? 0.78 : smooth((age - 0.8) / 0.64) * (1 - smooth((age - 3.5) / 0.9));
+    var front = frameAt(0, slide);
+    var memory = memoryAt(recall, slide, index - depth - recall);
+
+    ctx.clearRect(0, 0, W, H);
+    if (!scale) return;
+    ctx.save();
+    ctx.translate(left + tilt * 4, top);
+    ctx.scale(scale, scale);
+
+    ctx.save();
+    ctx.translate(front.x + front.w * 0.52, front.y + front.h * 0.38);
+    ctx.scale(1, 0.64);
+    var radius = front.w * 0.7;
+    var glow = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+    glow.addColorStop(0, colors.glow);
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+    ctx.restore();
+
+    for (var slot = last; slot >= 0; slot--) {
+      var opacity = (slot === 0 ? smooth((collapsed - 0.82) / 0.18) : 1) * (0.8 - slot * 0.065);
+      trace(memoryAt(slot, slide, index - depth - slot), opacity, slot === recall ? Math.max(beam, echo) : 0);
+    }
+
+    if (echo > 0) {
+      var p = layout.preview;
+      var preview = { x: p[0], y: p[1] + (1 - echo) * 5, w: p[2], h: p[2] * ROWS / COLS };
+      ctx.globalAlpha = echo * 0.65;
+      ctx.strokeStyle = colors.trace;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(memory.x + memory.w + 8, memory.y);
+      ctx.quadraticCurveTo(preview.x + 8, memory.y, preview.x + 14, preview.y + preview.h - 1);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      panel(preview, echo * 0.59, false);
+      particles(preview, (index - depth - recall + 1) * 0.83, echo * 0.78, true);
+    }
+
+    connection(front, memory, beam, age / 1.16);
+
+    for (var layer = depth; layer >= 0; layer--) {
+      if (layer === depth && collapsed >= 1) continue;
+      var rect = frameAt(layer, slide);
+      var reveal = layer === 0 ? smooth((phase + 0.06) / 0.78) : 1;
+      var collapse = layer === depth ? collapsed : 0;
+      var strength = reveal * (1 - layer * 0.17);
+      if (layer === 0) strength *= 0.76 + slide * 0.24;
+      panel(rect, strength * (1 - smooth(collapse * 1.4)), layer === 0);
+      particles(rect, (index - layer + (layer === 0 ? phase / CYCLE : 1)) * 0.83,
+        strength * (1 - collapse * 0.7), layer > 0, collapse ? memoryAt(0, slide, index - depth) : null, collapse);
+    }
+    ctx.restore();
+  }
+
+  function syncLoop() {
+    var play = !motion.matches && inView && !document.hidden;
+    if (play && frameId === null) frameId = requestAnimationFrame(frame);
+    if (!play && frameId !== null) {
+      cancelAnimationFrame(frameId);
+      frameId = lastFrame = null;
     }
   }
 
-  function startPulse() {
-    var tries = 0, s;
-    do { s = (Math.random() * N) | 0; tries++; } while ((owner[s] < 0 || near[s] < 0.45) && tries < 50);
-    var t = bfs(s, 11, 170);
-    t.t0 = performance.now();
-    pulses.push(t);
+  function frame(now) {
+    var delta = lastFrame === null ? 0 : Math.min(now - lastFrame, 50);
+    lastFrame = now;
+    time += delta / 1000;
+    tilt += (pointer - tilt) * (1 - Math.exp(-delta / 140));
+    render();
+    frameId = requestAnimationFrame(frame);
   }
 
-  function resample() {
-    if (anim && anim.type === 'resample') return;
-    seed += 1;
-    x0next = sample(seed * 7919);
-    adjNext = graph(x0next);
-    pulses = [];
-    if (still) {
-      x0 = x0next; adj = adjNext; x0next = adjNext = null; mix = 0;
-      render(performance.now());
+  fig.parentElement.classList.add('has-memory');
+  fig.classList.add('is-on');
+  readColors();
+  fit();
+
+  var image = new Image();
+  image.onload = function () {
+    var sample = document.createElement('canvas');
+    sample.width = COLS;
+    sample.height = ROWS;
+    var c = sample.getContext('2d', { willReadFrequently: true });
+    if (!c) return;
+    try {
+      c.drawImage(image, 0, 0, COLS, ROWS);
+      var pixels = c.getImageData(0, 0, COLS, ROWS).data;
+      photo = new Float32Array(COLS * ROWS);
+      for (var i = 0; i < photo.length; i++) {
+        var p = i * 4;
+        photo[i] = (pixels[p] * 0.2126 + pixels[p + 1] * 0.7152 + pixels[p + 2] * 0.0722) / 255;
+      }
+    } catch (error) {
+      // Some browsers restrict pixel reads from local files.
       return;
     }
-    anim = { type: 'resample', t0: performance.now() };
-  }
+    if (frameId === null) render();
+  };
+  image.src = canvas.dataset.source;
 
-  var running = false, onScreen = true, last = 0;
-  function frame(now) {
-    if (!running) return;
-    var dt = last ? Math.min(50, now - last) : 16.7;
-    last = now;
-    stepAnim(now);
-    if (!dragging) {
-      yaw += yawV + dt * 0.00006;
-      pitch += pitchV;
-      yawV *= 0.94; pitchV *= 0.9;
-      pitch += (REST_PITCH - pitch) * 0.008;
-    }
-    if (!anim && !hover && now > nextPulse) {
-      if (nextPulse) startPulse();
-      nextPulse = now + 4200 + Math.random() * 2600;
-    }
-    render(now);
-    requestAnimationFrame(frame);
-  }
-  function start() {
-    if (running || still || !onScreen || document.hidden) return;
-    running = true; last = 0;
-    requestAnimationFrame(frame);
-  }
-  function stop() { running = false; }
-
-  /* --- input ----------------------------------------------------------- */
-  function local(e) {
-    var r = canvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
-  canvas.addEventListener('pointerdown', function (e) {
-    press = local(e); press.yaw = yaw; press.pitch = pitch; press.lx = press.x; press.ly = press.y;
-    dragging = false;
-    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+  recallButton.addEventListener('click', function () {
+    var now = motion.matches ? STILL_TIME : time;
+    var slot = 1 + recallCount++ % (layout.memory[3] - 2);
+    requested = { time: now, index: HISTORY + Math.floor(now / CYCLE) - layout.depth - slot };
+    if (frameId === null) render();
   });
-  canvas.addEventListener('pointermove', function (e) {
-    var p = local(e);
-    hover = p;
-    if (press) {
-      if (!dragging && Math.hypot(p.x - press.x, p.y - press.y) > 4) {
-        dragging = true; fig.classList.add('is-dragging');
-      }
-      if (dragging) {
-        var dx = p.x - press.lx, dy = p.y - press.ly;
-        yaw += dx * 0.006; pitch = Math.max(-1.1, Math.min(1.1, pitch + dy * 0.004));
-        yawV = dx * 0.006; pitchV = dy * 0.004;
-        press.lx = p.x; press.ly = p.y;
-      }
-    }
-    if (still) render(performance.now());
+  canvas.addEventListener('pointermove', function (event) {
+    if (event.pointerType !== 'mouse' || motion.matches) return;
+    var rect = canvas.getBoundingClientRect();
+    pointer = 2 * clamp((event.clientX - rect.left) / rect.width) - 1;
+  }, { passive: true });
+  canvas.addEventListener('pointerleave', function () { pointer = 0; });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      inView = entries[0].isIntersecting;
+      if (!inView) pointer = 0;
+      syncLoop();
+    }).observe(fig);
+  }
+  document.addEventListener('visibilitychange', syncLoop);
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(fig);
+  else window.addEventListener('resize', fit);
+  theme.addEventListener('change', function () { readColors(); render(); });
+  motion.addEventListener('change', function () {
+    pointer = tilt = 0;
+    requested = null;
+    render();
+    syncLoop();
   });
-  function release(e) {
-    if (press && !dragging && e.type === 'pointerup') resample();
-    press = null;
-    if (dragging) { dragging = false; fig.classList.remove('is-dragging'); }
-  }
-  canvas.addEventListener('pointerup', release);
-  canvas.addEventListener('pointercancel', release);
-  canvas.addEventListener('pointerleave', function () { hover = null; if (still) render(performance.now()); });
-
-  /* --- go -------------------------------------------------------------- */
-  readColors();
-
-  var first = false;
-  try {
-    if (!sessionStorage.getItem('lz-manifold')) { sessionStorage.setItem('lz-manifold', '1'); first = true; }
-  } catch (err) { /* no storage: no opening, rather than one on every visit */ }
-  if (first && !still) { tau = 1; anim = { type: 'open', t0: performance.now() }; }
-
-  render(performance.now());
-  fig.classList.add('is-on');
-
-  if (!still) {
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        onScreen = entries[0].isIntersecting;
-        if (onScreen) start(); else stop();
-      }).observe(canvas);
-    }
-    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else start(); });
-    start();
-  }
-
-  var lastSize = W + 'x' + H;
-  function onResize() {
-    var r = canvas.getBoundingClientRect(), key = Math.round(r.width) + 'x' + Math.round(r.height);
-    if (key === lastSize) return;
-    lastSize = key; fit();
-    if (!running) render(performance.now());
-  }
-  if ('ResizeObserver' in window) new ResizeObserver(onResize).observe(canvas);
-  else window.addEventListener('resize', onResize);
-
-  var scheme = window.matchMedia('(prefers-color-scheme: light)');
-  if (scheme.addEventListener) scheme.addEventListener('change', function () { readColors(); if (!running) render(performance.now()); });
+  syncLoop();
 })();

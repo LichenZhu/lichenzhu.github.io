@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/manifold.js            the latent manifold beside About (see "The latent manifold")
+  js/manifold.js            the homepage's video memory particle animation
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,56 +262,24 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## The latent manifold
+## Video memory
 
-The homepage opens with text on the left and, on the right, a point cloud in
-the shape an embedding space takes under a projection: seven structures
-(strands, a spiral, a ring, blobs, a sheet) and a thin halo of outliers, each
-point linked to its three nearest neighbours. `assets/js/manifold.js` draws it.
+The homepage figure uses the sea horizon photograph from the Experience
+gallery as a luminance map for a particle scene. Ripples move through the
+foreground. Older frames recede and condense into short rows of particles.
+A signal periodically retrieves one trace and opens the corresponding frame.
+The **Recall a frame** button also works by touch and keyboard.
 
-- **It is born the way a diffusion model samples.** Every point has a fixed
-  noise vector ε and sits at `sqrt(ᾱ)·x₀ + sqrt(1−ᾱ)·ε` with ᾱ on a cosine
-  schedule, so on the first homepage view of a session a ball of Gaussian
-  noise separates into coloured structure over about three seconds.
-- **A click draws a new sample.** The cloud dissolves back toward noise and
-  re-forms as a different manifold. Cluster sizes are fixed per index, so
-  every point keeps its colour: it reads as the same data under a new sample.
-- **Signals travel along the graph.** Every few seconds a message is passed
-  hop by hop over the neighbour graph and lights a filament.
-- **Hover probes a neighbourhood** (three hops, drawn as a lit subgraph),
-  **drag turns the space** with inertia; a hint saying so appears on hover.
+`assets/js/manifold.js` draws the figure with Canvas 2D. Its `layouts` set the
+frame and trace positions for a desktop column, a wide band and a phone. The
+`--memory-*` tokens in `assets/css/style.css` define the dark and light palettes.
 
-Why it is built this way, after three versions that were rejected:
-
-- **Beside the text, never behind it.** A lattice animated under the prose
-  had to stay faint to keep the text readable, so it was neither impressive
-  nor out of the way.
-- **Inside the content column, so the sidebar never moves.** A full-width
-  hero above both columns would have pushed the sidebar down on the homepage
-  only, and it would jump on every click between pages.
-- **ML-native, not a physics demo and not one paper.** A wave-equation water
-  surface was generic decoration with an equation label pretending to be
-  research, and an interactive figure from one paper made the homepage about
-  that paper. An embedding space, a denoising sample and message passing are
-  shared vocabulary for anyone in the field, and there is no label on it.
-
-Mechanics worth keeping:
-
-- **Two columns by container query on `<main>`, not a viewport breakpoint**,
-  because the sidebar takes a different share of the viewport at each
-  breakpoint. Below 760px of column the figure becomes a band above the
-  greeting; on a phone it is a 210px band, and vertical swipes still scroll
-  (`touch-action: pan-y`).
-- **The canvas is out of flow** (`position: absolute; inset: 0`). In flow, its
-  backing-store size fed back into the stretched grid item's height and the
-  ResizeObserver looped.
-- About 0.5 ms a frame at 1440px with the probe active; a resample, including
-  the new neighbour graph, takes about 20 ms. It runs only while on screen and
-  with the tab visible. With reduced motion it is a still figure that still
-  answers to hover, drag and click. Without JavaScript it is hidden and the
-  text has the full width, as before.
-- Colours are the `--mf-*` tokens: additive light on dark, normal blending in
-  deeper hues on white, where the signal is ink rather than light.
+The figure sits beside About when the content column is at least 760px wide
+and above the greeting in narrower columns. The absolutely positioned canvas
+fits the figure without affecting its height. The animation pauses outside
+the viewport and in hidden tabs. Reduced-motion mode shows a still frame and
+changes the recalled frame immediately on request. The text uses the full
+column when JavaScript or Canvas 2D is unavailable.
 
 ## Pages, not scroll anchors
 

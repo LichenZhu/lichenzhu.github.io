@@ -109,14 +109,14 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
-  /* The latent manifold (assets/js/manifold.js): seven cluster colours, the
-     halo of outliers, the colour a passing signal lights in, the light behind
-     the cloud, and how its points combine. */
-  --mf-palette: #5aa2ff #7c8cff #9d7bff #47c8ff #6fb6ff #b58cff #8fd3ff;
-  --mf-halo:    #8b95a7;
-  --mf-signal:  #eaf3ff;
-  --mf-glow:    rgba(77, 156, 255, .10);
-  --mf-blend:   lighter;
+  /* Colours for the homepage's video memory study. */
+  --memory-surface: rgba(6, 14, 25, .96);
+  --memory-wash:    rgba(18, 43, 68, .96);
+  --memory-edge:    #557da8;
+  --memory-dot:     #6ba9ea;
+  --memory-shine:   #cbe9ff;
+  --memory-glow:    rgba(44, 107, 180, .18);
+  --memory-trace:   rgba(108, 163, 220, .33);
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -227,13 +227,13 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
-    /* On white, light cannot add up, so points are drawn normally, in deeper
-       versions of the same hues; the signal is ink rather than light. */
-    --mf-palette: #1d4ed8 #3b3fc4 #5b21b6 #0369a1 #1e5bd8 #6d28d9 #0e7490;
-    --mf-halo:    #94a3b8;
-    --mf-signal:  #0b1b3f;
-    --mf-glow:    rgba(15, 98, 201, .025);
-    --mf-blend:   normal;
+    --memory-surface: rgba(234, 242, 251, .98);
+    --memory-wash:    rgba(250, 253, 255, .98);
+    --memory-edge:    #7698be;
+    --memory-dot:     #316aa7;
+    --memory-shine:   #123d78;
+    --memory-glow:    rgba(75, 132, 194, .14);
+    --memory-trace:   rgba(31, 86, 150, .33);
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -347,7 +347,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
-.error-code, .honor-year, .tags-label, .manifold-hint,
+.error-code, .honor-year, .tags-label, .manifold-caption,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -655,14 +655,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 
 
-/* The opening screen: text on the left, the latent manifold on the right
-   (assets/js/manifold.js). The figure lives inside the content column, so
-   the sidebar never moves between pages, and beside the text, never behind
-   it. Two columns only when the column itself is wide enough, which is a
-   container query on <main> rather than a viewport breakpoint: the sidebar
-   takes a different share of the viewport at every breakpoint. Narrower, the
-   figure becomes a band above the greeting. Without JavaScript it is hidden
-   and the text has the full width, exactly as before. */
+/* Video memory lives inside the homepage's content column. The container
+   query gives it a column beside About or a band above it. */
 main { container-type: inline-size; container-name: main; }
 
 .intro { display: flex; flex-direction: column; }
@@ -672,48 +666,45 @@ main { container-type: inline-size; container-name: main; }
   display: none;
   position: relative;
   order: -1;
-  height: 230px;
+  height: 238px;
   margin: -1.5rem 0 1.25rem;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent),
-                      linear-gradient(180deg, transparent, #000 12%, #000 86%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent),
-              linear-gradient(180deg, transparent, #000 12%, #000 86%, transparent);
-  mask-composite: intersect;
 }
-.js .manifold { display: block; }
-/* Out of flow on purpose: in flow, a canvas's backing-store size feeds back
-   into a stretched grid item's height, and the ResizeObserver that resizes
-   it loops ("loop completed with undelivered notifications"). */
+.manifold.is-on { display: block; }
+/* Keep the canvas out of flow so its bitmap size cannot resize the figure. */
 .manifold canvas {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  cursor: grab;
-  /* vertical swipes still scroll the page on a phone; sideways ones turn it */
-  touch-action: pan-y;
-  opacity: 0;
-  transition: opacity .9s ease;
 }
-.manifold.is-on canvas { opacity: 1; }
-.manifold.is-dragging canvas { cursor: grabbing; }
-.manifold-hint {
+.manifold-caption {
   position: absolute;
-  right: 12%;
-  bottom: 6%;
+  inset: auto 5% 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   font-size: var(--t-micro);
   letter-spacing: .06em;
   color: var(--muted);
-  opacity: 0;
-  transition: opacity .3s ease;
-  pointer-events: none;
 }
-@media (hover: hover) { .manifold:hover .manifold-hint { opacity: 1; } }
+.manifold-caption button {
+  min-height: 44px;
+  margin-right: -0.65rem;
+  padding: 0 0.65rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--accent-ink);
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+.manifold-caption button:hover { background: var(--accent-dim); }
 
 @container main (min-width: 760px) {
-  .js .intro {
+  .intro.has-memory {
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(250px, 38%, 380px);
     column-gap: 2rem;
@@ -723,14 +714,10 @@ main { container-type: inline-size; container-name: main; }
     order: 0;
     height: auto;
     min-height: 360px;
-    /* into the container's gutter on the right, and up into the space above
-       the greeting, so the cloud has room to turn without clipping */
+    /* The artwork can use the container's right gutter. */
     margin: -2.2rem calc(-1 * var(--gutter)) 0 0;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 90%, transparent),
-                        linear-gradient(180deg, transparent, #000 9%, #000 88%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 16%, #000 90%, transparent),
-                linear-gradient(180deg, transparent, #000 9%, #000 88%, transparent);
   }
+  .manifold-caption { inset-inline: 15%; bottom: 1rem; }
 }
 @media (max-width: 720px) { .manifold { height: 210px; } }
 /* 7. Section furniture ---------------------------------------------------
@@ -1837,7 +1824,8 @@ img.fig-mark { padding: 17% 34%; }
 @media print {
   .site-header, .nav-toggle, .news-toggle, .skip-link,
   .pub-hint, .pub-modal, .photo-modal, .backdrop, .stamp,
-  .gallery { display: none !important; }
+  .gallery, .manifold { display: none !important; }
+  .intro.has-memory { display: block; }
   .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
   a { color: #000 !important; text-decoration: none !important; }

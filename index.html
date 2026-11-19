@@ -160,11 +160,7 @@
 
 <main id="main">
 
-<!-- The opening screen: greeting and About on the left, the latent manifold
-     on the right (assets/js/manifold.js). The figure sits beside the text,
-     never behind it, and inside this column, so the sidebar never moves.
-     Decorative, so aria-hidden; not shown without JavaScript, when the text
-     takes the full width as before. -->
+<!-- The opening screen pairs About with a particle study of video memory. -->
 <div class="intro">
 <div class="intro-text">
 
@@ -212,9 +208,12 @@
 
 </div>
 
-<figure class="manifold" aria-hidden="true">
-  <canvas></canvas>
-  <figcaption class="manifold-hint">drag to rotate, click to resample</figcaption>
+<figure class="manifold">
+  <canvas aria-hidden="true" data-source="assets/images/life/gallery/sea-horizon.webp"></canvas>
+  <figcaption class="manifold-caption">
+    <span>Video memory</span>
+    <button type="button">Recall a frame</button>
+  </figcaption>
 </figure>
 </div>
 
