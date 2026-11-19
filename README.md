@@ -14,8 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/globe.js               the particle globe beside About (see "The globe")
-  images/globe/land.png     land mask for the globe, from Natural Earth (public domain)
+  js/field.js               the live lattice behind every page (see "The live lattice")
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -263,72 +262,53 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## The globe
+## The live lattice
 
-Beside the About text sits the Earth drawn in particles: every grain of land is
-a point, and so are the routes, the markers and the dust around it. It shows
-the places where I have studied and worked, and it is a figure with a job, not
-decoration: it says where I am now (with the local time there), where I came
-from, and what happened in each place, and each place links to the part of the
-site that tells the rest. `assets/js/globe.js` draws it in WebGL, no libraries.
+The 24px dot grid behind every page is redrawn on a canvas by
+`assets/js/field.js` and made to respond, with a finer 12px lattice of grains
+under it that only shows where something is happening. No labels, no
+captions, no diagram: it is an atmosphere, not a figure.
 
-What a visitor can do:
+- **Ripples.** A damped wave equation runs on the fine lattice. The cursor
+  drags a wake across it, a click drops a stone, and on the first screen a
+  drop falls by itself now and then. Grains light on the moving slopes, so a
+  ripple reads as a ring of light; rings spread, cross and die away.
+- **Cursor.** Grains near the pointer light, lean away and link into a mesh.
+- **Memory.** Wherever the field has been lit it keeps a faint trace that
+  halves every 2.6 seconds: it remembers, then forgets. Rest the pointer in an
+  empty spot and thin lines reach back to the brightest traces left, and they
+  light again. That is the only nod to the research, and it is meant to stay
+  oblique.
+- **Opening.** On the first page of a visit the dots start scattered, lit, and
+  fly home into the grid.
 
-- watch: it turns to each place in turn and the caption follows
-- drag to spin it; it keeps a little momentum
-- hover the surface: the grains under the cursor lift and light up
-- click the surface: a ripple runs round the planet from that point
-- hover a marker or a place name to go there
-- hover any link on the page that points at one of the places (Duke, XJTLU,
-  Liverpool, the HumanSys post) and the globe turns to it; it also leans a
-  little toward the cursor wherever it is on the page
+**It never moves behind text.** Every paragraph, heading, list item, picture
+and card (the `TEXT` selector at the top of the file) is measured in viewport
+space on load, scroll and resize, and stamped onto the lattice: fully still
+under the text and a margin round it, and nearly still a little further out,
+which closes the gaps between paragraphs. So ripples run under the page and
+show only in space that is really empty: the column beside About, the
+gutters, the bands between sections. Recall lines are drawn only if their
+whole curve stays in empty space. This rule is the reason the first, faint
+version of this grid was rejected ("会打扰看文字"); do not relax it.
 
-On the first homepage view of a visit the grains fly in and assemble the planet.
+Why this and not a figure: six figures came and went (a wave surface, one
+paper's chart, a latent-space cloud, a galaxy, a globe of places, a stream of
+captioned video frames). The verdict on the last was "不要这么精准": the
+homepage wants a feeling, not a project. This grid was the first version and
+the one the owner found "有点意思".
 
-**To add, remove or edit a place, edit its `<button>` in `index.html`**
-(search for "THE GLOBE"). Nothing about the places is in the script:
+Mechanics worth keeping:
 
-| Attribute | Meaning |
-| --- | --- |
-| `data-stop` | a short id, used by `data-routes` |
-| `data-lat`, `data-lon` | coordinates in degrees; west and south are negative |
-| `data-city`, `data-org`, `data-role`, `data-years` | the four lines of the caption |
-| `data-href`, `data-link` | where the caption's link goes, and its label |
-| `data-match` | a piece of a URL; hovering a link whose address contains it turns the globe here |
-| `data-now` | marks the place I am in now: the globe opens on it and shows "Now" |
-| `data-tz` | an IANA time zone, for the local time beside "Now" |
-
-Routes are the figure's `data-routes`, as `from-to` pairs of ids. Keep the
-buttons in chronological order: that is the order of the tour. At most eight
-places and eight routes (the shaders hold fixed-size arrays).
-
-Things that are deliberate:
-
-- **Beside the text, never behind it, and inside the content column**, so
-  nothing moves under the prose and the sidebar does not shift between pages.
-  Two columns by container query on `<main>`; narrower, a small globe with its
-  caption beside it; on a phone, the globe centred above its caption.
-- **The canvas is larger than the globe's square and takes no pointer events.**
-  The glow, the dust and the lifted routes overhang the text beside it, so the
-  stage (the square) handles the pointer and the canvas is click-through;
-  otherwise it would block selecting text or clicking links near it.
-  `touch-action: pan-y` on the stage keeps vertical swipes scrolling the page.
-- **An even lattice of grains** (a Fibonacci sphere), sized to about 2.5 CSS px
-  apart at the current radius and rebuilt if the radius changes by a fifth.
-  Rows of latitude were tried first and moired into stripes.
-- **Colours are the `--gb-*` tokens** in `style.css`, hex only, since the
-  script hands them to the shaders. Dark: light on a dark sphere. Light theme:
-  ink on a pale sphere. Blending is ordinary premultiplied alpha in both.
-- **Fallbacks.** No WebGL: the script adds `.is-plain` and the text takes the
-  full width. No JavaScript: the same. Reduced motion: a still globe, no tour
-  and no opening, that still answers to drag, hover and the buttons. The tour
-  pauses while the pointer or keyboard focus is inside the figure.
-- About 0.4 ms a frame at 2x on a laptop, with the GPU finished each frame. It
-  draws only while on screen and with the tab visible.
-
-The land mask is `assets/images/globe/land.png`, 720x360, 1-bit, 5 KB, drawn
-from Natural Earth's 110m land polygons (public domain). `tools/check.py`
-reads the scripts for `'assets/...'` paths, so it counts as referenced.
+- Canvas 2D, no WebGL and no shaders, so nothing can fail to compile.
+- The loop stops when nothing moves; on the first screen the occasional drop
+  keeps it alive. About 1 to 2.5 ms a frame with ripples running.
+- The canvas is allocated at the tallest the viewport can get; only a width
+  change rebuilds it (a phone's address bar fires resize on every scroll).
+- Reduced motion or no JavaScript: no canvas, the static CSS grid stays.
+- Touch: no cursor halo (a moving finger is a scroll); a tap drops a stone.
+- Colours are `--field-lit`, `--field-hot`, `--field-alpha` and
+  `--field-blend` (additive light on dark, ink on white).
 
 ## Pages, not scroll anchors
 

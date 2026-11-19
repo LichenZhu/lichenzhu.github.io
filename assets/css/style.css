@@ -109,15 +109,12 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
-  /* The globe (assets/js/globe.js). Hex colours and plain numbers only: the
-     script hands them to the shaders. Land in shade and in light, a grain
-     that is lit up, the sphere in shade and in light, its rim and its air,
-     the routes, the markers, the dust; then how solid the sphere is, how
-     strong the rim and the air are, and how much of the far side shows. */
-  --gb-land-a: #4f7fd0;  --gb-land-b: #d6e6ff;  --gb-hot: #ffffff;
-  --gb-body-a: #05080f;  --gb-body-b: #101c36;  --gb-rim: #4d9cff;  --gb-atmo: #3f8cff;
-  --gb-arc: #8cc4ff;     --gb-core: #ffffff;    --gb-ring: #6fb2ff; --gb-dust: #9db7e8;
-  --gb-body-alpha: .92;  --gb-rim-k: .55;       --gb-atmo-alpha: .34; --gb-back: .15;
+  /* The live lattice (assets/js/field.js): the colour a lit grain turns, the
+     brightest crest, how strong the light is, and how it combines. */
+  --field-lit:   #4d9cff;
+  --field-hot:   #e6f1ff;
+  --field-alpha: .95;
+  --field-blend: lighter;
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -228,11 +225,12 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
-    /* On white the grains are ink on a pale sphere, not light on a dark one. */
-    --gb-land-a: #6d8fd6;  --gb-land-b: #0b2a7a;  --gb-hot: #0a84ff;
-    --gb-body-a: #e7eef9;  --gb-body-b: #ffffff;  --gb-rim: #a9c3f2;  --gb-atmo: #7fa8f2;
-    --gb-arc: #0f62c9;     --gb-core: #012169;    --gb-ring: #0f62c9; --gb-dust: #7f9bd6;
-    --gb-body-alpha: .97;  --gb-rim-k: .7;        --gb-atmo-alpha: .2; --gb-back: .08;
+    /* On white light cannot add up, so grains are ink: the link blue, with
+       navy at the crests, and no bloom. */
+    --field-lit:   #0f62c9;
+    --field-hot:   #012169;
+    --field-alpha: .7;
+    --field-blend: normal;
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -347,7 +345,6 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
 .error-code, .honor-year, .tags-label,
-.globe-city, .globe-now, .globe-time, .globe-years, .globe-tag, .globe-stops button,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -364,7 +361,9 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 /* 3. Backdrop ------------------------------------------------------------
    A dot grid and one soft accent bloom, both fixed and non-interactive.
-   They give the page depth without putting anything behind the text.
+   They give the page depth without putting anything behind the text. With
+   scripting, field.js redraws the grid on a canvas and makes it respond, but
+   only in the empty space: wherever there is text, it stays still.
    ------------------------------------------------------------------------ */
 
 .backdrop {
@@ -387,6 +386,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   opacity: .85;
 }
 
+.backdrop > canvas { position: absolute; top: 0; left: 0; display: block; }  /* sized by field.js */
+.backdrop.is-live::before { display: none; }
 .backdrop::after {
   content: "";
   position: absolute;
@@ -654,173 +655,6 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .sidebar-links a:hover svg { color: var(--accent); }
 
 
-
-/* The globe beside About (assets/js/globe.js). Text on the left, the globe
-   and its caption on the right; it sits beside the text and never behind it,
-   and inside the content column, so the sidebar does not move. Two columns
-   by container query on <main>, because the sidebar takes a different share
-   of the viewport at each breakpoint. Narrower, the globe goes under the
-   text with its caption beside it. If WebGL is missing the script adds
-   .is-plain and the text takes the full width, as it does without scripts. */
-main { container: main / inline-size; }
-
-.globe { display: none; margin: 0; }
-.js .about-grid:not(.is-plain) .globe { display: grid; }
-.globe {
-  /* phone: the globe on top, centred, its caption under it */
-  grid-template-columns: minmax(0, 1fr);
-  align-items: center;
-  gap: .4rem 1.4rem;
-  margin-top: 2.4rem;
-  opacity: 0;
-  transition: opacity .8s ease;
-}
-.globe.is-on { opacity: 1; }
-
-.globe-stage {
-  position: relative;
-  width: min(100%, 15rem);
-  margin: 0 auto;
-  aspect-ratio: 1;
-  touch-action: pan-y;        /* a vertical swipe still scrolls the page */
-  user-select: none;
-  -webkit-user-select: none;
-}
-/* Larger than the stage on every side: the air round the planet, the dust
-   and the lifted routes all fall outside the globe's own square. Out of
-   flow, so the canvas's pixel size can never feed back into the layout. */
-.globe canvas {
-  position: absolute;
-  inset: -16%;
-  width: 132%;
-  height: 132%;
-  display: block;
-  /* It overhangs the text beside it and the caption below it, so it takes no
-     pointer events itself: the stage, the globe's own square, handles them. */
-  pointer-events: none;
-}
-.globe-tag {
-  position: absolute;
-  left: 0; top: 0;
-  margin: -1.9rem 0 0 .55rem;
-  padding: .12rem .4rem;
-  font-size: var(--t-micro);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--ink);
-  background: var(--bg-1);
-  border: 1px solid var(--rule-2);
-  border-radius: var(--r-sm);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .25s ease;
-}
-
-.globe-panel { position: relative; z-index: 1; min-width: 0; }
-.globe-place {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .6rem;
-  margin: 0 0 .3rem;
-}
-.globe-city {
-  font-size: var(--t-label);
-  font-weight: 600;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-.globe-now {
-  display: inline-flex; align-items: center; gap: .35rem;
-  font-size: var(--t-micro); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--award);
-}
-.globe-now::before {
-  content: ""; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--award);
-  animation: globe-now 2.4s ease-in-out infinite;
-}
-@keyframes globe-now { 50% { opacity: .35; } }
-.globe-now[hidden] { display: none; }
-.globe-time { font-size: var(--t-micro); letter-spacing: .06em; color: var(--body); }
-.globe-org {
-  font-family: var(--display);
-  font-size: var(--t-title);
-  font-weight: 600;
-  line-height: var(--lh-snug);
-  letter-spacing: var(--tr-serif);
-  color: var(--ink);
-  margin: 0;
-}
-.globe-role {
-  font-size: var(--t-fine);
-  line-height: var(--lh-normal);
-  color: var(--body);
-  margin: .2rem 0 0;
-  /* two lines always, so the buttons below do not jump between places */
-  min-height: calc(2 * var(--lh-normal) * 1em);
-}
-.globe-meta {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
-  margin: .45rem 0 0;
-}
-.globe-years { font-size: var(--t-label); color: var(--body); white-space: nowrap; }
-.globe-link { font-size: var(--t-fine); font-weight: 500; color: var(--accent-ink); white-space: nowrap; }
-.globe-link::after { content: " \2192"; }
-.globe-link:hover, .globe-link:focus-visible { color: var(--ink); }
-.globe-link[hidden] { display: none; }
-
-.globe-stops {
-  display: flex; flex-wrap: wrap; gap: .1rem .15rem;
-  margin: .85rem 0 0 -.45rem;
-  padding-top: .6rem;
-  border-top: 1px solid var(--rule);
-}
-.globe-stops button {
-  position: relative;
-  padding: .3rem .45rem;
-  font-size: var(--t-micro);
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: var(--body);
-  background: none;
-  border: 0;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: color .15s ease;
-}
-.globe-stops button:hover { color: var(--ink); }
-.globe-stops button[aria-pressed="true"] { color: var(--ink); }
-.globe-stops button::after {
-  content: ""; position: absolute; left: .45rem; right: .45rem; bottom: .08rem; height: 1px;
-  background: var(--accent); transform: scaleX(0); transform-origin: left;
-  transition: transform .25s ease;
-}
-.globe-stops button[aria-pressed="true"]::after { transform: scaleX(1); }
-
-/* a tablet, or a narrow window: a small globe with its caption beside it. The
-   floating name tag would cover half of a globe this size, and the caption
-   says the same thing right next to it. */
-@container main (min-width: 520px) {
-  .globe { grid-template-columns: 11rem minmax(0, 1fr); margin-top: 2.2rem; }
-  .globe-stage { width: 100%; }
-  .globe-tag { display: none; }
-}
-@container main (min-width: 760px) {
-  .js .about-grid:not(.is-plain) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(270px, 37%, 340px);
-    column-gap: 2.5rem;
-    align-items: start;
-  }
-  .globe {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: .2rem;
-    /* up beside the greeting and the About rule, where the page was empty */
-    margin-top: -5.4rem;
-  }
-  .globe-tag { display: block; }
-}
-@media (prefers-reduced-motion: reduce) { .globe-now::before { animation: none; } }
 
 /* 7. Section furniture ---------------------------------------------------
    A mono index, the title, then a hairline that runs to the right edge.
@@ -1926,8 +1760,7 @@ img.fig-mark { padding: 17% 34%; }
 @media print {
   .site-header, .nav-toggle, .news-toggle, .skip-link,
   .pub-hint, .pub-modal, .photo-modal, .backdrop, .stamp,
-  .gallery, .globe { display: none !important; }
-  .about-grid { display: block !important; }
+  .gallery { display: none !important; }
   .layout::before { display: none !important; }
   body { font-size: 11pt; color: #000; background: #fff; }
   a { color: #000 !important; text-decoration: none !important; }
