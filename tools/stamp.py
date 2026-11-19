@@ -53,12 +53,15 @@ def main():
         if not found:
             print(f'{path.name:20} no stamp')
             continue
-        want = date_for(path.name)
-        new = f'<time datetime="{want}">{want}</time>'
         want_cv = f'<span class="cv-date">{cv}</span>'
+        cv_ok = CVDATE.search(text) is None or CVDATE.search(text).group(0) == want_cv
+        # A page whose only drift is the CV date is about to be edited, so it
+        # is dated today. Reading git first gave it its old date, and the run
+        # after needed a second pass to notice the file had become dirty.
+        want = date_for(path.name) if cv_ok else datetime.date.today().isoformat()
+        new = f'<time datetime="{want}">{want}</time>'
 
         stamp_ok = found.group(0) == new
-        cv_ok = CVDATE.search(text) is None or CVDATE.search(text).group(0) == want_cv
         if stamp_ok and cv_ok:
             print(f'{path.name:20} {want}   cv {cv}')
             continue

@@ -85,10 +85,6 @@
           "text": "HumanSys 2026"
         },
         {
-          "text": "Oral",
-          "kind": "award"
-        },
-        {
           "text": "Best Paper Award",
           "kind": "award"
         }
@@ -385,6 +381,41 @@
         }
       ],
       "bibtex": "@misc{zhu2026coupledlateturntakingfullduplex,\n  title         = {Coupled but Late: Turn-Taking Between Full-Duplex Speech Models in Unscripted Dialogue},\n  author        = {Lichen Zhu and Yueqian Lin and Yiheng Wang and Hai Li and Yiran Chen},\n  year          = {2026},\n  eprint        = {2610.08683},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.AI},\n  url           = {https://arxiv.org/abs/2610.08683}\n}",
+      "selected": false
+    },
+    {
+      "id": "whom-to-answer",
+      "group": "preprint",
+      "badges": [
+        {
+          "text": "Under Review",
+          "kind": "muted"
+        }
+      ],
+      "title": "Not Every Question Is Yours: Learning Whom to Answer in Multi-Party Dialogue",
+      "authors": [
+        {
+          "name": "L. Zhu",
+          "me": true
+        },
+        {
+          "name": "Y. Lin"
+        },
+        {
+          "name": "Y. Wang"
+        },
+        {
+          "name": "H. Li"
+        },
+        {
+          "name": "Y. Chen"
+        }
+      ],
+      "venue": {
+        "name": "Under review",
+        "detail": "2026"
+      },
+      "links": [],
       "selected": false
     },
     {

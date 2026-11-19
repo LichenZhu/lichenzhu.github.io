@@ -33,7 +33,8 @@ university mark rather than a teaser.
                   itself as soon as any author carries one
     venue         {name, detail} — rendered as <em>name</em>, detail
     venue_card    optional short form for the card face; defaults to `venue`
-    summary       one or two sentences for the list
+    summary       one or two sentences for the list; optional, for a
+                  manuscript with nothing public to summarise yet
     summary_card  the card/modal version where it differs; defaults to summary
     figure        {src, alt, w, h, cls}
     links         [{label, href}]
@@ -146,7 +147,10 @@ def render_entries(papers):
                 f'    <h2 class="group-title" id="g-{key}">{heading}</h2>',
                 '    <ul class="entry-list">']
         for p in group:
-            out += ['', '      <li>', f'        <article class="entry" id="{p["id"]}">']
+            # no figure: the designed single-column layout, not a body
+            # squeezed into the 216px column the figure would have used
+            cls = 'entry' if p.get('figure') else 'entry entry--notease'
+            out += ['', '      <li>', f'        <article class="{cls}" id="{p["id"]}">']
             if p.get('figure'):
                 out += ['          <figure class="entry-figure">',
                         figure_html(p, '            '),
@@ -156,7 +160,8 @@ def render_entries(papers):
             para(out, '            ', 'h3 class="entry-title"', title_html(p), COLS['title'])
             para(out, '            ', 'p class="entry-authors"', authors_html(p), COLS['authors'])
             para(out, '            ', 'p class="entry-venue"', venue_html(p), COLS['venue'])
-            para(out, '            ', 'p class="entry-summary"', p['summary'], COLS['summary'])
+            if p.get('summary'):
+                para(out, '            ', 'p class="entry-summary"', p['summary'], COLS['summary'])
             links = links_html(p, '            ', 'entry-links')
             if links:
                 out.append(links)
