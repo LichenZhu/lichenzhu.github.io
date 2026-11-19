@@ -160,6 +160,14 @@
 
 <main id="main">
 
+<!-- The wave field (assets/js/wave.js). A band of its own above the text,
+     never behind it. Decorative, so aria-hidden; hidden without JavaScript,
+     since without it there is nothing to draw. -->
+<figure class="hero-field" aria-hidden="true">
+  <canvas></canvas>
+  <figcaption class="hero-eq">&part;&sup2;u/&part;t&sup2; = c&sup2;&nabla;&sup2;u &minus; &gamma;&thinsp;&part;u/&part;t</figcaption>
+</figure>
+
 <!-- The content column used to open on the "About" rule, which is a filing
      label rather than a greeting. This is a <p>, not a heading: the <h1> is
      the name in the sidebar and there is only ever one. The emoji is
@@ -496,7 +504,7 @@ queried twelve hours later"
 </footer>
 
 <script src="assets/js/main.js" defer></script>
-<script src="assets/js/field.js" defer></script>
+<script src="assets/js/wave.js" defer></script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      STRUCTURED DATA — the Person, plus one ScholarlyArticle per selected

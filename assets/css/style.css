@@ -109,9 +109,15 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
-  /* The live lattice (assets/js/field.js): what a lit dot turns, and how far. */
-  --field-lit:   #4d9cff;
-  --field-alpha: .85;
+  /* The wave field (assets/js/wave.js): troughs, body, crests, scanlines. */
+  --wave-lo:    #5b4fe0;
+  --wave-mid:   #3d8bff;
+  --wave-hi:    #d8f0ff;
+  --wave-line:  #4d9cff;
+  --wave-glow:  rgba(216, 240, 255, .95);
+  --wave-alpha: 1;
+  --wave-blend: lighter;
+  --wave-floor: .16;
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -222,10 +228,17 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
-    /* Navy would read as ink on white; the link blue reads as signal. Held
-       lower than on dark because a saturated dot on white carries further. */
-    --field-lit:   #0f62c9;
-    --field-alpha: .6;
+    /* On white the crests are the darkest points, not the brightest: ink
+       carries height here the way light does on dark. */
+    --wave-lo:    #4a6fc4;
+    --wave-mid:   #1f5fd0;
+    --wave-hi:    #012169;
+    --wave-line:  #1f5fd0;
+    --wave-glow:  rgba(15, 98, 201, .5);
+    --wave-alpha: 1;
+    --wave-blend: normal;
+    /* Still water is lit more on white: there is no glow to carry it. */
+    --wave-floor: .34;
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -339,7 +352,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
-.error-code, .honor-year, .tags-label,
+.error-code, .honor-year, .tags-label, .hero-eq,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -355,9 +368,9 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .skip-link:focus { left: .75rem; top: .75rem; }
 
 /* 3. Backdrop ------------------------------------------------------------
-   A dot grid and one soft accent bloom, both fixed. They give the page depth
-   without putting anything behind the text. With scripting, field.js takes
-   the grid over and makes it respond (README: "The backdrop is alive").
+   A dot grid and one soft accent bloom, both fixed and non-interactive.
+   They give the page depth without putting anything behind the text. The
+   motion lives in its own band at the top of the homepage (.hero-field).
    ------------------------------------------------------------------------ */
 
 .backdrop {
@@ -392,12 +405,6 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   filter: blur(24px);
   opacity: .55;
 }
-
-/* The live lattice. field.js draws the same grid on a canvas and, once it is
-   running, the CSS grid above steps aside so there are never two. With no
-   script or with reduced motion the canvas never exists and nothing changes. */
-.backdrop > canvas { position: absolute; top: 0; left: 0; display: block; }  /* sized in px by field.js */
-.backdrop.is-live::before { display: none; }
 
 /* 4. Layout -------------------------------------------------------------- */
 
@@ -660,6 +667,37 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    is a hello, not a headline, and it should cost the page a line rather than a
    band of empty space. Sans rather than the display serif for the same reason
    — at this size the serif reads formal, which is the opposite of the job. */
+
+/* The wave field band (assets/js/wave.js). It sits above the text and never
+   behind it: the previous attempt animated the backdrop under the prose and
+   made it harder to read. Hidden without JavaScript. The canvas fades in on
+   its first frame. */
+.hero-field {
+  display: none;
+  position: relative;
+  height: 250px;
+  margin: -.5rem 0 1.1rem;
+  cursor: crosshair;
+}
+.js .hero-field { display: block; }
+.hero-field canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.hero-field.is-on canvas { opacity: 1; }
+.hero-eq {
+  position: absolute;
+  top: .2rem;
+  left: 0;
+  font-size: var(--t-micro);
+  letter-spacing: .04em;
+  color: var(--muted);
+  pointer-events: none;
+}
+@media (max-width: 720px) { .hero-field { height: 170px; } }
 .greeting {
   display: flex;
   align-items: baseline;

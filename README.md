@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/field.js               the live backdrop lattice (see "The backdrop is alive")
+  js/wave.js                the wave field at the top of the homepage (see "The wave field")
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -244,8 +244,9 @@ Four effects carry the rest:
 
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
-  below the fold. Decorative, `aria-hidden`, `pointer-events: none`. With
-  scripting, `field.js` takes the grid over and makes it respond; see below.
+  below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
+  It stays still on purpose; see "The wave field" for why motion lives
+  elsewhere.
 - **Cursor-tracked card glow** — each `.pub-card` has a fill bloom (`::before`)
   and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
   `main.js` writes on pointer move (one write per frame, hover-capable pointers
@@ -262,46 +263,51 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## The backdrop is alive
+## The wave field
 
-`assets/js/field.js` redraws the backdrop's 24px dot grid on a canvas, at the
-same positions and with the same fade, and gives it three behaviours. The
-idea is the lab's name: a network that organises itself and answers you.
+The homepage opens on a band of water: `<figure class="hero-field">` above the
+greeting, drawn by `assets/js/wave.js`. It is a point cloud of a surface seen
+in perspective, driven by a damped 2-D wave equation solved live on the grid,
+which is what the corner label says:
 
-- **Opening.** On the first page of a visit the dots start scattered and pull
-  themselves into the lattice over 2.2 s, linking to neighbours as they
-  arrive. Once per session (a `sessionStorage` flag), so moving between pages
-  stays calm, the same reason the sidebar does not re-animate. If storage is
-  unavailable there is no opening at all, rather than one on every page.
-- **Cursor.** Dots within 170px light up in `--field-lit`, lean away, and join
-  into a small mesh. Each dot has a fixed random offset applied in proportion
-  to how lit it is, so the lit patch breaks out of the grid into a
-  constellation and settles back as it fades. Below the fade the resting grid
-  is invisible, so the cursor reveals a lattice that was there all along.
-- **Pulse.** A click or tap sends a ring out through the grid (softer on a
-  phone, where it crosses the screen in half a second). A faint one goes out
-  by itself every 11 to 18 s.
+    ∂²u/∂t² = c²∇²u − γ ∂u/∂t
 
-Things that are deliberate and easy to break:
+so ripples are not drawn, they happen. They spread, cross, interfere and die
+away. A drop lands as the page opens; rain falls now and then; one glider
+crosses the surface by itself, and its wake comes out of the equation rather
+than being drawn. A cursor dragged across the surface leaves a wake, and a
+click drops a stone.
 
-- **It stops when nothing moves.** The loop ends as soon as velocities and
-  brightness settle, and a resting cursor counts as settled. An idle page
-  makes zero frame requests; moving the cursor costs about 0.1 ms a frame.
-- **Height changes never rebuild it.** The canvas is allocated at the tallest
-  the viewport can get. A phone fires `resize` whenever its address bar
-  slides in or out while scrolling, and rebuilding on that wiped the lit
-  dots, the pulses and the opening mid-scroll. Only a new width rebuilds.
-- **Reduced motion means none of it.** No canvas is created and the CSS grid
-  stays; the same happens with JavaScript off. Turning reduced motion on
-  while the page is open removes the canvas.
-- **Clicks are observed, never intercepted.** Keyboard activation
-  (`detail === 0`) sends no pulse.
-- Colours come from `--field-lit` and `--field-alpha`, set per theme. On light
-  the lit colour is the link blue rather than navy, which would read as ink,
-  and it is held lower because a saturated dot carries further on white.
+**Why it is a band and not a backdrop.** The first version animated the dot
+grid behind the whole page. It had to stay faint to keep the prose readable,
+so it was too timid to impress and still got in the way of reading. Here it
+has its own space, can afford to be bright, and nothing moves behind text.
 
-To tune it, the constants are at the top of the file: `REACH`, `JITTER`,
-`PULSE_BAND`, `INTRO_MS`, `SPRING`/`DAMP`.
+Design decisions worth keeping:
+
+- **Square cells in world space.** Rows sit as far apart in depth as columns
+  do across, so a drop spreads as a true circle and perspective alone makes it
+  an ellipse. Spacing rows by depth made waves run faster away from the viewer
+  and the rings lopsided.
+- **Light comes from slope, not height.** Water catches light where it tilts,
+  so each point is lit by its local gradient: wave fronts glow as rings and
+  still water stays dark. That is the whole look.
+- **Additive blending on dark, normal on white** (`--wave-blend`). Light adds
+  up into glow on a dark page; on white it would only wash out, so the light
+  theme draws crests as the darkest points instead, with no bloom pass, and
+  lifts still water (`--wave-floor`) since there is no glow to carry it.
+- **The swell is small and quick.** A large slow swell made the surface read
+  as hills, and drowned the ripples.
+- **It fades out at the sides and the bottom**, so it dissolves into the page
+  above the greeting rather than ending on a line.
+
+Cost and fallbacks: about 1 ms a frame at 1440px, and it only runs while the
+band is on screen and the tab is visible (IntersectionObserver plus
+`visibilitychange`). With reduced motion it renders one still frame of the
+surface and never animates. Without JavaScript the band is not shown at all,
+since there is nothing to draw. Colours are the `--wave-*` tokens, per theme.
+To tune it, the constants are at the top of the file: `Z_NEAR`/`Z_FAR`
+(camera), `C2` (wave speed), `DAMP` (how long ripples live), `AMP` (height).
 
 ## Pages, not scroll anchors
 
