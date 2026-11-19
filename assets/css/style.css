@@ -109,15 +109,11 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
-  /* The wave field (assets/js/wave.js): troughs, body, crests, scanlines. */
-  --wave-lo:    #5b4fe0;
-  --wave-mid:   #3d8bff;
-  --wave-hi:    #d8f0ff;
-  --wave-line:  #4d9cff;
-  --wave-glow:  rgba(216, 240, 255, .95);
-  --wave-alpha: 1;
-  --wave-blend: lighter;
-  --wave-floor: .16;
+  /* The keyframe figure keeps the paper's colour coding: relevance blue,
+     evidence red, the answering segment green. */
+  --kf-rel:     #4d9cff;
+  --kf-evi:     #ff7a6b;
+  --kf-seg:     rgba(74, 222, 128, .13);
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -228,17 +224,9 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
-    /* On white the crests are the darkest points, not the brightest: ink
-       carries height here the way light does on dark. */
-    --wave-lo:    #4a6fc4;
-    --wave-mid:   #1f5fd0;
-    --wave-hi:    #012169;
-    --wave-line:  #1f5fd0;
-    --wave-glow:  rgba(15, 98, 201, .5);
-    --wave-alpha: 1;
-    --wave-blend: normal;
-    /* Still water is lit more on white: there is no glow to carry it. */
-    --wave-floor: .34;
+    --kf-rel:     #0f62c9;
+    --kf-evi:     #d4452f;
+    --kf-seg:     rgba(21, 128, 61, .11);
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -352,7 +340,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    consistent signal that separates data from prose. */
 .mono, .badge, .news-date, .tl-meta, .pub-hint,
 .section-title, .subsection-title, .group-title,
-.error-code, .honor-year, .tags-label, .hero-eq,
+.error-code, .honor-year, .tags-label, .kf-readout, .kf-thumb-label,
 .stamp, .footer-meta, .tag, .news-photo figcaption {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums lining-nums;
@@ -369,8 +357,7 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 
 /* 3. Backdrop ------------------------------------------------------------
    A dot grid and one soft accent bloom, both fixed and non-interactive.
-   They give the page depth without putting anything behind the text. The
-   motion lives in its own band at the top of the homepage (.hero-field).
+   They give the page depth without putting anything behind the text.
    ------------------------------------------------------------------------ */
 
 .backdrop {
@@ -659,6 +646,75 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 }
 .sidebar-links a:hover svg { color: var(--accent); }
 
+
+/* Keyframe figure (assets/js/keyframes.js). A research result made
+   interactive, at the end of About. Static figure without JavaScript. */
+.kf { margin: 2.4rem 0 0; }
+.kf-static {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--fig-line); border-radius: var(--r-md);
+  background: var(--fig-bg); padding: 2%;
+}
+.kf-live { display: none; }
+.js .kf-static { display: none; }
+.js .kf-live { display: block; }
+
+.kf-controls {
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  gap: .6rem 1rem; margin-bottom: 1rem;
+}
+.kf-group { display: inline-flex; flex-wrap: wrap; gap: .4rem; }
+.kf-group button {
+  font: inherit; font-size: var(--t-fine);
+  padding: .32rem .8rem;
+  color: var(--body); background: var(--bg-1);
+  border: 1px solid var(--rule-2); border-radius: 100px;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.kf-group button:hover { color: var(--ink); border-color: var(--accent); }
+.kf-group button[aria-pressed="true"] {
+  color: var(--ink); border-color: var(--accent); background: var(--accent-dim);
+}
+/* The sampler is one control with three settings, so it reads as one. */
+.kf-modes { gap: 0; border: 1px solid var(--rule-2); border-radius: 100px; padding: 2px; }
+.kf-modes button { border-color: transparent; background: transparent; padding: .28rem .8rem; }
+.kf-modes button[aria-pressed="true"] { border-color: transparent; }
+
+.kf-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 188px;
+  gap: 1.2rem;
+  align-items: start;
+}
+.kf-canvas { display: block; width: 100%; height: 220px; cursor: crosshair; }
+.kf-thumb-label {
+  font-size: var(--t-micro); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin: .9rem 0 .45rem;
+}
+.kf-thumb {
+  display: block; width: 100%; height: auto; aspect-ratio: 335 / 185;
+  border: 1px solid var(--rule-2); border-radius: var(--r-sm);
+}
+.kf-thumb[hidden] { display: none; }
+.kf-thumb-cap {
+  font-size: var(--t-fine); line-height: var(--lh-normal);
+  color: var(--body); margin: .55rem 0 0;
+}
+.kf-readout { font-size: var(--t-fine); color: var(--ink); margin: .5rem 0 0; }
+.kf-cap {
+  font-size: var(--t-fine); line-height: var(--lh-normal);
+  color: var(--body); margin-top: 1rem; max-width: 72ch;
+}
+.kf-cap a { color: var(--accent-ink); }
+
+@media (max-width: 720px) {
+  .kf-stage { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
+  .kf-top { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 0 .8rem; align-items: start; }
+  .kf-thumb-label { grid-column: 1 / -1; margin-top: .2rem; }
+  .kf-thumb-cap { margin: 0; }
+  .kf-canvas { height: 200px; }
+}
 /* 7. Section furniture ---------------------------------------------------
    A mono index, the title, then a hairline that runs to the right edge.
    ------------------------------------------------------------------------ */
@@ -668,36 +724,6 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
    band of empty space. Sans rather than the display serif for the same reason
    — at this size the serif reads formal, which is the opposite of the job. */
 
-/* The wave field band (assets/js/wave.js). It sits above the text and never
-   behind it: the previous attempt animated the backdrop under the prose and
-   made it harder to read. Hidden without JavaScript. The canvas fades in on
-   its first frame. */
-.hero-field {
-  display: none;
-  position: relative;
-  height: 250px;
-  margin: -.5rem 0 1.1rem;
-  cursor: crosshair;
-}
-.js .hero-field { display: block; }
-.hero-field canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-.hero-field.is-on canvas { opacity: 1; }
-.hero-eq {
-  position: absolute;
-  top: .2rem;
-  left: 0;
-  font-size: var(--t-micro);
-  letter-spacing: .04em;
-  color: var(--muted);
-  pointer-events: none;
-}
-@media (max-width: 720px) { .hero-field { height: 170px; } }
 .greeting {
   display: flex;
   align-items: baseline;

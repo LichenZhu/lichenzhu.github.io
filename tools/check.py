@@ -167,6 +167,10 @@ def assets():
     css = (ROOT / 'assets/css/style.css').read_text()
     for u in re.findall(r'url\(([^)]+)\)', css):
         referenced.add('assets/' + u.strip('\'"').replace('../', ''))
+    # scripts that swap images in by path, like the keyframe figure
+    for js in (ROOT / 'assets/js').glob('*.js'):
+        for u in re.findall(r"'(assets/[^']+)'", js.read_text()):
+            referenced.add(u)
     unused = []
     for p in sorted((ROOT / 'assets').rglob('*')):
         if p.is_dir() or p.name.startswith('.'):

@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/wave.js                the wave field at the top of the homepage (see "The wave field")
+  js/keyframes.js           the interactive keyframe figure in About (see "A figure, not decoration")
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -245,8 +245,7 @@ Four effects carry the rest:
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
   below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
-  It stays still on purpose; see "The wave field" for why motion lives
-  elsewhere.
+  It stays still on purpose; see "A figure, not decoration".
 - **Cursor-tracked card glow** — each `.pub-card` has a fill bloom (`::before`)
   and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
   `main.js` writes on pointer move (one write per frame, hover-capable pointers
@@ -263,51 +262,42 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## The wave field
+## A figure, not decoration
 
-The homepage opens on a band of water: `<figure class="hero-field">` above the
-greeting, drawn by `assets/js/wave.js`. It is a point cloud of a surface seen
-in perspective, driven by a damped 2-D wave equation solved live on the grid,
-which is what the corner label says:
+The end of About carries one interactive figure: Fig. 1 of *Query-Conditioned
+Evidential Keyframe Sampling* (WACV 2027), made playable by
+`assets/js/keyframes.js`. Pick one of the paper's two questions and one of
+three samplers (uniform, relevance, evidence) and watch where an 8-frame
+budget goes: a playhead scans the video and the score curve forms behind it,
+then the chosen frames lift into the model's context, lit where they land in
+the segment that answers the question. The panel beside it shows the frame
+each scorer ranks first, which are the paper's own frames, cropped from the
+figure (`kf-*.webp`). Hovering the plot reads out a frame's time and scores.
 
-    ∂²u/∂t² = c²∇²u − γ ∂u/∂t
+**Why this and not an effect.** Two animated effects came before it: a dot
+lattice behind the text that lit up under the cursor, then a wave-equation
+water surface above it. Both were rejected, rightly. The first got in the way
+of reading; the second was generic decoration wearing a lab coat, with an
+equation label to signal "science" that was not this research. The sites that
+carry interactive visuals well (Fred Hohman, Viégas and Wattenberg, Distill,
+Bartosz Ciechanowski) all follow one rule: the visual *is* the work. So if
+this is ever replaced, replace it with another result, not with an effect.
 
-so ripples are not drawn, they happen. They spread, cross, interfere and die
-away. A drop lands as the page opens; rain falls now and then; one glider
-crosses the surface by itself, and its wake comes out of the equation rather
-than being drawn. A cursor dragged across the surface leaves a wake, and a
-click drops a stone.
+What keeps it honest:
 
-**Why it is a band and not a backdrop.** The first version animated the dot
-grid behind the whole page. It had to stay faint to keep the prose readable,
-so it was too timid to impress and still got in the way of reading. Here it
-has its own space, can afford to be bright, and nothing moves behind text.
-
-Design decisions worth keeping:
-
-- **Square cells in world space.** Rows sit as far apart in depth as columns
-  do across, so a drop spreads as a true circle and perspective alone makes it
-  an ellipse. Spacing rows by depth made waves run faster away from the viewer
-  and the rings lopsided.
-- **Light comes from slope, not height.** Water catches light where it tilts,
-  so each point is lit by its local gradient: wave fronts glow as rings and
-  still water stays dark. That is the whole look.
-- **Additive blending on dark, normal on white** (`--wave-blend`). Light adds
-  up into glow on a dark page; on white it would only wash out, so the light
-  theme draws crests as the darkest points instead, with no bloom pass, and
-  lifts still water (`--wave-floor`) since there is no glow to carry it.
-- **The swell is small and quick.** A large slow swell made the surface read
-  as hills, and drowned the ripples.
-- **It fades out at the sides and the bottom**, so it dissolves into the page
-  above the greeting rather than ending on a line.
-
-Cost and fallbacks: about 1 ms a frame at 1440px, and it only runs while the
-band is on screen and the tab is visible (IntersectionObserver plus
-`visibilitychange`). With reduced motion it renders one still frame of the
-surface and never animates. Without JavaScript the band is not shown at all,
-since there is nothing to draw. Colours are the `--wave-*` tokens, per theme.
-To tune it, the constants are at the top of the file: `Z_NEAR`/`Z_FAR`
-(camera), `C2` (wave speed), `DAMP` (how long ripples live), `AMP` (height).
+- **The caption says what is real.** The curves are illustrative, shaped
+  after the paper's figure: same peaks, same places, same colours (relevance
+  blue, evidence red, the answering segment green). The frames are the
+  paper's. The results it prints follow from those curves, and they match the
+  paper's point: on the poem question evidence puts 8 of 8 frames in the
+  answer segment, relevance 0, uniform 1; on the football question 4 of 8 (the
+  whole 4-frame segment), 0 and 0.
+- **The budget is 8 for legibility; the paper uses 32.** The caption says so.
+- Without JavaScript the paper's static figure stands in. With reduced motion
+  every change lands in its final state. It animates only on a change and on
+  first scrolling into view, and costs nothing otherwise.
+- `tools/check.py` reads the scripts for `'assets/...'` paths, since three of
+  the four frames are only ever swapped in by the script.
 
 ## Pages, not scroll anchors
 
