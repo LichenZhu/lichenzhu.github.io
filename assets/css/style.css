@@ -109,6 +109,9 @@
   --accent-ink: #a6cbff;  /* accent text on dark      */
   --accent-dim: rgba(77, 156, 255, .13);
   --glow:       rgba(77, 156, 255, .30);
+  /* The live lattice (assets/js/field.js): what a lit dot turns, and how far. */
+  --field-lit:   #4d9cff;
+  --field-alpha: .85;
 
   /* Marks a distinction — the Oral badge and the honours-list bullets. Bright
      on dark, deep on light: a green light enough to read as bright on white
@@ -219,6 +222,10 @@
     --accent-ink: #0f62c9;
     --accent-dim: rgba(1, 33, 105, .07);
     --glow:       rgba(1, 33, 105, .16);
+    /* Navy would read as ink on white; the link blue reads as signal. Held
+       lower than on dark because a saturated dot on white carries further. */
+    --field-lit:   #0f62c9;
+    --field-alpha: .6;
 
     --award:      #15803d;
     --award-dim:  rgba(21, 128, 61, .10);
@@ -348,8 +355,9 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 .skip-link:focus { left: .75rem; top: .75rem; }
 
 /* 3. Backdrop ------------------------------------------------------------
-   A dot grid and one soft accent bloom, both fixed and non-interactive.
-   They give the page depth without putting anything behind the text.
+   A dot grid and one soft accent bloom, both fixed. They give the page depth
+   without putting anything behind the text. With scripting, field.js takes
+   the grid over and makes it respond (README: "The backdrop is alive").
    ------------------------------------------------------------------------ */
 
 .backdrop {
@@ -384,6 +392,12 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
   filter: blur(24px);
   opacity: .55;
 }
+
+/* The live lattice. field.js draws the same grid on a canvas and, once it is
+   running, the CSS grid above steps aside so there are never two. With no
+   script or with reduced motion the canvas never exists and nothing changes. */
+.backdrop > canvas { position: absolute; top: 0; left: 0; display: block; }  /* sized in px by field.js */
+.backdrop.is-live::before { display: none; }
 
 /* 4. Layout -------------------------------------------------------------- */
 

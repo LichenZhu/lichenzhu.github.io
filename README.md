@@ -14,6 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
+  js/field.js               the live backdrop lattice (see "The backdrop is alive")
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -243,7 +244,8 @@ Four effects carry the rest:
 
 
 - **`.backdrop`** — a fixed dot grid plus one accent bloom, masked to fade out
-  below the fold. Purely decorative, `aria-hidden`, `pointer-events: none`.
+  below the fold. Decorative, `aria-hidden`, `pointer-events: none`. With
+  scripting, `field.js` takes the grid over and makes it respond; see below.
 - **Cursor-tracked card glow** — each `.pub-card` has a fill bloom (`::before`)
   and a 1px gradient border (`::after`), both centred on `--mx` / `--my`, which
   `main.js` writes on pointer move (one write per frame, hover-capable pointers
@@ -259,6 +261,47 @@ Four effects carry the rest:
   change look as though it had just arrived. Only the content column moves.
 
 All three are disabled under `prefers-reduced-motion: reduce`.
+
+## The backdrop is alive
+
+`assets/js/field.js` redraws the backdrop's 24px dot grid on a canvas, at the
+same positions and with the same fade, and gives it three behaviours. The
+idea is the lab's name: a network that organises itself and answers you.
+
+- **Opening.** On the first page of a visit the dots start scattered and pull
+  themselves into the lattice over 2.2 s, linking to neighbours as they
+  arrive. Once per session (a `sessionStorage` flag), so moving between pages
+  stays calm, the same reason the sidebar does not re-animate. If storage is
+  unavailable there is no opening at all, rather than one on every page.
+- **Cursor.** Dots within 170px light up in `--field-lit`, lean away, and join
+  into a small mesh. Each dot has a fixed random offset applied in proportion
+  to how lit it is, so the lit patch breaks out of the grid into a
+  constellation and settles back as it fades. Below the fade the resting grid
+  is invisible, so the cursor reveals a lattice that was there all along.
+- **Pulse.** A click or tap sends a ring out through the grid (softer on a
+  phone, where it crosses the screen in half a second). A faint one goes out
+  by itself every 11 to 18 s.
+
+Things that are deliberate and easy to break:
+
+- **It stops when nothing moves.** The loop ends as soon as velocities and
+  brightness settle, and a resting cursor counts as settled. An idle page
+  makes zero frame requests; moving the cursor costs about 0.1 ms a frame.
+- **Height changes never rebuild it.** The canvas is allocated at the tallest
+  the viewport can get. A phone fires `resize` whenever its address bar
+  slides in or out while scrolling, and rebuilding on that wiped the lit
+  dots, the pulses and the opening mid-scroll. Only a new width rebuilds.
+- **Reduced motion means none of it.** No canvas is created and the CSS grid
+  stays; the same happens with JavaScript off. Turning reduced motion on
+  while the page is open removes the canvas.
+- **Clicks are observed, never intercepted.** Keyboard activation
+  (`detail === 0`) sends no pulse.
+- Colours come from `--field-lit` and `--field-alpha`, set per theme. On light
+  the lit colour is the link blue rather than navy, which would read as ink,
+  and it is held lower because a saturated dot carries further on white.
+
+To tune it, the constants are at the top of the file: `REACH`, `JITTER`,
+`PULSE_BAND`, `INTRO_MS`, `SPRING`/`DAMP`.
 
 ## Pages, not scroll anchors
 
