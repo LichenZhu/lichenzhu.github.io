@@ -362,8 +362,8 @@ html { scrollbar-color: var(--rule-2) transparent; scrollbar-width: thin; }
 /* 3. Backdrop ------------------------------------------------------------
    A dot grid and one soft accent bloom, both fixed and non-interactive.
    They give the page depth without putting anything behind the text. With
-   scripting, field.js redraws the grid on a canvas and makes it respond, but
-   only in the empty space: wherever there is text, it stays still.
+   scripting, field.js redraws the grid on a canvas and makes it respond:
+   fully round a moving pointer, and softly under text once the pointer rests.
    ------------------------------------------------------------------------ */
 
 .backdrop {

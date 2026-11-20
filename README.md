@@ -269,28 +269,34 @@ The 24px dot grid behind every page is redrawn on a canvas by
 under it that only shows where something is happening. No labels, no
 captions, no diagram: it is an atmosphere, not a figure.
 
-- **Ripples.** A damped wave equation runs on the fine lattice. The cursor
-  drags a wake across it, a click drops a stone, and on the first screen a
-  drop falls by itself now and then. Grains light on the moving slopes, so a
-  ripple reads as a ring of light; rings spread, cross and die away.
-- **Cursor.** Grains near the pointer light, lean away and link into a mesh.
-- **Memory.** Wherever the field has been lit it keeps a faint trace that
-  halves every 2.6 seconds: it remembers, then forgets. Rest the pointer in an
-  empty spot and thin lines reach back to the brightest traces left, and they
-  light again. That is the only nod to the research, and it is meant to stay
-  oblique.
+- **Ripples.** A damped wave equation runs on the fine lattice. Moving the
+  mouse drags a wake, a click drops a stone, and soon after arrival up to four
+  single drops fall by themselves (only in the first minute, so the page is
+  calm by the time anyone reads it). The whole lattice rides the waves and
+  grains light on the moving slopes, so a ripple reads as a ring of light.
+  The edges of the window absorb waves instead of reflecting them.
+- **Cursor.** Grains round the pointer light, lean away and link into a mesh.
+  The glow is strong while the pointer moves and settles to a faint one about
+  a second after it stops.
+- **Trails.** Lit grains leave an afterglow that halves every 0.9 s. It is the
+  one oblique nod to the research (memory that fades), and it has no label.
 - **Opening.** On the first page of a visit the dots start scattered, lit, and
   fly home into the grid.
 
-**It never moves behind text.** Every paragraph, heading, list item, picture
-and card (the `TEXT` selector at the top of the file) is measured in viewport
-space on load, scroll and resize, and stamped onto the lattice: fully still
-under the text and a margin round it, and nearly still a little further out,
-which closes the gaps between paragraphs. So ripples run under the page and
-show only in space that is really empty: the column beside About, the
-gutters, the bands between sections. Recall lines are drawn only if their
-whole curve stays in empty space. This rule is the reason the first, faint
-version of this grid was rejected ("会打扰看文字"); do not relax it.
+**How it treats text.** It answers the same everywhere: round a moving pointer
+it is at full strength wherever the pointer is, over a paragraph or not, since
+nobody reads while moving the mouse. Away from the pointer, and once it rests,
+everything under text (the `TEXT` selector, measured on load, scroll and
+resize, feathered over about 24px) shows at 40% with no mesh and no glow. So
+a ripple dims under a paragraph and comes back on the other side, and nothing
+bright sits behind what is being read. A drag with a button held (a text
+selection) makes no glow. Cards and pictures are opaque and need nothing.
+
+Two earlier versions of this file got it wrong, and the fixes are worth
+keeping. Holding everything under text completely still left whole regions
+(the paragraph, the sidebar, the publication list) dead to the mouse ("有的部分
+就不联动了"). Lines drawn from a resting pointer to old traces meant nothing to
+anyone ("莫名其妙") and are gone.
 
 Why this and not a figure: six figures came and went (a wave surface, one
 paper's chart, a latent-space cloud, a galaxy, a globe of places, a stream of
@@ -301,12 +307,16 @@ the one the owner found "有点意思".
 Mechanics worth keeping:
 
 - Canvas 2D, no WebGL and no shaders, so nothing can fail to compile.
-- The loop stops when nothing moves; on the first screen the occasional drop
-  keeps it alive. About 1 to 2.5 ms a frame with ripples running.
+- The loop stops as soon as nothing visible changes: about 2.5 s after the
+  mouse stops, 6 s after a click (while the ring and its trail fade). The stop
+  test counts only what can be seen; tests on raw wave height or on sub-pixel
+  flicker kept it running for ten seconds and more.
+- About 2 ms a frame at 1440x900 on a retina laptop with the pointer sweeping
+  the screen and clicking, 3.3 ms at 2560x1440, 1 ms on a phone; 60 fps.
 - The canvas is allocated at the tallest the viewport can get; only a width
   change rebuilds it (a phone's address bar fires resize on every scroll).
 - Reduced motion or no JavaScript: no canvas, the static CSS grid stays.
-- Touch: no cursor halo (a moving finger is a scroll); a tap drops a stone.
+- Touch: no cursor glow (a moving finger is a scroll); a tap drops a stone.
 - Colours are `--field-lit`, `--field-hot`, `--field-alpha` and
   `--field-blend` (additive light on dark, ink on white).
 
