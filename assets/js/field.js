@@ -5,12 +5,12 @@
    where something is happening.
 
      ripples   a damped wave equation runs on the fine lattice. Moving the
-               mouse drags a wake through it, a click drops a stone, and soon
-               after arrival a few single drops fall by themselves. The whole
-               lattice rides the waves, and grains light on the moving slopes,
-               so a ripple reads as a ring of light that spreads, crosses
-               others and leaves the window at its edges (they absorb; they do
-               not reflect).
+               mouse drags a wake through it and a click drops a stone; that
+               is the only way a ripple starts, so nothing ever ripples on its
+               own. The whole lattice rides the waves, and grains light on the
+               moving slopes, so a ripple reads as a ring of light that
+               spreads, crosses others and leaves the window at its edges
+               (they absorb; they do not reflect).
      cursor    grains round the pointer light, lean away and link into a mesh.
                The glow is strong while the pointer moves and settles to a
                faint one when it stops, so nothing pulses while you read.
@@ -62,7 +62,7 @@
   var fc = 0, fr = 0, fn = 0;             // fine lattice
   var u0, u1, u2, damp, lit, mem, vis, shade, seff, raw, tmp, jx, jy, ox, oy, phase;
   var C = {};
-  var ptr = null, energy = 0, lastInput = 0;
+  var ptr = null, energy = 0;
   var running = false, last = 0, acc = 0, clock = 0;
   var introOn = false, introT0 = 0, INTRO_MS = 2400;
 
@@ -170,10 +170,6 @@
     if (measureQueued) return;
     measureQueued = true;
     requestAnimationFrame(function () { measureQueued = false; measure(); wake(); });
-  }
-  function emptyAt(x, y) {
-    var i = Math.round(x / FINE), j = Math.round(y / FINE);
-    return i >= 0 && j >= 0 && i < fc && j < fr && shade[j * fc + i] > 0.97;
   }
 
   /* --- the water ---------------------------------------------------------- */
@@ -400,18 +396,24 @@
   }
 
   /* --- input ------------------------------------------------------------------- */
-  var prev = null;
+  var prev = null, prevT = 0;
   window.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch') return;      // a moving finger is a scroll
-    var p = { x: e.clientX, y: e.clientY };
+    var p = { x: e.clientX, y: e.clientY }, t = now();
     // A drag with a button held is usually a text selection: no glow and no
     // wake behind the words being selected.
     if (prev && !e.buttons) {
       var d = Math.sqrt((p.x - prev.x) * (p.x - prev.x) + (p.y - prev.y) * (p.y - prev.y));
-      energy = Math.min(1.2, energy + d / 90);
-      if (d > 2) drop(p.x, p.y, -Math.min(0.5, d * 0.011), 1.1);
+      // A mouse that moves reports every frame or so. One that reappears far
+      // away after a pause (back from outside the window, or after resting)
+      // has jumped, not moved: no wake for a distance it never travelled.
+      var jumped = t - prevT > 120 && d > 40;
+      if (!jumped) {
+        energy = Math.min(1.2, energy + d / 90);
+        if (d > 2) drop(p.x, p.y, -Math.min(0.5, d * 0.011), 1.1);
+      }
     }
-    prev = p; ptr = p; lastInput = now();
+    prev = p; prevT = t; ptr = p;
     wake();
   }, { passive: true });
   function leave() { ptr = null; prev = null; wake(); }
@@ -419,26 +421,8 @@
   window.addEventListener('blur', leave);
   window.addEventListener('click', function (e) {
     if (e.detail === 0) return;                 // keyboard activation
-    lastInput = now();
     drop(e.clientX, e.clientY, -2.6, 1.6);
   }, { passive: true });
-
-  // Soon after arrival, while nobody is touching the page, a few single drops
-  // fall in empty parts of the first screen: an invitation to try it. At most
-  // four, all in the first minute, so the page is calm by the time anyone is
-  // reading it.
-  var drops = 0, born = now();
-  (function idle() {
-    setTimeout(function () {
-      if (!document.hidden && window.scrollY < VH * 0.8 && now() - lastInput > 3000 && !introOn) {
-        for (var t = 0; t < 20; t++) {
-          var x = Math.random() * W, y = 80 + Math.random() * VH * 0.6;
-          if (emptyAt(x, y)) { drop(x, y, -1.5, 1.2); drops++; break; }
-        }
-      }
-      if (drops < 4 && now() - born < 60000) idle();
-    }, 5000 + Math.random() * 6000);
-  })();
 
   window.addEventListener('scroll', remeasure, { passive: true });
   var resizeTimer;
@@ -475,11 +459,4 @@
   if (first) { introOn = true; introT0 = clock; }
   draw();
   wake();
-  // the opening ends on a stone dropped into the largest empty space in view
-  if (first) setTimeout(function () {
-    for (var t = 0; t < 40; t++) {
-      var x = W * (0.45 + Math.random() * 0.5), y = VH * (0.12 + Math.random() * 0.45);
-      if (emptyAt(x, y) && emptyAt(x - 60, y) && emptyAt(x + 60, y) && emptyAt(x, y - 50) && emptyAt(x, y + 50)) { drop(x, y, -3.2, 1.8); break; }
-    }
-  }, INTRO_MS * 0.75);
 })();

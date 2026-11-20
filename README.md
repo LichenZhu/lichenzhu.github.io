@@ -270,18 +270,26 @@ under it that only shows where something is happening. No labels, no
 captions, no diagram: it is an atmosphere, not a figure.
 
 - **Ripples.** A damped wave equation runs on the fine lattice. Moving the
-  mouse drags a wake, a click drops a stone, and soon after arrival up to four
-  single drops fall by themselves (only in the first minute, so the page is
-  calm by the time anyone reads it). The whole lattice rides the waves and
-  grains light on the moving slopes, so a ripple reads as a ring of light.
-  The edges of the window absorb waves instead of reflecting them.
+  mouse drags a wake and a click drops a stone, and **those are the only ways
+  a ripple starts.** The whole lattice rides the waves and grains light on
+  the moving slopes, so a ripple reads as a ring of light. The edges of the
+  window absorb waves instead of reflecting them.
 - **Cursor.** Grains round the pointer light, lean away and link into a mesh.
   The glow is strong while the pointer moves and settles to a faint one about
   a second after it stops.
 - **Trails.** Lit grains leave an afterglow that halves every 0.9 s. It is the
   one oblique nod to the research (memory that fades), and it has no label.
 - **Opening.** On the first page of a visit the dots start scattered, lit, and
-  fly home into the grid.
+  fly home into the grid. It ends there, with no splash.
+
+**Nothing ripples by itself.** An earlier version dropped a stone at the end
+of the opening and let a few drops fall on their own while the page sat
+untouched. It read as a click nobody made ("鼠标不在这个界面上…就会自动的
+出现一个点有水波"), so both are gone. The same goes for a mouse that rests or
+leaves the window and reappears far away: a move that comes more than 120 ms
+after the last one and lands more than 40 px off is a jump, not a movement,
+and makes no wake. A 20-second untouched-page test in real Chrome now shows no
+ripple at all after the opening.
 
 **How it treats text.** It answers the same everywhere: round a moving pointer
 it is at full strength wherever the pointer is, over a paragraph or not, since
