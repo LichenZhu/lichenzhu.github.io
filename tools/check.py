@@ -171,6 +171,8 @@ def assets():
     for js in (ROOT / 'assets/js').glob('*.js'):
         for u in re.findall(r"'(assets/[^']+)'", js.read_text()):
             referenced.add(u)
+    # kept on purpose with nothing loading it; see "The live lattice" in the README
+    referenced.add('assets/js/field.js')
     unused = []
     for p in sorted((ROOT / 'assets').rglob('*')):
         if p.is_dir() or p.name.startswith('.'):

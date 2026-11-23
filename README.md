@@ -14,7 +14,7 @@ sitemap.xml                 two URLs; bump <lastmod> when you publish changes
 assets/
   css/style.css             all styling (one file, sectioned + commented)
   js/main.js                mobile nav, publication modal, news toggle, scroll-spy
-  js/field.js               the live lattice behind every page (see "The live lattice")
+  js/field.js               the live lattice, switched off: kept, loaded by no page
   images/logos/             Duke / XJTLU / Liverpool marks
   images/profile/           profile photo
   images/publications/      teaser figures
@@ -262,7 +262,18 @@ Four effects carry the rest:
 
 All three are disabled under `prefers-reduced-motion: reduce`.
 
-## The live lattice
+## The live lattice (switched off)
+
+**No page loads `assets/js/field.js` any more.** The backdrop is the static CSS
+dot grid again, with no animation, no ripples and no response to the pointer.
+The file is kept so the effect can come back without being rebuilt; switching
+it back on is one line per page, after `main.js`:
+
+    <script src="assets/js/field.js" defer></script>
+
+(`/assets/js/field.js` in `404.html`.) `tools/check.py` treats the file as
+referenced on purpose. Everything below describes the script as it was when
+it was last live.
 
 The 24px dot grid behind every page is redrawn on a canvas by
 `assets/js/field.js` and made to respond, with a finer 12px lattice of grains
